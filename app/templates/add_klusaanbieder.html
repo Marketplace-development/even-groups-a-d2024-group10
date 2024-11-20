@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toevoegen Klusaanbieder</title>
+</head>
+<body>
+    <h1>Voeg een Klusaanbieder toe</h1>
+
+    <form method="POST">
+        {{ form.hidden_tag() }}
+
+        <p>{{ form.idnummer.label }} {{ form.idnummer() }}</p>
+        <p>{{ form.rating.label }} {{ form.rating() }}</p>
+        <p>{{ form.categorie.label }} {{ form.categorie() }}</p>
+
+        <p>{{ form.submit() }}</p>
+    </form>
+</body>
+</html>

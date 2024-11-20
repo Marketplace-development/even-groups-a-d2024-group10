@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kies je Rol - KLUSKOMPAS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Welkom {{ username }}!</h1>
+        <p>Je hebt je succesvol geregistreerd. Kies nu een rol:</p>
+        <form method="POST">
+            <div class="form-group">
+                <input type="radio" id="kluszoeker" name="role" value="Kluszoeker">
+                <label for="kluszoeker">Kluszoeker</label>
+            </div>
+            <div class="form-group">
+                <input type="radio" id="klusaanbieder" name="role" value="Klusaanbieder">
+                <label for="klusaanbieder">Klusaanbieder</label>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Bevestig Rol" class="btn">
+            </div>
+        </form>
+    </div>
+</body>
+</html>

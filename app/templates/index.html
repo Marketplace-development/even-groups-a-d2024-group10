@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welkom - KLUSKOMPAS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Welkom bij KLUSKOMPAS!</h1>
+        <p>Welkom bij onze klusplatform. Klik hieronder om je aan te melden of een account te maken.</p>
+
+        <!-- Registratie- en Inlogknoppen -->
+        <div class="button-group">
+            <a href="{{ url_for('main.register') }}" class="btn">Registreren</a>
+            <a href="{{ url_for('main.login') }}" class="btn">Inloggen</a>
+        </div>
+    </div>
+</body>
+</html>

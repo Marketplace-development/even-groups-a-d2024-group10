@@ -1,0 +1,25 @@
+<!-- app/templates/add_person.html -->
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Persoon Toevoegen</title>
+</head>
+<body>
+    <h1>Voeg een nieuwe Persoon toe</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}  <!-- Verwerkt CSRF-token -->
+        
+        <p>{{ form.voornaam.label }} {{ form.voornaam(size=32) }}</p>
+        <p>{{ form.achternaam.label }} {{ form.achternaam(size=32) }}</p>
+        <p>{{ form.leeftijd.label }} {{ form.leeftijd() }}</p>
+        <p>{{ form.adres.label }} {{ form.adres(size=64) }}</p>
+        <p>{{ form.email.label }} {{ form.email(size=64) }}</p>
+        <p>{{ form.tel_nr.label }} {{ form.tel_nr(size=16) }}</p>
+        <p>{{ form.voorkeur_categorie.label }} {{ form.voorkeur_categorie(size=32) }}</p>
+        
+        <p>{{ form.submit() }}</p>
+    </form>
+</body>
+</html>
