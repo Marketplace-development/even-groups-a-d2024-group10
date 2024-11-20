@@ -141,4 +141,3 @@ def add_kluszoeker():
     return render_template('add_kluszoeker.html', form=form)
 
 
-"hallo"
