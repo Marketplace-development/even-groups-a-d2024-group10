@@ -16,7 +16,7 @@ class Config:
         raise ValueError("DATABASE_URL moet worden ingesteld in .env bestand!")
 
     # Schakel database wijzigingen tracken uit
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    
 
     # Supabase instellingen
     SUPABASE_URL = os.getenv('SUPABASE_URL')
