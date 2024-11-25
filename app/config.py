@@ -5,10 +5,22 @@ import os
 load_dotenv()
 
 class Config:
-    SECRET_KEY = os.getenv('SECRET_KEY', os.urandom(24))  # Laadt sleutel uit .env of genereert een tijdelijke
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')  # Haalt de URI uit .env
-    SQLALCHEMY_TRACK_MODIFICATIONS = False  # Vermijd onnodige waarschuwingen
+    # Geheime sleutel
+    SECRET_KEY = os.getenv('SECRET_KEY')
+    if not SECRET_KEY:
+        raise ValueError("SECRET_KEY moet worden ingesteld in .env bestand!")
 
-    # Voeg hier de Supabase instellingen toe
+    # Database URI
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///site.db')
+    if not SQLALCHEMY_DATABASE_URI:
+        raise ValueError("DATABASE_URL moet worden ingesteld in .env bestand!")
+
+    # Schakel database wijzigingen tracken uit
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    # Supabase instellingen
     SUPABASE_URL = os.getenv('SUPABASE_URL')
     SUPABASE_KEY = os.getenv('SUPABASE_KEY')
+
+    # Debug mode (optioneel)
+    DEBUG = os.getenv('DEBUG', 'False').lower() in ['true', '1', 't']

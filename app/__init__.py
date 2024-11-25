@@ -2,25 +2,30 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
-# Initialiseer extensies
+# Maak één instantie van SQLAlchemy aan
 db = SQLAlchemy()
 migrate = Migrate()
+
 
 def create_app():
     app = Flask(__name__)
     
-    # Laad configuratie
+    # Laad de configuratie
     app.config.from_object('app.config.Config')
     
-    # Initialiseer extensies
+    # Initialiseer de extensies met de app
     db.init_app(app)
     migrate.init_app(app, db)
-    
-    # Registreer de blueprint voor de routes
-    from .routes import main  # Zorg dat 'main' in routes correct is gedefinieerd
+
+    # Registreer de blueprints
+    from .routes import main
     app.register_blueprint(main)
 
-    # Stel een geheim sleutel in voor sessiebeheer
-    app.secret_key = '1bc29dd9e466f92dccd7382212eaaaba8f79a81929ba83bb'  # random string
+    # Stel de geheime sleutel in (gebruik een veilige waarde in productie)
+    app.secret_key = 'SECRET_KEY'
+
+    # Controleer en maak de tabellen aan indien ze niet bestaan
+    with app.app_context():
+        db.create_all()  # Hiermee worden alle ontbrekende tabellen aangemaakt
 
     return app

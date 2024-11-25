@@ -1,21 +1,97 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toevoegen Klusaanbieder</title>
-</head>
-<body>
-    <h1>Voeg een Klusaanbieder toe</h1>
+{% extends 'base.html' %}
 
+{% block content %}
+    <h1>Bied een klus aan</h1>
     <form method="POST">
         {{ form.hidden_tag() }}
 
-        <p>{{ form.idnummer.label }} {{ form.idnummer() }}</p>
-        <p>{{ form.rating.label }} {{ form.rating() }}</p>
-        <p>{{ form.categorie.label }} {{ form.categorie() }}</p>
+        <!-- Naam van de klus -->
+        <div class="form-group">
+            <label for="klusnaam">Naam van de klus</label>
+            {{ form.klusnaam(class="form-control") }}
+            {% if form.klusnaam.errors %}
+                <ul class="errors">
+                    {% for error in form.klusnaam.errors %}
+                        <li class="text-danger">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
 
-        <p>{{ form.submit() }}</p>
+        <!-- Categorie -->
+        <div class="form-group">
+            <label for="categorie">Categorie</label>
+            <select class="form-control" name="categorie" id="categorie" required>
+                <option value="">Kies een categorie</option>
+                <option value="buitenshuis" {% if form.categorie.data == 'buitenshuis' %}selected{% endif %}>Buitenshuis</option>
+                <option value="binnenshuis" {% if form.categorie.data == 'binnenshuis' %}selected{% endif %}>Binnenshuis</option>
+                <option value="tuin" {% if form.categorie.data == 'tuin' %}selected{% endif %}>Tuin</option>
+                <option value="techniek" {% if form.categorie.data == 'techniek' %}selected{% endif %}>Techniek</option>
+            </select>
+            {% if form.categorie.errors %}
+                <ul class="errors">
+                    {% for error in form.categorie.errors %}
+                        <li class="text-danger">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <!-- Locatie -->
+        <div class="form-group">
+            <label for="locatie">Locatie</label>
+            {{ form.locatie(class="form-control") }}
+            {% if form.locatie.errors %}
+                <ul class="errors">
+                    {% for error in form.locatie.errors %}
+                        <li class="text-danger">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <!-- Tijd -->
+        <div class="form-group">
+            <label for="tijd">Tijd</label>
+            {{ form.tijd(class="form-control") }}
+            {% if form.tijd.errors %}
+                <ul class="errors">
+                    {% for error in form.tijd.errors %}
+                        <li class="text-danger">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <!-- Beschrijving -->
+        <div class="form-group">
+            <label for="beschrijving">Beschrijving</label>
+            {{ form.beschrijving(class="form-control") }}
+            {% if form.beschrijving.errors %}
+                <ul class="errors">
+                    {% for error in form.beschrijving.errors %}
+                        <li class="text-danger">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <!-- Vergoeding -->
+        <div class="form-group">
+            <label for="vergoeding">Vergoeding</label>
+            {{ form.vergoeding(class="form-control") }}
+            {% if form.vergoeding.errors %}
+                <ul class="errors">
+                    {% for error in form.vergoeding.errors %}
+                        <li class="text-danger">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <!-- Submit button -->
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Klus aanbieden</button>
+        </div>
     </form>
-</body>
-</html>
+{% endblock %}

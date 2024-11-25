@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>{{ klus.titel }}</h1>
+  
+  <p><strong>Locatie:</strong> {{ klus.locatie }}</p>
+  <p><strong>Beschrijving:</strong> {{ klus.beschrijving }}</p>
+  <p><strong>Vergoeding:</strong> {{ klus.vergoeding }} €</p>
+  
+  <!-- Knop om interesse in de klus aan te geven -->
+  {% if 'username' in session %}
+    <form action="{{ url_for('main.meld_aan_voor_klus', klusnummer=klus.klusnummer) }}" method="POST">
+      <button type="submit" class="btn btn-success">Ik ben geïnteresseerd in deze klus</button>
+    </form>
+
+    <!-- Knop om de klus zelf te doen (optioneel, afhankelijk van je logica) -->
+    <form action="{{ url_for('main.accepteer_klus', klusnummer=klus.klusnummer) }}" method="POST">
+      <button type="submit" class="btn btn-primary">Ik wil deze klus doen</button>
+    </form>
+  {% endif %}
+
+  <a href="{{ url_for('main.klussen') }}" class="btn btn-secondary">Terug naar overzicht</a>
+{% endblock %}
