@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Alle Klussen</h1>
+  <ul>
+    {% for klus in klussen %}
+      <li>
+        <!-- Toon de naam van de klus groot -->
+        <h2>{{ klus.titel }}</h2>
+        
+        <!-- Toon de locatie en andere details -->
+        <p><strong>Locatie:</strong> {{ klus.locatie }} <br>
+        <strong>Vergoeding:</strong> {{ klus.vergoeding }} €</p>
+
+        <!-- Knop om naar de klusdetails te gaan -->
+        <a href="{{ url_for('main.klus_detail', klusnummer=klus.klusnummer) }}" class="btn btn-secondary">
+          Bekijk Details
+        </a>
+
+        <!-- Als de gebruiker is ingelogd, toon de knop 'Klus doen' -->
+        {% if 'username' in session %}
+          <form action="{{ url_for('main.meld_aan_voor_klus', klusnummer=klus.klusnummer) }}" method="POST">
+            <button type="submit" class="btn btn-primary">Klus doen</button>
+          </form>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}

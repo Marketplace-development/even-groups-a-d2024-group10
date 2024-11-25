@@ -1,24 +1,108 @@
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registreren - KLUSKOMPAS</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <div class="container">
-        <h1>Registreren</h1>
-        <form method="POST">
-            {{ form.hidden_tag() }}
-            <div class="form-group">
-                <label for="username">Gebruikersnaam:</label>
-                {{ form.username_or_email(class="form-control", placeholder="Vul je gebruikersnaam in") }}
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Registreren" class="btn">
-            </div>
-        </form>
-    </div>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Registreren</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        
+        <div>
+            <label for="username">Gebruikersnaam</label>
+            {{ form.username(class="form-control") }}
+            {% if form.username.errors %}
+                <ul class="errors">
+                    {% for error in form.username.errors %}
+                        <li class="text-danger">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div>
+            <label for="email">E-mail</label>
+            {{ form.email(class="form-control") }}
+            {% if form.email.errors %}
+                <ul class="errors">
+                    {% for error in form.email.errors %}
+                        <li class="text-danger">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div>
+            <label for="voornaam">Voornaam</label>
+            {{ form.voornaam(class="form-control") }}
+            {% if form.voornaam.errors %}
+                <ul class="errors">
+                    {% for error in form.voornaam.errors %}
+                        <li class="text-danger">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div>
+            <label for="achternaam">Achternaam</label>
+            {{ form.achternaam(class="form-control") }}
+            {% if form.achternaam.errors %}
+                <ul class="errors">
+                    {% for error in form.achternaam.errors %}
+                        <li class="text-danger">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div>
+            <label for="leeftijd">Leeftijd</label>
+            {{ form.leeftijd(class="form-control") }}
+            {% if form.leeftijd.errors %}
+                <ul class="errors">
+                    {% for error in form.leeftijd.errors %}
+                        <li class="text-danger">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div>
+            <label for="gender">Geslacht</label>
+            {{ form.gender(class="form-control") }}
+            {% if form.gender.errors %}
+                <ul class="errors">
+                    {% for error in form.gender.errors %}
+                        <li class="text-danger">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div>
+            <label for="telefoonnummer">Telefoonnummer</label>
+            {{ form.telefoonnummer(class="form-control") }}
+            {% if form.telefoonnummer.errors %}
+                <ul class="errors">
+                    {% for error in form.telefoonnummer.errors %}
+                        <li class="text-danger">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div>
+            <label for="adres">Adres</label>
+            {{ form.adres(class="form-control") }}
+            {% if form.adres.errors %}
+                <ul class="errors">
+                    {% for error in form.adres.errors %}
+                        <li class="text-danger">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div>
+            <button type="submit" class="btn btn-primary">Registreren</button>
+        </div>
+    </form>
+{% endblock %}

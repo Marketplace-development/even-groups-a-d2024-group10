@@ -1,0 +1,8 @@
+<!-- klus_bekeken.html -->
+<h1>Klus Bekeken</h1>
+<p>Je hebt de klus <strong>{{ klus.locatie }}</strong> bekeken.</p>
+<p>Status: {{ klus.status }}</p>
+
+<form action="{{ url_for('accepteer_klus', klusnummer=klus.klusnummer) }}" method="post">
+    <button type="submit">Accepteer Klus</button>
+</form>

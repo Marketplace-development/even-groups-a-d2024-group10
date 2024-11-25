@@ -1,0 +1,263 @@
+/* Algemene instellingen */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f8ff;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+    width: 100%;
+    max-width: 800px;  /* Dit zorgt ervoor dat de container niet breder wordt dan 800px */
+}
+
+h1 {
+    font-size: 2.5rem;
+    color: #003366;
+    margin-bottom: 20px;
+}
+
+/* Stijlen voor knoppen */
+.btn, input[type="submit"] {
+    padding: 12px 20px;
+    background-color: #1e90ff;
+    color: white;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    width: 100%;
+    max-width: 250px; /* Max breedte voor de knoppen */
+    transition: background-color 0.3s;
+}
+
+.btn:hover, input[type="submit"]:hover {
+    background-color: #4682b4;
+}
+
+/* Formulierinvoer */
+input {
+    padding: 10px;
+    width: 100%;
+    max-width: 400px;  /* Beperk de breedte van invoervelden */
+    font-size: 1rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    margin: 10px 0;
+}
+
+/* Focus op invoervelden */
+input:focus {
+    outline: none; /* Verwijder standaard focus-outline */
+    border: 1px solid #1e90ff; /* Blauw rand bij focus */
+    box-shadow: 0 0 8px rgba(30, 144, 255, 0.5); /* Schaduw bij focus */
+}
+
+/* Styling voor foutmeldingen in formulier */
+form .error {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+/* Stijlen voor invoervelden met specifieke validatie */
+input:valid {
+    border-color: #28a745;  /* Groene rand voor geldig invoerveld */
+}
+
+input:invalid {
+    border-color: #dc3545;  /* Rode rand voor ongeldig invoerveld */
+}
+
+/* Styling voor leeftijdsveld */
+input[type="number"] {
+    -moz-appearance: textfield; /* Verwijder pijlknoppen in Firefox */
+    -webkit-appearance: none;   /* Verwijder pijlknoppen in Webkit-browsers (Chrome, Safari) */
+    appearance: none;           /* Verwijder pijlknoppen in moderne browsers */
+}
+
+/* Styling voor actieve invoervelden in de forms */
+input:focus, select:focus, textarea:focus {
+    border-color: #1e90ff; /* Blauw randje bij focus */
+    box-shadow: 0 0 8px rgba(30, 144, 255, 0.5); /* Subtiele schaduw rondom actief veld */
+}
+
+/* Verbetering voor de 'submit' knop */
+input[type="submit"] {
+    padding: 12px 0;  /* Vergroot de hoogte van de knop */
+}
+
+/* Verbeter de zichtbaarheid van foutmeldingen */
+.flash-message {
+    margin: 20px 0;
+    padding: 10px;
+    background-color: #1e90ff;
+    color: white;
+    font-size: 1.2rem;
+    border-radius: 5px;
+    text-align: center;
+}
+
+/* Button styling */
+.button-group {
+    margin-top: 20px;
+}
+
+.btn {
+    display: inline-block;
+    margin: 10px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    padding: 12px 20px;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+/* Specifieke stijlen voor invoervelden in formulieren */
+.form-group input {
+    width: 100%;  /* Zorgt ervoor dat de invoervelden zich uitrekken naar de containerbreedte */
+    max-width: 400px; /* Limiteer de maximale breedte van de invoervelden */
+    margin: 10px 0;  /* Ruimte boven en onder de invoervelden */
+}
+
+/* Styling voor foutmeldingen */
+form .error {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+/* Verbeterde zichtbaarheid voor foutmeldingen */
+.flash-message {
+    margin: 20px 0;
+    padding: 10px;
+    background-color: #1e90ff;
+    color: white;
+    font-size: 1.2rem;
+    border-radius: 5px;
+    text-align: center;
+}
+
+/* Algemeen voor beide pagina's */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f8ff;
+    color: #333;
+}
+
+.container {
+    max-width: 800px;  /* Beperk de breedte van de container voor een nettere weergave */
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Headerstijl voor beide pagina's */
+h1 {
+    font-size: 2.5rem;
+    color: #003366;
+    margin-bottom: 20px;
+}
+
+/* Formulierinstellingen */
+.form-group {
+    margin-bottom: 20px;
+}
+
+/* Knopinstellingen */
+.btn, input[type="submit"] {
+    padding: 12px 20px;
+    background-color: #1e90ff;
+    color: white;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    max-width: 250px; /* Max breedte voor de knoppen */
+    transition: background-color 0.3s;
+}
+
+/* Hover effect voor knoppen */
+.btn:hover, input[type="submit"]:hover {
+    background-color: #4682b4;
+}
+
+/* Styling voor formulierinvoer */
+input, select {
+    padding: 10px;
+    width: 100%;
+    max-width: 400px;  /* Beperk de breedte van invoervelden */
+    font-size: 1rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    margin: 10px 0;
+}
+
+/* Styling voor foutmeldingen in formulier */
+ul.errors {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+/* Focus op invoervelden */
+input:focus, select:focus {
+    outline: none;
+    border: 1px solid #1e90ff;
+    box-shadow: 0 0 8px rgba(30, 144, 255, 0.5);
+}
+
+/* Styling voor link naar registratie */
+.btn-link {
+    text-decoration: none;
+    color: #1e90ff;
+    font-size: 1rem;
+    margin-top: 10px;
+}
+
+.btn-link:hover {
+    text-decoration: underline;
+}
+
+/* Verbetering voor de zichtbaarheid van foutmeldingen */
+.flash-message {
+    margin: 20px 0;
+    padding: 10px;
+    background-color: #1e90ff;
+    color: white;
+    font-size: 1.2rem;
+    border-radius: 5px;
+    text-align: center;
+}
+
+h2 {
+    font-size: 24px;
+    color: #333;
+  }
+  
+  p {
+    font-size: 16px;
+    color: #555;
+  }
+  
+  .btn-secondary {
+    margin-top: 10px;
+  }
+  
+  .btn-primary {
+    margin-left: 10px;
+  }
+  
