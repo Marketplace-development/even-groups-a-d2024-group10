@@ -77,6 +77,7 @@ from flask import session
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():
+    print("Login route is reached")  # Dit moet in je terminal verschijnen
     form = LoginForm()
     
     if form.validate_on_submit():
