@@ -152,38 +152,53 @@ def add_person():
 
 @main.route('/add_klusaanbieder', methods=['GET', 'POST'])
 def add_klusaanbieder():
+    # Controleer of de gebruiker is ingelogd
     if 'user_id' not in session:
         flash('Je moet ingelogd zijn om deze actie uit te voeren', 'danger')
         return redirect(url_for('main.login'))
     
+    # Haal de ingelogde persoon op
     persoon = Persoon.query.get(session['user_id'])
     
     if not persoon:
         flash('Persoon niet gevonden', 'danger')
         return redirect(url_for('main.dashboard'))
 
+    # Het formulier wordt aangemaakt
     form = KlusaanbiederForm()  # Gebruik KlusaanbiederForm hier
+    
     if form.validate_on_submit():
+        # Haal de gegevens uit het formulier
         categorie = form.categorie.data if form.categorie.data else None
+        datum = form.datum.data
+        verwachte_duur = form.verwachte_duur.data
+        locatie = form.locatie.data
+        tijd = form.tijd.data
         
+        # Maak een nieuwe Klus aan
         nieuwe_klus = Klus(
             naam=form.naam.data,
-            locatie=form.locatie.data,
-            tijd=form.tijd.data,
+            locatie=locatie,
+            tijd=tijd,
             beschrijving=form.beschrijving.data,
             vergoeding=form.vergoeding.data,
             categorie=categorie,
             idnummer=persoon.idnummer,
-            status=None  # Dit kan hier nog aangepast worden
+            status='beschikbaar',  # Standaard status
+            datum=datum,  # Voeg de datum toe
+            verwachte_duur=verwachte_duur  # Voeg de verwachte duur toe
         )
 
+        # Voeg de klus toe aan de database
         db.session.add(nieuwe_klus)
         db.session.commit()
 
         flash('Klus succesvol toegevoegd!', 'success')
-        return redirect(url_for('main.klussen'))  # Zorg ervoor dat je hier de juiste route aanroept
+        return redirect(url_for('main.klussen'))  # Redirect naar de klussenoverzicht
     
+    # Toon het formulier
     return render_template('add_klusaanbieder.html', form=form)
+
 
 # Route voor het toevoegen van een kluszoeker
 @main.route('/add_kluszoeker', methods=['GET', 'POST'])
@@ -274,19 +289,18 @@ from flask_login import login_required, current_user
 from . import db
 from .models import Klus
 
-@main.route('/klus/<klusnummer>/bekijken', methods=['GET', 'POST'])
+@main.route('/klus/<klusnummer>/bekijken', methods=['GET'])
 @login_required
 def bekijk_klus(klusnummer):
     klus = Klus.query.filter_by(klusnummer=klusnummer).first()
-    
+
     if klus:
-        # Verander de status van de klus naar 'bekeken'
-        klus.status = 'bekeken'
-        db.session.commit()
-        
         return render_template('klus_bekeken.html', klus=klus)
     else:
-        return redirect(url_for('index'))  # Of een andere foutpagina
+        flash('Deze klus bestaat niet.', 'danger')
+        return redirect(url_for('main.klussen'))
+
+
 
 @main.route('/klus/<klusnummer>/accepteren', methods=['POST'])
 def accepteer_klus(klusnummer):
@@ -307,6 +321,7 @@ def accepteer_klus(klusnummer):
     else:
         flash('Deze klus is al geaccepteerd of bestaat niet.', 'danger')
         return redirect(url_for('main.klussen'))  # Terug naar het overzicht
+
 
 
 

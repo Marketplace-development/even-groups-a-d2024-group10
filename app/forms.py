@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, SubmitField, DecimalField, RadioField, TextAreaField, SelectField
+from wtforms import StringField, IntegerField, SubmitField, DecimalField, DateField, TextAreaField, SelectField
 from wtforms.validators import DataRequired, Email, Length, NumberRange, InputRequired
 import random
 import string
@@ -20,14 +20,26 @@ class PersoonForm(FlaskForm):
 
 class KlusaanbiederForm(FlaskForm):
     naam = StringField('Naam van de klus', validators=[DataRequired()])
+    
+    # Categorie selectie
     categorie = SelectField('Categorie', choices=[('buitenshuis', 'Buitenshuis'), 
                                                   ('binnenshuis', 'Binnenshuis'),
                                                   ('tuin', 'Tuin'),
-                                                  ('techniek', 'Techniek')], validators=[DataRequired()])
-    tijd = StringField('Tijd', validators=[DataRequired()])
-    locatie = StringField('Locatie', validators=[DataRequired()]) 
+                                                  ('techniek', 'Techniek')], 
+                            validators=[DataRequired()])
+    
+    # Tijd: bijvoorbeeld van 09:00 tot 12:00
+    tijd = StringField('Verwachte tijd (bijv. 09:00 - 12:00)', validators=[DataRequired()])
+    
+    # Locatie: meer specifiek een adres
+    locatie = StringField('Locatie', validators=[DataRequired()])
+    
     beschrijving = TextAreaField('Beschrijving', validators=[DataRequired()])
     vergoeding = DecimalField('Vergoeding', places=2, rounding=None, validators=[DataRequired()])
+    
+    # Nieuwe velden
+    datum = DateField('Datum van de klus', validators=[DataRequired()])
+    verwachte_duur = IntegerField('Verwachte tijdsduur in uren', validators=[DataRequired()])
 
 
 class KluszoekerForm(FlaskForm):

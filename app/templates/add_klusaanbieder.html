@@ -21,13 +21,7 @@
         <!-- Categorie -->
         <div class="form-group">
             <label for="categorie">Categorie</label>
-            <select class="form-control" name="categorie" id="categorie" required>
-                <option value="">Kies een categorie</option>
-                <option value="buitenshuis" {% if form.categorie.data == 'buitenshuis' %}selected{% endif %}>Buitenshuis</option>
-                <option value="binnenshuis" {% if form.categorie.data == 'binnenshuis' %}selected{% endif %}>Binnenshuis</option>
-                <option value="tuin" {% if form.categorie.data == 'tuin' %}selected{% endif %}>Tuin</option>
-                <option value="techniek" {% if form.categorie.data == 'techniek' %}selected{% endif %}>Techniek</option>
-            </select>
+            {{ form.categorie(class="form-control") }}
             {% if form.categorie.errors %}
                 <ul class="errors">
                     {% for error in form.categorie.errors %}
@@ -37,9 +31,9 @@
             {% endif %}
         </div>
 
-        <!-- Locatie -->
+        <!-- Locatie (Adres) -->
         <div class="form-group">
-            <label for="locatie">Locatie</label>
+            <label for="locatie">Locatie (Adres)</label>
             {{ form.locatie(class="form-control") }}
             {% if form.locatie.errors %}
                 <ul class="errors">
@@ -50,9 +44,35 @@
             {% endif %}
         </div>
 
+        <!-- Datum -->
+        <div class="form-group">
+            <label for="datum">Datum</label>
+            {{ form.datum(class="form-control") }}
+            {% if form.datum.errors %}
+                <ul class="errors">
+                    {% for error in form.datum.errors %}
+                        <li class="text-danger">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <!-- Verwachte tijdsduur -->
+        <div class="form-group">
+            <label for="verwachte_duur">Verwachte tijdsduur (in uren)</label>
+            {{ form.verwachte_duur(class="form-control") }}
+            {% if form.verwachte_duur.errors %}
+                <ul class="errors">
+                    {% for error in form.verwachte_duur.errors %}
+                        <li class="text-danger">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
         <!-- Tijd -->
         <div class="form-group">
-            <label for="tijd">Tijd</label>
+            <label for="tijd">Tijd (bijv. van 10:00 tot 12:00)</label>
             {{ form.tijd(class="form-control") }}
             {% if form.tijd.errors %}
                 <ul class="errors">
@@ -86,7 +106,7 @@
                         <li class="text-danger">{{ error }}</li>
                     {% endfor %}
                 </ul>
-            {% endif %} 
+            {% endif %}
         </div>
 
         <!-- Submit button -->
