@@ -19,7 +19,7 @@ class PersoonForm(FlaskForm):
     submit = SubmitField('Toevoegen')
 
 class KlusaanbiederForm(FlaskForm):
-    klusnaam = StringField('Naam van de klus', validators=[DataRequired()])
+    naam = StringField('Naam van de klus', validators=[DataRequired()])
     categorie = SelectField('Categorie', choices=[('buitenshuis', 'Buitenshuis'), 
                                                   ('binnenshuis', 'Binnenshuis'),
                                                   ('tuin', 'Tuin'),
@@ -28,6 +28,7 @@ class KlusaanbiederForm(FlaskForm):
     locatie = StringField('Locatie', validators=[DataRequired()]) 
     beschrijving = TextAreaField('Beschrijving', validators=[DataRequired()])
     vergoeding = DecimalField('Vergoeding', places=2, rounding=None, validators=[DataRequired()])
+
 
 class KluszoekerForm(FlaskForm):
     idnummer = StringField('ID Nummer', validators=[DataRequired()])
@@ -53,9 +54,11 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 class KlusForm(FlaskForm):
-    titel = StringField('Titel', validators=[DataRequired()])
-    omschrijving = StringField('Omschrijving', validators=[DataRequired()])
+    naam = StringField('Naam van de klus', validators=[DataRequired()])  # Nieuw veld voor de naam van de klus
+    beschrijving = StringField('Behrijving', validators=[DataRequired()])
     categorie = StringField('Categorie', validators=[DataRequired()])
     prijs = DecimalField('Prijs', validators=[DataRequired()])  # Gebruik DecimalField voor prijs
     locatie = StringField('Locatie', validators=[DataRequired()])
+    tijd = StringField('Tijd', validators=[DataRequired()])  # Nieuw veld voor tijd
+    vergoeding = StringField('Vergoeding', validators=[DataRequired()])
     submit = SubmitField('Toevoegen')

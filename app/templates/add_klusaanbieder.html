@@ -7,11 +7,11 @@
 
         <!-- Naam van de klus -->
         <div class="form-group">
-            <label for="klusnaam">Naam van de KLUS</label>
-            {{ form.klusnaam(class="form-control") }}
-            {% if form.klusnaam.errors %}
+            <label for="naam">Naam van de KLUS</label>
+            {{ form.naam(class="form-control") }}
+            {% if form.naam.errors %}
                 <ul class="errors">
-                    {% for error in form.klusnaam.errors %}
+                    {% for error in form.naam.errors %}
                         <li class="text-danger">{{ error }}</li>
                     {% endfor %}
                 </ul>
@@ -86,7 +86,7 @@
                         <li class="text-danger">{{ error }}</li>
                     {% endfor %}
                 </ul>
-            {% endif %}
+            {% endif %} 
         </div>
 
         <!-- Submit button -->

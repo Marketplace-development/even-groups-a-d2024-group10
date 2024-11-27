@@ -1,22 +1,25 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h1>{{ klus.titel }}</h1>
-  
+  <!-- Controleer de sessie-informatie (voor debugging) -->
+  <p>Gebruiker ingelogd als: {{ session['user_id'] }}</p>  <!-- Dit toont de user_id -->
+
+  <h1>{{ klus.naam }}</h1>
   <p><strong>Locatie:</strong> {{ klus.locatie }}</p>
   <p><strong>Beschrijving:</strong> {{ klus.beschrijving }}</p>
   <p><strong>Vergoeding:</strong> {{ klus.vergoeding }} €</p>
-  
-  <!-- Knop om interesse in de klus aan te geven -->
-  {% if 'username' in session %}
-    <form action="{{ url_for('main.meld_aan_voor_klus', klusnummer=klus.klusnummer) }}" method="POST">
-      <button type="submit" class="btn btn-success">Ik ben geïnteresseerd in deze klus</button>
-    </form>
 
-    <!-- Knop om de klus zelf te doen (optioneel, afhankelijk van je logica) -->
-    <form action="{{ url_for('main.accepteer_klus', klusnummer=klus.klusnummer) }}" method="POST">
-      <button type="submit" class="btn btn-primary">Ik wil deze klus doen</button>
-    </form>
+  <!-- Controleer of de gebruiker ingelogd is -->
+  {% if 'user_id' in session %}
+    {% if klus.status == 'beschikbaar' %}
+      <form action="{{ url_for('main.accepteer_klus', klusnummer=klus.klusnummer) }}" method="POST">
+        <button type="submit" class="btn btn-primary">Klus accepteren</button>
+      </form>
+    {% else %}
+      <p>Deze klus is al geaccepteerd.</p>
+    {% endif %}
+  {% else %}
+    <p>Je moet ingelogd zijn om deze klus te accepteren.</p>
   {% endif %}
 
   <a href="{{ url_for('main.klussen') }}" class="btn btn-secondary">Terug naar overzicht</a>

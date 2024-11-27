@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, session
 from app import db
 from app.models import Persoon, Klusaanbieder, Kluszoeker, Categorie
-from app.forms import PersoonForm, KlusaanbiederForm, KluszoekerForm, RegistrationForm, LoginForm
+from app.forms import PersoonForm, KlusaanbiederForm, KluszoekerForm, RegistrationForm, LoginForm, KlusForm
 import uuid
 from app.models import Klus  # Voeg deze regel toe om de Klus-klasse te importeren
 from flask_login import current_user, login_required
@@ -125,9 +125,9 @@ def profile():
 # Route voor afmelden (logout)
 @main.route('/logout')
 def logout():
-    session.pop('user_id', None)  # Verwijder de user_id uit de sessie
-    flash('Uitgelogd', 'success')
-    return redirect(url_for('main.login'))
+    session.pop('username', None)  # Verwijder de username uit de sessie
+    flash('Je bent uitgelogd.', 'info')
+    return redirect(url_for('main.klussen'))
 
 
 # Route voor het toevoegen van een persoon (voorbeeld)
@@ -152,46 +152,38 @@ def add_person():
 
 @main.route('/add_klusaanbieder', methods=['GET', 'POST'])
 def add_klusaanbieder():
-    # Controleer of de gebruiker ingelogd is via 'user_id'
     if 'user_id' not in session:
         flash('Je moet ingelogd zijn om deze actie uit te voeren', 'danger')
         return redirect(url_for('main.login'))
     
-    # Haal de persoon op op basis van 'user_id' uit de sessie
     persoon = Persoon.query.get(session['user_id'])
     
-    # Als de persoon niet wordt gevonden, redirect naar dashboard
     if not persoon:
         flash('Persoon niet gevonden', 'danger')
         return redirect(url_for('main.dashboard'))
 
-    # Maak het formulier voor klusaanbieder aan
-    form = KlusaanbiederForm()
+    form = KlusaanbiederForm()  # Gebruik KlusaanbiederForm hier
     if form.validate_on_submit():
-        # Als er geen categorie is geselecteerd, stel dan de waarde in op NULL of een defaultwaarde
         categorie = form.categorie.data if form.categorie.data else None
-
-        # Maak een nieuwe klus aan
+        
         nieuwe_klus = Klus(
+            naam=form.naam.data,
             locatie=form.locatie.data,
             tijd=form.tijd.data,
             beschrijving=form.beschrijving.data,
             vergoeding=form.vergoeding.data,
-            categorie=categorie,  # Als geen categorie is geselecteerd, zal deze None zijn
-            idnummer=persoon.idnummer  # De idnummer van de ingelogde gebruiker
+            categorie=categorie,
+            idnummer=persoon.idnummer,
+            status=None  # Dit kan hier nog aangepast worden
         )
 
-        # Voeg de nieuwe klus toe aan de sessie en commit
         db.session.add(nieuwe_klus)
         db.session.commit()
 
-        # Toon een succesbericht en redirect naar de klus detailpagina
         flash('Klus succesvol toegevoegd!', 'success')
-        return redirect(url_for('main.klus_detail', klusnummer=nieuwe_klus.klusnummer))
+        return redirect(url_for('main.klussen'))  # Zorg ervoor dat je hier de juiste route aanroept
     
     return render_template('add_klusaanbieder.html', form=form)
-
-
 
 # Route voor het toevoegen van een kluszoeker
 @main.route('/add_kluszoeker', methods=['GET', 'POST'])
@@ -233,14 +225,20 @@ def klus_detail(klusnummer):
     klus = Klus.query.filter_by(klusnummer=klusnummer).first()
     if klus is None:
         flash('Klus niet gevonden', 'danger')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('main.klussen'))
     
+    # Print de status van de klus om te controleren of het daadwerkelijk 'beschikbaar' is
+    print(f"Status van de klus: {klus.status}")  # Voeg deze regel toe om de status te controleren
+
     return render_template('klus_detail.html', klus=klus)
 
-@main.route('/klussen') #haalt alle klussen op en toont deze
+
+@main.route('/klussen')
 def klussen():
-    alle_klussen = Klus.query.all()
-    return render_template('klussen_overzicht.html', klussen=alle_klussen)
+    # Haal alle beschikbare klussen op (die niet geaccepteerd zijn)
+    klussen = Klus.query.filter_by(status='beschikbaar').all()
+
+    return render_template('klussen_overzicht.html', klussen=klussen)
 
 
 @main.route('/meld_aan_voor_klus/<klusnummer>', methods=['POST'])
@@ -291,15 +289,33 @@ def bekijk_klus(klusnummer):
         return redirect(url_for('index'))  # Of een andere foutpagina
 
 @main.route('/klus/<klusnummer>/accepteren', methods=['POST'])
-@login_required
 def accepteer_klus(klusnummer):
+    # Controleer of de gebruiker is ingelogd
+    if 'user_id' not in session:
+        flash('Je moet ingelogd zijn om deze klus te accepteren.', 'danger')
+        return redirect(url_for('main.klussen'))  # Terug naar het overzicht van klussen
+
     klus = Klus.query.filter_by(klusnummer=klusnummer).first()
-    
-    if klus and klus.status == 'bekeken':  # Controleer of de klus bekeken is
+
+    if klus and klus.status == 'beschikbaar':  # Controleer of de klus beschikbaar is
         # Verander de status naar 'geaccepteerd'
         klus.status = 'geaccepteerd'
         db.session.commit()
-        
+
+        flash('Je hebt de klus geaccepteerd!', 'success')
+        return redirect(url_for('main.klus_geaccepteerd', klusnummer=klusnummer))  # Redirect naar de klus_geaccepteerd pagina
+    else:
+        flash('Deze klus is al geaccepteerd of bestaat niet.', 'danger')
+        return redirect(url_for('main.klussen'))  # Terug naar het overzicht
+
+
+
+@main.route('/klus/<klusnummer>/geaccepteerd')
+def klus_geaccepteerd(klusnummer):
+    klus = Klus.query.filter_by(klusnummer=klusnummer).first()
+    
+    if klus:
         return render_template('klus_geaccepteerd.html', klus=klus)
     else:
-        return redirect(url_for('index'))  # Of een andere foutpagina
+        flash('Deze klus bestaat niet.', 'danger')
+        return redirect(url_for('main.klussen'))  # Terug naar de overzichtspagina als de klus niet gevonden wordt
