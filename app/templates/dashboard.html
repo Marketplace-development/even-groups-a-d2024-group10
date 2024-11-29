@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container mt-5">
@@ -25,6 +26,9 @@
                             
                             <!-- Knop om naar de klussen overzicht te gaan -->
                             <a href="{{ url_for('main.klussen') }}" class="btn btn-secondary">Zoek een klus</a>
+                            
+                            <!-- Knop om geaccepteerde klussen te bekijken -->
+                            <a href="{{ url_for('main.geaccepteerde_klussen') }}" class="btn btn-success">Geaccepteerde Klussen</a>
                         </div>
                     </div>
                 </div>

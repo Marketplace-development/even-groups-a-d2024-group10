@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Geaccepteerde Klussen{% endblock %}
+
+{% block content %}
+    <h1>Geaccepteerde Klussen</h1>
+    {% if klussen %}
+        {% for klus in klussen %}
+            <div class="klus">
+                <h3>{{ klus.naam }}</h3>
+                <p><strong>Locatie:</strong> {{ klus.locatie }}</p>
+                <p><strong>Datum:</strong> {{ klus.datum.strftime('%d-%m-%Y') }}</p>
+                <p><strong>Beschrijving:</strong> {{ klus.beschrijving }}</p>
+                <p><strong>Vergoeding:</strong> {{ klus.vergoeding }} €</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Je hebt nog geen klussen geaccepteerd.</p>
+    {% endif %}
+    <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">Terug naar Dashboard</a>
+{% endblock %}
