@@ -4,18 +4,106 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welkom - KLUSKOMPAS</title>
-    <!-- Veranderde href voor de juiste CSS link -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: white;
+            color: #10246B;
+        }
+
+        .container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .logo-container {
+            margin-bottom: 30px;
+        }
+
+        .logo-container img {
+            width: 250px; 
+            height: auto;
+        }
+
+        .welcome-text {
+            font-size: 36px;
+            font-family: Roboto, sans-serif;
+            font-weight: 500;
+            line-height: 40px;
+            letter-spacing: 1.8px;
+            color: #10246B;
+            margin-bottom: 20px;
+        }
+
+        .link {
+            font-size: 24px;
+            font-family: Inter, sans-serif;
+            font-weight: 400;
+            color: #10246B;
+            text-decoration: underline;
+            cursor: pointer;
+            margin: 20px;
+        }
+
+        .link:hover {
+            color: #0e1f4a;
+        }
+
+        .login-box {
+            width: 267px;
+            height: 126px;
+            background: #10246B;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #F5EFF7;
+            font-size: 67px;
+            font-family: Inter, sans-serif;
+            font-weight: 700;
+            line-height: 115.2px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .login-box a {
+            color: #F5EFF7;
+            text-decoration: none;
+            font-size: 67px;
+            font-family: Inter, sans-serif;
+            font-weight: 700;
+            line-height: 115.2px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>Welkom bij KLUSKOMPAS!</h1>
-        <p>Welkom bij onze klusplatform. test123 Klik hieronder om je aan te melden of een account te maken.</p>
+        <!-- Logo -->
+        <div style="left: 50%; top: 30px; position: absolute; transform: translateX(-50%);">
+            <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" style="width: 650px; height: auto;">
+        </div>
 
-        <!-- Registratie- en Inlogknoppen -->
-        <div class="button-group">
-            <a href="{{ url_for('main.register') }}" class="btn">Registreren</a>
-            <a href="{{ url_for('main.login') }}" class="btn">Inloggen</a>
+        <!-- Welkomsttekst -->
+        <div class="welcome-text">
+            Welkom bij ons klusplatform. Klik hieronder om je aan te melden of registreer.
+        </div>
+
+        <!-- Login Box met link naar inlogpagina -->
+        <a href="{{ url_for('main.login') }}" class="login-box">
+            Log in
+        </a>
+
+        <!-- Registratie link zonder knop -->
+        <div>
+            <a href="{{ url_for('main.register') }}" class="link">Of registreer</a>
         </div>
     </div>
 </body>

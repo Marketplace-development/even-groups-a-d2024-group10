@@ -5,49 +5,106 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: white;
+            color: #10246B;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            background: white;
+            border: 1px solid white;
+        }
+
+        .button-container {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .button {
+            width: 354px;
+            height: 73px;
+            margin-bottom: 20px;
+            background: #10246B;
+            color: #F5F5F5;
+            font-size: 45px;
+            font-family: Roboto, sans-serif;
+            font-weight: 400;
+            text-align: center;
+            line-height: 73px;
+            border: 1px solid #2C2C2C;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+        }
+
+        .button:hover {
+            background: #0e1f4a;
+        }
+
+        .logout {
+            position: absolute;
+            left: 41px;
+            bottom: 20px;
+            text-align: center;
+        }
+
+        .logout-icon {
+            width: 200px;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .logout-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <!-- Welkomstbericht voor de gebruiker -->
-                <div class="card">
-                    <div class="card-header text-center">
-                        <h3>Welkom, {{ username }}!</h3>
-                    </div>
-                    <div class="card-body">
-                        <p class="lead text-center">Kies wat je wilt doen:</p>
-                        
-                        <!-- Keuzes voor klusaanbieder en kluszoeker -->
-                        <div class="d-grid gap-2">
-                            <!-- Knop om een klus aan te bieden -->
-                            <a href="{{ url_for('main.add_klusaanbieder') }}" class="btn btn-primary">Bied een klus aan</a>
-                            
-                            <!-- Knop om naar de klussen overzicht te gaan -->
-                            <a href="{{ url_for('main.klussen') }}" class="btn btn-secondary">Zoek een klus</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div class="container">
+        <!-- Logo en decoratie -->
+    <div style="left: 50%; top: 30px; position: absolute; transform: translateX(-50%);">
+        <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" style="width: 500px; height: auto;">
+    </div>
+
+        <!-- Knoppen voor acties -->
+        <div class="button-container">
+            <!-- Knop om een klus aan te bieden -->
+            <a href="{{ url_for('main.add_klusaanbieder') }}" class="button">Klus aanbieden</a>
+
+            <!-- Knop om een klus te zoeken -->
+            <a href="{{ url_for('main.klussen') }}" class="button">Klus zoeken</a>
+
+            <!-- Knop om een review te schrijven dit moet nog gedaan worden!!!!!!!!!!!-->
+            <a href="{{ url_for('main.login') }}" class="button">Review schrijven</a>
         </div>
 
-        <!-- Optioneel: Extra sectie voor de gebruiker om hun profiel bij te werken -->
-        <div class="row mt-4 justify-content-center">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header text-center">
-                        <h5>Profiel</h5>
-                    </div>
-                    <div class="card-body text-center">
-                        <p>Wil je je gegevens bijwerken? Klik hieronder om naar je profielpagina te gaan.</p>
-                        <a href="{{ url_for('main.profile', username=username) }}" class="btn btn-warning">Bekijk of bewerk profiel</a>
-                    </div>
-                </div>
+        <!-- Logout optie -->
+        <div class="logout">
+            <!-- Afbeelding als logout-icoon -->
+            <div class="logout-icon">
+                <a href="{{ url_for('main.login') }}">
+                    <img src="{{ url_for('static', filename='images/logout.png') }}" alt="Logout" style="width: 100px; height: auto;">
+                </a>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap JS en afhankelijkheden -->
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 </body>
