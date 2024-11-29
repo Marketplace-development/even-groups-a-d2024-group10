@@ -334,3 +334,15 @@ def klus_geaccepteerd(klusnummer):
     else:
         flash('Deze klus bestaat niet.', 'danger')
         return redirect(url_for('main.klussen'))  # Terug naar de overzichtspagina als de klus niet gevonden wordt
+
+@main.route('/geaccepteerde_klussen')
+def geaccepteerde_klussen():
+    if 'user_id' not in session:
+        flash('Je moet ingelogd zijn om deze pagina te bekijken.', 'danger')
+        return redirect(url_for('main.login'))
+    
+    # Haal de ingelogde gebruiker op
+    user_id = session['user_id']
+    geaccepteerde_klussen = Klus.query.filter_by(idnummer=user_id, status='geaccepteerd').all()
+    
+    return render_template('geaccepteerde_klussen.html', klussen=geaccepteerde_klussen)
