@@ -100,11 +100,19 @@ def dashboard():
     if 'user_id' not in session:
         flash('Je moet eerst inloggen', 'danger')
         return redirect(url_for('main.login'))
-    
-    # Gebruik 'idnummer' om de gebruiker op te halen uit de sessie
-    user = Persoon.query.get(session['user_id'])  # Haal gebruiker op met 'idnummer'
-    
-    return render_template('dashboard.html', user=user)
+
+    # Haal de gebruiker op uit de database
+    user = Persoon.query.get(session['user_id'])
+    if not user:
+        flash('Gebruiker niet gevonden', 'danger')
+        return redirect(url_for('main.login'))
+
+    # Haal de geaccepteerde en aangeboden klussen op
+    geaccepteerde_klussen = Klus.query.filter_by(idnummer=user.idnummer, status='geaccepteerd').all()
+    aangeboden_klussen = Klus.query.filter_by(idnummer=user.idnummer).all()
+
+    return render_template('dashboard.html', user=user, geaccepteerde_klussen=geaccepteerde_klussen, aangeboden_klussen=aangeboden_klussen)
+
 
 # Route voor het profiel (weergeven van gebruikersgegevens)
 @main.route('/profile')
@@ -341,8 +349,16 @@ def geaccepteerde_klussen():
         flash('Je moet ingelogd zijn om deze pagina te bekijken.', 'danger')
         return redirect(url_for('main.login'))
     
-    # Haal de ingelogde gebruiker op
-    user_id = session['user_id']
-    geaccepteerde_klussen = Klus.query.filter_by(idnummer=user_id, status='geaccepteerd').all()
+    user = Persoon.query.get(session['user_id'])
+    klussen = Klus.query.filter_by(idnummer=user.idnummer, status='geaccepteerd').all()
+    return render_template('geaccepteerde_klussen.html', klussen=klussen)
+
+@main.route('/aangeboden_klussen')
+def aangeboden_klussen():
+    if 'user_id' not in session:
+        flash('Je moet ingelogd zijn om deze pagina te bekijken.', 'danger')
+        return redirect(url_for('main.login'))
     
-    return render_template('geaccepteerde_klussen.html', klussen=geaccepteerde_klussen)
+    user = Persoon.query.get(session['user_id'])
+    klussen = Klus.query.filter_by(idnummer=user.idnummer).all()
+    return render_template('klussen_overzicht.html', klussen=klussen)
