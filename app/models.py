@@ -72,6 +72,7 @@ class Klus(db.Model):
     __tablename__ = 'klus'
     
     klusnummer = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))  # automatisch UUID
+    naam = db.Column(db.String(100), nullable=False)  # Voeg de naam kolom toe, dit is de titel van de klus
     categorie = db.Column(db.String(50), db.ForeignKey('categorie.categorie', ondelete="SET NULL"), nullable=True)
     locatie = db.Column(db.String(100))
     tijd = db.Column(db.String(50))

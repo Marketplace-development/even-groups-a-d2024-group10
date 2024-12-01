@@ -74,18 +74,11 @@
         <!-- Titel van de pagina -->
         <h1 class="text-center" style="font-size: 28px; color: #10246B;">Alle Klussen</h1>
 
-        <!-- Debugging -->
-        <pre>
-            {{ klussen | safe }}
-        </pre>
 
         <!-- Lijst met klussen -->
         <div>
             {% for klus in klussen %}
             <div class="klus-card">
-                <!-- Debugging: Bekijk individuele klus -->
-                <pre>{{ klus | safe }}</pre>
-                
                 <!-- Titel van de klus -->
                 <h2>{{ klus.naam if klus.naam else "Geen titel beschikbaar" }}</h2>
 
