@@ -1,5 +1,126 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klus Details</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            border: 1px solid black;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background: white;
+            text-align: center;
+        }
+        .logo {
+            margin-bottom: 20px;
+        }
+        .logo img {
+            max-width: 100px;
+            height: auto;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .details {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        .details div {
+            padding: 12px 0;
+            border-bottom: 1px solid #B2B2B2;
+        }
+        .details span {
+            font-size: 16px;
+            color: #767676;
+        }
+        .details .value {
+            float: right;
+            color: black;
+        }
+        .buttons {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .buttons button {
+            width: 100%;
+            padding: 12px;
+            background: #10246B;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .buttons button:hover {
+            background: #10246B;
+        }
+        .back-link {
+            margin-top: 20px;
+            display: block;
+            padding: 12px;
+            background: #10246B;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Logo en decoratie -->
+        <div style="left: 50%; top: 30px; position: absolute; transform: translateX(-50%);">
+            <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" style="width: 500px; height: auto;">
+        </div>
 
+<<<<<<< HEAD
+        <!-- Titel -->
+        <div class="title">{{ klus.naam }}</div>
+
+        <!-- Klus Details -->
+        <div class="details">
+            <div>
+                <span>Categorie:</span>
+                <span class="value">{{ klus.categorie_ref.categorie if klus.categorie_ref else 'Onbekend' }}</span>
+            </div>
+            <div>
+                <span>Beschrijving:</span>
+                <span class="value">{{ klus.beschrijving }}</span>
+            </div>
+            <div>
+                <span>Tijd:</span>
+                <span class="value">{{ klus.tijd }}</span>
+            </div>
+            <div>
+                <span>Locatie:</span>
+                <span class="value">{{ klus.locatie }}</span>
+            </div>
+            <div>
+                <span>Geschatte duur:</span>
+                <span class="value">{{ klus.geschatte_duur }}</span>
+            </div>
+            <div>
+                <span>Vergoeding:</span>
+                <span class="value">{{ klus.vergoeding }} €</span>
+            </div>
+=======
 {% block content %}
   <!-- Controleer de sessie-informatie (voor debugging) -->
 
@@ -20,6 +141,34 @@
   {% else %}
     <p>Je moet ingelogd zijn om deze klus te accepteren.</p>
   {% endif %}
+>>>>>>> 4325cbf11322b3cc2544510e563acf7673391762
 
-  <a href="{{ url_for('main.klussen') }}" class="btn btn-secondary">Terug naar overzicht</a>
-{% endblock %}
+            <!-- Toevoeging: Aanbieder met Gebruikersnaam -->
+            <div>
+                <span>Aanbieder:</span>
+                <span class="value">
+                    <!-- Toon de gebruikersnaam van de aanbieder -->
+                    <a href="{{ url_for('main.dashboard', idnummer=klus.persoon_aanbieder.idnummer) }}" style="color: #10246B; text-decoration: none;">
+                        {{ klus.persoon_aanbieder.username }} <!-- Gebruikersnaam wordt hier getoond -->
+                    </a>
+                </span>
+            </div>
+        </div>
+
+        <!-- Knoppen -->
+        <div class="buttons">
+            {% if 'username' in session %}
+            <form action="{{ url_for('main.meld_aan_voor_klus', klusnummer=klus.klusnummer) }}" method="POST">
+                <button type="submit">Ik ben geïnteresseerd</button>
+            </form>
+            <form action="{{ url_for('main.accepteer_klus', klusnummer=klus.klusnummer) }}" method="POST">
+                <button type="submit">Ik wil deze klus doen</button>
+            </form>
+            {% endif %}
+        </div>
+
+        <!-- Terug naar overzicht -->
+        <a href="{{ url_for('main.klussen') }}" class="back-link">Terug naar overzicht</a>
+    </div>
+</body>
+</html>
