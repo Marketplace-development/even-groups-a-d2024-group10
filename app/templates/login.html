@@ -1,12 +1,22 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<<<<<<< HEAD
     <div>
         
         <!-- Logo en decoratie -->
     <div style="left: 50%; top: 30px; position: absolute; transform: translateX(-50%);">
         <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" style="width: 300px; height: auto;">
     </div>
+=======
+    <div style="width: 100%; height: 100vh; background-color: white; font-family: Inter, sans-serif; position: relative;">
+        
+        <!-- Logo linksboven -->
+        <div style="position: absolute; top: 20px; left: 20px; width: 80px; height: 80px; 
+            background-image: url('{{ url_for('static', filename='logo_kluskompas.png') }}');
+            background-size: cover; background-position: center; border-radius: 50%;">
+        </div>
+>>>>>>> 4325cbf11322b3cc2544510e563acf7673391762
 
         <!-- Login form container -->
         <div style="width: 366px; height: auto; margin: 100px auto; padding: 20px; border: 1px solid #ddd; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius: 8px;">
@@ -39,3 +49,4 @@
         </div>
     </div>
 {% endblock %}
+

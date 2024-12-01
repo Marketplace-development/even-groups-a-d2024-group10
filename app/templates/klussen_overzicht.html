@@ -13,6 +13,7 @@
             color: #10246B;
         }
 
+<<<<<<< HEAD
         .container {
             width: 100%;
             padding: 20px;
@@ -104,3 +105,17 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
+=======
+{% block title %}Overzicht van Klussen{% endblock %}
+
+{% block content %}
+    <h1>Beschikbare Klussen</h1>
+    {% for klus in klussen %}
+    <div class="klus">
+        <h3>{{ klus.naam }}</h3>
+        <p>Locatie: {{ klus.locatie }}</p>
+        <a href="{{ url_for('main.klus_detail', klusnummer=klus.klusnummer) }}" class="btn btn-primary">Bekijk Details</a>
+    </div>
+    {% endfor %}
+{% endblock %}
+>>>>>>> 4325cbf11322b3cc2544510e563acf7673391762

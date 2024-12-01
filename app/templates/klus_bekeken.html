@@ -1,8 +1,35 @@
-<!-- klus_bekeken.html -->
-<h1>Klus Bekeken</h1>
-<p>Je hebt de klus <strong>{{ klus.locatie }}</strong> bekeken.</p>
-<p>Status: {{ klus.status }}</p>
+{% extends 'base.html' %}
 
-<form action="{{ url_for('accepteer_klus', klusnummer=klus.klusnummer) }}" method="post">
-    <button type="submit">Accepteer Klus</button>
-</form>
+{% block content %}
+
+  <p><strong>Debug:</strong> {{ klus }}</p>
+
+  <h1>{{ klus.naam }}</h1>
+  <p><strong>Locatie:</strong> {{ klus.locatie }}</p>
+  <p><strong>Beschrijving:</strong> {{ klus.beschrijving or 'Geen beschrijving opgegeven' }}</p>
+  <p><strong>Vergoeding:</strong> {{ klus.vergoeding }} €</p>
+
+  <!-- Voeg datum toe -->
+  {% if klus.datum %}
+    <p><strong>Datum:</strong> {{ klus.datum.strftime('%d/%m/%Y') }}</p>
+  {% else %}
+    <p><strong>Datum:</strong> Geen datum opgegeven</p>
+  {% endif %}
+
+  <!-- Voeg verwachte duur toe -->
+  {% if klus.verwachte_duur %}
+    <p><strong>Verwachte duur:</strong> {{ klus.verwachte_duur }} minuten</p>
+  {% else %}
+    <p><strong>Verwachte duur:</strong> Onbekend</p>
+  {% endif %}
+
+  {% if klus.status == 'beschikbaar' %}
+    <form action="{{ url_for('main.accepteer_klus', klusnummer=klus.klusnummer) }}" method="POST">
+      <button type="submit" class="btn btn-primary">Klus accepteren</button>
+    </form>
+  {% else %}
+    <p>Deze klus is al geaccepteerd.</p>
+  {% endif %}
+
+  <a href="{{ url_for('main.klussen') }}" class="btn btn-secondary">Terug naar overzicht</a>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Bevestiging</h1>
+  <p>Je hebt de klus "{{ klus.naam }}" geaccepteerd!</p>
+
+  <h3>Details van de klus:</h3>
+  <p><strong>Locatie:</strong> {{ klus.locatie }}</p>
+  <p><strong>Beschrijving:</strong> {{ klus.beschrijving }}</p>
+  <p><strong>Vergoeding:</strong> {{ klus.vergoeding }} €</p>
+
+  <a href="{{ url_for('main.klussen') }}" class="btn btn-primary">Terug naar overzicht van klussen</a>
+{% endblock %}
