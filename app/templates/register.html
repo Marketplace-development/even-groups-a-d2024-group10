@@ -1,108 +1,225 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Registreren</h1>
-    <form method="POST">
-        {{ form.hidden_tag() }}
-        
-        <div>
-            <label for="username">Gebruikersnaam</label>
-            {{ form.username(class="form-control") }}
-            {% if form.username.errors %}
-                <ul class="errors">
-                    {% for error in form.username.errors %}
-                        <li class="text-danger">{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        </div>
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f8f8f8;
+        margin: 0;
+        padding: 0;
+    }
+    .registration-page {
+        text-align: center;
+        margin-top: 50px;
+    }
+    .logo img {
+        max-width: 500px;
+        margin:  auto;
+    }
+    .registration-form {
+        max-width: 600px;
+        margin: 5px auto;
+        padding: 20px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .registration-form h1 {
+        color: #10246B;
+        font-size: 36px;
+        margin-bottom: 20px;
+    }
+    .form-group {
+        margin-bottom: 20px;
+        text-align: left;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 16px;
+        color: #767676;
+    }
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #B2B2B2;
+        border-radius: 6px;
+        font-size: 16px;
+    }
+    .error-list {
+        color: red;
+        font-size: 14px;
+        margin: 5px 0 0;
+        padding: 0;
+        list-style: none;
+    }
+    .submit-button {
+        width: 100%;
+        padding: 14px;
+        background-color: #10246B;
+        color: white;
+        font-size: 18px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+    .submit-button:hover {
+        background-color: #0d1c59;
+    }
 
-        <div>
-            <label for="email">E-mail</label>
-            {{ form.email(class="form-control") }}
-            {% if form.email.errors %}
-                <ul class="errors">
-                    {% for error in form.email.errors %}
-                        <li class="text-danger">{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        </div>
+    /* Logo bovenaan */
+    .logo-container {
+        position: relative;
+        top: -50px; /* Zet het logo hoger */
+        margin-bottom: 30px;
+    }
 
-        <div>
-            <label for="voornaam">Voornaam</label>
-            {{ form.voornaam(class="form-control") }}
-            {% if form.voornaam.errors %}
-                <ul class="errors">
-                    {% for error in form.voornaam.errors %}
-                        <li class="text-danger">{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        </div>
+    /* Terug-knop linksonder */
+    .terug {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+    }
+    .terug-icon img {
+        width: 100px;
+        height: auto;
+        cursor: pointer;
+    }
+    .terug-icon img:hover {
+        opacity: 0.8;
+    }
+</style>
 
-        <div>
-            <label for="achternaam">Achternaam</label>
-            {{ form.achternaam(class="form-control") }}
-            {% if form.achternaam.errors %}
-                <ul class="errors">
-                    {% for error in form.achternaam.errors %}
-                        <li class="text-danger">{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        </div>
+<div class="registration-page">
+    <!-- Logo en decoratie -->
+    <div class="logo-container">
+        <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" style="width: 500px; height: auto;">
+    </div>
 
-        <div>
-            <label for="leeftijd">Leeftijd</label>
-            {{ form.leeftijd(class="form-control") }}
-            {% if form.leeftijd.errors %}
-                <ul class="errors">
-                    {% for error in form.leeftijd.errors %}
-                        <li class="text-danger">{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        </div>
+    <!-- Registratieformulier -->
+    <div class="registration-form">
+        <h1>Registreren</h1>
+        <form method="POST" action="{{ url_for('main.register') }}">
+            {{ form.hidden_tag() }}
 
-        <div>
-            <label for="gender">Geslacht</label>
-            {{ form.gender(class="form-control") }}
-            {% if form.gender.errors %}
-                <ul class="errors">
-                    {% for error in form.gender.errors %}
-                        <li class="text-danger">{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        </div>
+            <!-- Gebruikersnaam -->
+            <div class="form-group">
+                <label for="username">Gebruikersnaam</label>
+                {{ form.username(class="form-control") }}
+                {% if form.username.errors %}
+                    <ul class="error-list">
+                        {% for error in form.username.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
 
-        <div>
-            <label for="telefoonnummer">Telefoonnummer</label>
-            {{ form.telefoonnummer(class="form-control") }}
-            {% if form.telefoonnummer.errors %}
-                <ul class="errors">
-                    {% for error in form.telefoonnummer.errors %}
-                        <li class="text-danger">{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        </div>
+            <!-- E-mail -->
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                {{ form.email(class="form-control") }}
+                {% if form.email.errors %}
+                    <ul class="error-list">
+                        {% for error in form.email.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
 
-        <div>
-            <label for="adres">Adres</label>
-            {{ form.adres(class="form-control") }}
-            {% if form.adres.errors %}
-                <ul class="errors">
-                    {% for error in form.adres.errors %}
-                        <li class="text-danger">{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        </div>
+            <!-- Voornaam -->
+            <div class="form-group">
+                <label for="voornaam">Voornaam</label>
+                {{ form.voornaam(class="form-control") }}
+                {% if form.voornaam.errors %}
+                    <ul class="error-list">
+                        {% for error in form.voornaam.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
 
-        <div>
-            <button type="submit" class="btn btn-primary">Registreren</button>
+            <!-- Achternaam -->
+            <div class="form-group">
+                <label for="achternaam">Achternaam</label>
+                {{ form.achternaam(class="form-control") }}
+                {% if form.achternaam.errors %}
+                    <ul class="error-list">
+                        {% for error in form.achternaam.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <!-- Leeftijd -->
+            <div class="form-group">
+                <label for="leeftijd">Leeftijd</label>
+                {{ form.leeftijd(class="form-control") }}
+                {% if form.leeftijd.errors %}
+                    <ul class="error-list">
+                        {% for error in form.leeftijd.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <!-- Geslacht -->
+            <div class="form-group">
+                <label for="gender">Geslacht</label>
+                {{ form.gender(class="form-control") }}
+                {% if form.gender.errors %}
+                    <ul class="error-list">
+                        {% for error in form.gender.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <!-- Telefoonnummer -->
+            <div class="form-group">
+                <label for="telefoonnummer">Telefoonnummer</label>
+                {{ form.telefoonnummer(class="form-control") }}
+                {% if form.telefoonnummer.errors %}
+                    <ul class="error-list">
+                        {% for error in form.telefoonnummer.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <!-- Adres -->
+            <div class="form-group">
+                <label for="adres">Adres</label>
+                {{ form.adres(class="form-control") }}
+                {% if form.adres.errors %}
+                    <ul class="error-list">
+                        {% for error in form.adres.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <!-- Submit knop -->
+            <div class="form-group">
+                <button type="submit" class="submit-button">Registreren</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Terug Knop -->
+    <div class="terug">
+        <div class="terug-icon">
+            <a href="{{ url_for('main.home') }}">
+                <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug">
+            </a>
         </div>
-    </form>
+    </div>
+</div>
 {% endblock %}
