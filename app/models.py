@@ -73,11 +73,7 @@ class Klus(db.Model):
     __tablename__ = 'klus'
     
     klusnummer = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))  # automatisch UUID
-<<<<<<< HEAD
     naam = db.Column(db.String(100), nullable=False)  # Voeg de naam kolom toe, dit is de titel van de klus
-=======
-    naam = db.Column(db.String(100), nullable=False)  # Naam van de klus
->>>>>>> 4325cbf11322b3cc2544510e563acf7673391762
     categorie = db.Column(db.String(50), db.ForeignKey('categorie.categorie', ondelete="SET NULL"), nullable=True)
     locatie = db.Column(db.String(100))  # Locatie van de klus
     tijd = db.Column(db.String(50))  # Verwachte tijd
