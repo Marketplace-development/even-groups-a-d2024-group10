@@ -16,7 +16,7 @@ klus_zoeker = db.Table('klus_zoeker',
 
 # Persoon Model
 class Persoon(db.Model):
-    __tablename__ = 'persoon'
+    _tablename_ = 'persoon'
     
     idnummer = db.Column(db.String(10), primary_key=True, default=generate_id_number)
     voornaam = db.Column(db.String(100), nullable=False)
@@ -41,7 +41,7 @@ class Persoon(db.Model):
 
 # Klusaanbieder Model
 class Klusaanbieder(db.Model):
-    __tablename__ = 'klusaanbieder'
+    _tablename_ = 'klusaanbieder'
     
     idnummer = db.Column(db.String(10), db.ForeignKey('persoon.idnummer'), primary_key=True)
     rating = db.Column(db.Numeric(3, 2))
@@ -53,10 +53,9 @@ class Klusaanbieder(db.Model):
     def __repr__(self):
         return f'<Klusaanbieder {self.idnummer}>'
 
-
 # Kluszoeker Model
 class Kluszoeker(db.Model):
-    __tablename__ = 'kluszoeker'
+    _tablename_ = 'kluszoeker'
     
     idnummer = db.Column(db.String(10), db.ForeignKey('persoon.idnummer'), primary_key=True)
     rating = db.Column(db.Numeric(3, 2))
@@ -70,32 +69,34 @@ class Kluszoeker(db.Model):
 
 # Klus Model
 class Klus(db.Model):
-    __tablename__ = 'klus'
+    _tablename_ = 'klus'
     
     klusnummer = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))  # automatisch UUID
     naam = db.Column(db.String(100), nullable=False)  # Voeg de naam kolom toe, dit is de titel van de klus
     categorie = db.Column(db.String(50), db.ForeignKey('categorie.categorie', ondelete="SET NULL"), nullable=True)
-    locatie = db.Column(db.String(100))  # Locatie van de klus
-    tijd = db.Column(db.String(50))  # Verwachte tijd
-    beschrijving = db.Column(db.Text)  # Beschrijving van de klus
-    vergoeding = db.Column(db.Numeric(10, 2))  # Vergoeding in € (numeriek)
-    created_at = db.Column(db.TIMESTAMP, nullable=False, default=datetime.utcnow)  # Tijdstip van toevoegen
-    status = db.Column(db.String(20), default='beschikbaar')  # Status van de klus (beschikbaar, bekeken, geaccepteerd)
-    idnummer = db.Column(db.String(10), db.ForeignKey('persoon.idnummer'), nullable=False)  # Verwijzing naar de aanbieder
-    datum = db.Column(db.Date)  # Datum van de klus
-    verwachte_duur = db.Column(db.Integer)  # Verwachte duur in uren
+    locatie = db.Column(db.String(100))
+    tijd = db.Column(db.String(50))
+    beschrijving = db.Column(db.Text)
+    vergoeding = db.Column(db.Numeric(10, 2))
+    created_at = db.Column(db.TIMESTAMP, nullable=False, default=datetime.utcnow)
+    status = db.Column(db.String(20), default='beschikbaar')  # Status van de klus: beschikbaar, bekeken, geaccepteerd
+    
+    idnummer = db.Column(db.String(10), db.ForeignKey('persoon.idnummer'), nullable=False)
 
     persoon_aanbieder = db.relationship('Persoon', backref=db.backref('klussen', lazy=True))
+    
+    # Gebruik de tussenliggende tabel 'klus_zoeker' om de relatie tussen Klus en Persoon te beheren
     klussen_zoekers = db.relationship('Persoon', secondary=klus_zoeker, backref=db.backref('geinteresseerd_in_klussen', lazy='dynamic'))
+
     categorie_ref = db.relationship('Categorie', backref='klussen', lazy=True)
 
     def __repr__(self):
-        return f'<Klus {self.naam} voor {self.locatie}>'
+        return f'<Klus {self.klusnummer} voor {self.locatie}>'
 
 
 # Categorie Model
 class Categorie(db.Model):
-    __tablename__ = 'categorie'
+    _tablename_ = 'categorie'
     
     categorie = db.Column(db.String(50), primary_key=True)
     naam = db.Column(db.String(100), nullable=False)
