@@ -173,37 +173,35 @@ def add_klusaanbieder():
         return redirect(url_for('main.dashboard'))
 
     # Het formulier wordt aangemaakt
-    form = KlusaanbiederForm()  # Gebruik KlusaanbiederForm hier
+    form = KlusaanbiederForm()
     
     if form.validate_on_submit():
-        # Haal de gegevens uit het formulier
-        categorie = form.categorie.data if form.categorie.data else None
-        datum = form.datum.data
-        verwachte_duur = form.verwachte_duur.data
-        locatie = form.locatie.data
-        tijd = form.tijd.data
-        
-        # Maak een nieuwe Klus aan
-        nieuwe_klus = Klus(
-            naam=form.naam.data,
-            locatie=locatie,
-            tijd=tijd,
-            beschrijving=form.beschrijving.data,
-            vergoeding=form.vergoeding.data,
-            categorie=categorie,
-            idnummer=persoon.idnummer,
-            status='beschikbaar',  # Standaard status
-            datum=datum,  # Voeg de datum toe
-            verwachte_duur=verwachte_duur  # Voeg de verwachte duur toe
-        )
+        try:
+            # Maak een nieuwe Klus aan
+            nieuwe_klus = Klus(
+                naam=form.naam.data,
+                locatie=form.locatie.data,
+                tijd=form.tijd.data,
+                beschrijving=form.beschrijving.data,
+                vergoeding=form.vergoeding.data,
+                categorie=form.categorie.data,
+                datum=form.datum.data,
+                verwachte_duur=form.verwachte_duur.data,
+                idnummer=persoon.idnummer
+            )
+            db.session.add(nieuwe_klus)
+            db.session.commit()
 
-        # Voeg de klus toe aan de database
-        db.session.add(nieuwe_klus)
-        db.session.commit()
+            flash('Klus succesvol toegevoegd!', 'success')
+            return redirect(url_for('main.klussen'))  # Redirect naar de klussenoverzicht
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Er is een fout opgetreden bij het opslaan: {e}', 'danger')
+            return redirect(url_for('main.add_klusaanbieder'))
+    else:
+        if form.errors:
+            flash(f'Formulierfout: {form.errors}', 'danger')
 
-        flash('Klus succesvol toegevoegd!', 'success')
-        return redirect(url_for('main.klussen'))  # Redirect naar de klussenoverzicht
-    
     # Toon het formulier
     return render_template('add_klusaanbieder.html', form=form)
 

@@ -21,26 +21,19 @@ class PersoonForm(FlaskForm):
 class KlusaanbiederForm(FlaskForm):
     naam = StringField('Naam van de klus', validators=[DataRequired()])
     
-    # Categorie selectie
-    categorie = SelectField('Categorie', choices=[('buitenshuis', 'Buitenshuis'), 
-                                                  ('binnenshuis', 'Binnenshuis'),
-                                                  ('tuin', 'Tuin'),
-                                                  ('techniek', 'Techniek')], 
-                            validators=[DataRequired()])
+    categorie = SelectField('Categorie', choices=[
+        ('buitenshuis', 'Buitenshuis'), 
+        ('binnenshuis', 'Binnenshuis'),
+        ('tuin', 'Tuin'),
+        ('techniek', 'Techniek')],
+        validators=[DataRequired()])
     
-    # Tijd: bijvoorbeeld van 09:00 tot 12:00
     tijd = StringField('Verwachte tijd (bijv. 09:00 - 12:00)', validators=[DataRequired()])
-    
-    # Locatie: meer specifiek een adres
     locatie = StringField('Locatie', validators=[DataRequired()])
-    
     beschrijving = TextAreaField('Beschrijving', validators=[DataRequired()])
-    vergoeding = DecimalField('Vergoeding', places=2, rounding=None, validators=[DataRequired()])
-    
-    # Nieuwe velden
+    vergoeding = DecimalField('Vergoeding', places=2, validators=[DataRequired()])
     datum = DateField('Datum van de klus', validators=[DataRequired()])
     verwachte_duur = IntegerField('Verwachte tijdsduur in uren', validators=[DataRequired()])
-
 
 class KluszoekerForm(FlaskForm):
     idnummer = StringField('ID Nummer', validators=[DataRequired()])

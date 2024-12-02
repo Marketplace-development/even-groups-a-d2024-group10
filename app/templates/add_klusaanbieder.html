@@ -102,51 +102,54 @@
     <!-- Formulier Container -->
     <div class="container">
         <form method="POST" action="{{ url_for('main.add_klusaanbieder') }}">
+            {{ form.hidden_tag() }} <!-- Voeg een CSRF-token toe -->
+
             <!-- Titel -->
             <div class="form-group">
                 <label for="naam">Titel:</label>
-                <input type="text" id="naam" name="naam" class="form-control" placeholder="Voer een titel in">
+                {{ form.naam(class_="form-control", placeholder="Voer een titel in") }}
             </div>
             
             <!-- Categorie -->
             <div class="form-group">
                 <label for="categorie">Categorie:</label>
-                <select id="categorie" name="categorie" class="form-control">
-                    <option value="buitenshuis">Buitenshuis</option>
-                    <option value="binnenshuis">Binnenshuis</option>
-                    <option value="tuin">Tuin</option>
-                    <option value="techniek">Techniek</option>
-                </select>
+                {{ form.categorie(class_="form-control") }}
             </div>
             
             <!-- Plaats -->
             <div class="form-group">
                 <label for="locatie">Plaats:</label>
-                <input type="text" id="locatie" name="locatie" class="form-control" placeholder="Voer een plaats in">
+                {{ form.locatie(class_="form-control", placeholder="Voer een plaats in") }}
             </div>
             
             <!-- Tijd -->
             <div class="form-group">
                 <label for="tijd">Tijd:</label>
-                <input type="text" id="tijd" name="tijd" class="form-control" placeholder="Voer een tijd in">
+                {{ form.tijd(class_="form-control", placeholder="Voer een tijd in") }}
             </div>
             
             <!-- Beschrijving -->
             <div class="form-group">
                 <label for="beschrijving">Beschrijving:</label>
-                <textarea id="beschrijving" name="beschrijving" class="form-control" rows="3" placeholder="Beschrijf de klus"></textarea>
+                {{ form.beschrijving(class_="form-control", placeholder="Beschrijf de klus") }}
+            </div>
+            
+            <!-- Datum -->
+            <div class="form-group">
+                <label for="datum">Datum:</label>
+                {{ form.datum(class_="form-control", placeholder="Selecteer een datum") }}
             </div>
             
             <!-- Geschatte duur -->
             <div class="form-group">
                 <label for="verwachte_duur">Geschatte duur:</label>
-                <input type="text" id="verwachte_duur" name="verwachte_duur" class="form-control" placeholder="Voer de geschatte duur in">
+                {{ form.verwachte_duur(class_="form-control", placeholder="Voer de geschatte duur in") }}
             </div>
             
             <!-- Vergoeding -->
             <div class="form-group">
                 <label for="vergoeding">Vergoeding:</label>
-                <input type="text" id="vergoeding" name="vergoeding" class="form-control" placeholder="Voer de vergoeding in">
+                {{ form.vergoeding(class_="form-control", placeholder="Voer de vergoeding in") }}
             </div>
             
             <!-- Aanmaken knop -->
@@ -155,7 +158,7 @@
     </div>
 
     <!-- Terug Knop -->
-    <div class="logout">
+    <div class="terug">
         <div class="terug-icon">
             <a href="{{ url_for('main.dashboard') }}">
                 <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" style="width: 100px; height: auto;">
