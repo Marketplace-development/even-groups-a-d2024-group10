@@ -4,6 +4,7 @@ import uuid
 from flask_login import current_user
 from sqlalchemy import CheckConstraint
 
+
 # Functie om een ID-nummer te genereren
 def generate_id_number():
     return str(uuid.uuid4().int)[:10]  # 10 cijfers van een UUID
@@ -75,10 +76,9 @@ class Klus(db.Model):
     naam = db.Column(db.String(100), nullable=False)
     categorie = db.Column(db.String(50), db.ForeignKey('categorie.categorie', ondelete="SET NULL"), nullable=True)
     locatie = db.Column(db.String(100))
-    tijd = db.Column(db.String(50))
     beschrijving = db.Column(db.Text)
     vergoeding = db.Column(db.Numeric(10, 2))
-    datum = db.Column(db.Date, nullable=False)  # Toegevoegd veld
+    datum = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     verwachte_duur = db.Column(db.Integer, nullable=False)  # Toegevoegd veld
     created_at = db.Column(db.TIMESTAMP, nullable=False, default=datetime.utcnow)
     status = db.Column(db.String(20), default='beschikbaar')

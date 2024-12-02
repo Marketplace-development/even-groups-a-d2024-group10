@@ -104,8 +104,12 @@
                 <span class="value">{{ klus.beschrijving }}</span>
             </div>
             <div>
-                <span>Tijd:</span>
-                <span class="value">{{ klus.tijd }}</span>
+                <!-- AANGEPAST: Tijd vervangen door Datum en Tijd -->
+                <span>Datum en Tijd:</span>
+                <span class="value">
+                    <!-- AANGEPAST: Gebruik van strftime om datetime correct te formatteren -->
+                    {{ klus.datum.strftime('%d %B %Y, %H:%M') }}
+                </span>
             </div>
             <div>
                 <span>Locatie:</span>

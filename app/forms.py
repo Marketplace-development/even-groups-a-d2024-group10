@@ -1,8 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, SubmitField, DecimalField, DateField, TextAreaField, SelectField
+from wtforms import StringField, IntegerField, SubmitField, DecimalField, DateField, TextAreaField, SelectField, DateTimeField
 from wtforms.validators import DataRequired, Email, Length, NumberRange, InputRequired
 import random
 import string
+
 
 # Functie om een 10-cijferig ID-nummer te genereren
 def generate_id_number():
@@ -28,11 +29,10 @@ class KlusaanbiederForm(FlaskForm):
         ('techniek', 'Techniek')],
         validators=[DataRequired()])
     
-    tijd = StringField('Verwachte tijd (bijv. 09:00 - 12:00)', validators=[DataRequired()])
     locatie = StringField('Locatie', validators=[DataRequired()])
     beschrijving = TextAreaField('Beschrijving', validators=[DataRequired()])
     vergoeding = DecimalField('Vergoeding', places=2, validators=[DataRequired()])
-    datum = DateField('Datum van de klus', validators=[DataRequired()])
+    datum = DateTimeField('Datum en Tijd van de klus', format='%Y-%m-%d %H:%M:%S', validators=[DataRequired()])
     verwachte_duur = IntegerField('Verwachte tijdsduur in uren', validators=[DataRequired()])
 
 class KluszoekerForm(FlaskForm):
