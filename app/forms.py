@@ -29,10 +29,11 @@ class KlusaanbiederForm(FlaskForm):
         ('techniek', 'Techniek')],
         validators=[DataRequired()])
     
+    tijd = StringField('Verwachte tijd (bijv. 09:00 - 12:00)', validators=[DataRequired()])
     locatie = StringField('Locatie', validators=[DataRequired()])
     beschrijving = TextAreaField('Beschrijving', validators=[DataRequired()])
     vergoeding = DecimalField('Vergoeding', places=2, validators=[DataRequired()])
-    datum = DateTimeField('Datum en Tijd van de klus', format='%Y-%m-%d %H:%M:%S', validators=[DataRequired()])
+    datum = DateField('Datum van de klus', validators=[DataRequired()])
     verwachte_duur = IntegerField('Verwachte tijdsduur in uren', validators=[DataRequired()])
 
 class KluszoekerForm(FlaskForm):

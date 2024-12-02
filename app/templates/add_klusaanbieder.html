@@ -122,6 +122,11 @@
                 {{ form.locatie(class_="form-control", placeholder="Voer een plaats in") }}
             </div>
             
+            <!-- Tijd -->
+            <div class="form-group">
+                <label for="tijd">Tijd:</label>
+                {{ form.tijd(class_="form-control", placeholder="Voer een tijd in") }}
+            </div>
             
             <!-- Beschrijving -->
             <div class="form-group">
@@ -129,11 +134,11 @@
                 {{ form.beschrijving(class_="form-control", placeholder="Beschrijf de klus") }}
             </div>
             
-            <!-- Datum en tijd-->
-            <div>
-                <label for="datum">Datum en Tijd:</label>
-                {{ form.datum(class="form-control", type="datetime-local") }}
-            </div>            
+            <!-- Datum -->
+            <div class="form-group">
+                <label for="datum">Datum:</label>
+                {{ form.datum(class_="form-control", placeholder="Selecteer een datum") }}
+            </div>
             
             <!-- Geschatte duur -->
             <div class="form-group">
