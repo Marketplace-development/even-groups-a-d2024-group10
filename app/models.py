@@ -76,7 +76,7 @@ class Klus(db.Model):
     naam = db.Column(db.String(100), nullable=False)
     categorie = db.Column(db.String(50), db.ForeignKey('categorie.categorie', ondelete="SET NULL"), nullable=True)
     locatie = db.Column(db.String(100))
-    tijd = db.Column(db.String(50))
+    tijd = db.Column(db.Time, nullable=False)
     beschrijving = db.Column(db.Text)
     vergoeding = db.Column(db.Numeric(10, 2))
     datum = db.Column(db.Date, nullable=False)  # Toegevoegd veld

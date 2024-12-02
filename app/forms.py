@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, SubmitField, DecimalField, DateField, TextAreaField, SelectField, DateTimeField
+from wtforms import StringField, IntegerField, SubmitField, DecimalField, DateField, TextAreaField, SelectField, TimeField
 from wtforms.validators import DataRequired, Email, Length, NumberRange, InputRequired
 import random
 import string
@@ -26,10 +26,17 @@ class KlusaanbiederForm(FlaskForm):
         ('buitenshuis', 'Buitenshuis'), 
         ('binnenshuis', 'Binnenshuis'),
         ('tuin', 'Tuin'),
-        ('techniek', 'Techniek')],
-        validators=[DataRequired()])
-    
-    tijd = StringField('Verwachte tijd (bijv. 09:00 - 12:00)', validators=[DataRequired()])
+        ('techniek', 'Techniek'),
+        ('oppassen', 'Oppassen'),  # Nieuwe categorie
+        ('boodschappen', 'Boodschappen doen'),  # Nieuwe categorie
+        ('schoonmaak', 'Schoonmaak'),  # Nieuwe categorie
+        ('verhuis', 'Verhuizen'),  # Nieuwe categorie
+        ('hulp_thuis', 'Hulp thuis'),  # Nieuwe categorie
+        ('administratie', 'Administratie'),  # Nieuwe categorie
+        ('zorg', 'Zorg & Verzorging')  # Nieuwe categorie
+    ], validators=[DataRequired()])
+
+    tijd = TimeField('Verwachte tijd', format='%H:%M', validators=[DataRequired()])
     locatie = StringField('Locatie', validators=[DataRequired()])
     beschrijving = TextAreaField('Beschrijving', validators=[DataRequired()])
     vergoeding = DecimalField('Vergoeding', places=2, validators=[DataRequired()])
