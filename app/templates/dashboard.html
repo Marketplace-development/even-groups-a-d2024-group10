@@ -77,9 +77,9 @@
 <body>
     <div class="container">
         <!-- Logo en decoratie -->
-    <div style="left: 50%; top: 30px; position: absolute; transform: translateX(-50%);">
-        <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" style="width: 500px; height: auto;">
-    </div>
+        <div style="left: 50%; top: 30px; position: absolute; transform: translateX(-50%);">
+            <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" style="width: 500px; height: auto;">
+        </div>
 
         <!-- Knoppen voor acties -->
         <div class="button-container">
@@ -88,9 +88,6 @@
 
             <!-- Knop om een klus te zoeken -->
             <a href="{{ url_for('main.klussen') }}" class="button">Klus zoeken</a>
-
-            <!-- Knop om een review te schrijven dit moet nog gedaan worden!!!!!!!!!!!-->
-            <a href="{{ url_for('main.login') }}" class="button">Review schrijven</a>
         </div>
 
         <!-- Logout optie -->
@@ -109,4 +106,3 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
-cdn.jsdelivr.net
