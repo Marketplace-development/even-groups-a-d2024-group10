@@ -1,13 +1,9 @@
-{% extends 'base.html' %}
+<h1>Bevestig Klus Accepteren</h1>
+<p>Weet je zeker dat je deze klus wilt accepteren?</p>
+<p><strong>{{ klus.naam }}</strong></p>
+<p>{{ klus.beschrijving }}</p>
 
-{% block content %}
-  <h1>Bevestiging</h1>
-  <p>Je hebt de klus "{{ klus.naam }}" geaccepteerd!</p>
-
-  <h3>Details van de klus:</h3>
-  <p><strong>Locatie:</strong> {{ klus.locatie }}</p>
-  <p><strong>Beschrijving:</strong> {{ klus.beschrijving }}</p>
-  <p><strong>Vergoeding:</strong> {{ klus.vergoeding }} €</p>
-
-  <a href="{{ url_for('main.klussen') }}" class="btn btn-primary">Terug naar overzicht van klussen</a>
-{% endblock %}
+<form action="{{ url_for('main.accepteer_klus', klusnummer=klus.klusnummer) }}" method="POST">
+    <button type="submit">Ja, accepteer deze klus</button>
+</form>
+<a href="{{ url_for('main.klussen') }}">Nee, terug naar overzicht</a>

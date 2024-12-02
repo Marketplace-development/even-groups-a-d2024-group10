@@ -322,14 +322,14 @@ def accepteer_klus(klusnummer):
     if klus and klus.status == 'beschikbaar':  # Controleer of de klus beschikbaar is
         # Verander de status naar 'geaccepteerd'
         klus.status = 'geaccepteerd'
+        klus.geaccepteerd_door = session['user_id']  # Optioneel: voeg toe wie de klus accepteerde
         db.session.commit()
 
         flash('Je hebt de klus geaccepteerd!', 'success')
-        return redirect(url_for('main.klus_geaccepteerd', klusnummer=klusnummer))  # Redirect naar de klus_geaccepteerd pagina
+        return redirect(url_for('main.geaccepteerde_klussen'))  # Redirect naar geaccepteerde klussen
     else:
         flash('Deze klus is al geaccepteerd of bestaat niet.', 'danger')
         return redirect(url_for('main.klussen'))  # Terug naar het overzicht
-
 
 
 
@@ -362,3 +362,14 @@ def aangeboden_klussen():
     user = Persoon.query.get(session['user_id'])
     klussen = Klus.query.filter_by(idnummer=user.idnummer).all()
     return render_template('klussen_overzicht.html', klussen=klussen)
+
+
+@main.route('/klus/<klusnummer>/bevestigen', methods=['GET'])
+def bevestig_klus_accepteren(klusnummer):
+    klus = Klus.query.filter_by(klusnummer=klusnummer).first()
+    if klus and klus.status == 'beschikbaar':
+        return render_template('klus_bevestigen.html', klus=klus)
+    else:
+        flash('Deze klus kan niet worden geaccepteerd.', 'danger')
+        return redirect(url_for('main.klussen'))
+

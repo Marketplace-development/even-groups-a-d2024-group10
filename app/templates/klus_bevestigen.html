@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Bevestig Klus{% endblock %}
+
+{% block content %}
+<h1>Bevestig Klus Accepteren</h1>
+<p>Weet je zeker dat je deze klus wilt accepteren?</p>
+
+<div class="klus-details">
+    <h3>{{ klus.naam }}</h3>
+    <p><strong>Beschrijving:</strong> {{ klus.beschrijving or "Geen beschrijving opgegeven" }}</p>
+    <p><strong>Locatie:</strong> {{ klus.locatie }}</p>
+    {% if klus.datum %}
+        <p><strong>Datum:</strong> {{ klus.datum.strftime('%d-%m-%Y') }}</p>
+    {% else %}
+        <p><strong>Datum:</strong> Geen datum opgegeven</p>
+    {% endif %}
+    <p><strong>Vergoeding:</strong> {{ klus.vergoeding }} €</p>
+</div>
+
+<form action="{{ url_for('main.accepteer_klus', klusnummer=klus.klusnummer) }}" method="POST">
+    <button type="submit" class="btn btn-primary">Ja, accepteer deze klus</button>
+</form>
+
+<a href="{{ url_for('main.klussen') }}" class="btn btn-secondary">Nee, terug naar overzicht</a>
+{% endblock %}
