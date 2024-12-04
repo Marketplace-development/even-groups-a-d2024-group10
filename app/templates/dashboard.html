@@ -72,6 +72,26 @@
             height: 100%;
             object-fit: cover;
         }
+
+        /* Nieuwe stijl voor de profielknop rechtsboven */
+        .profile-button {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            background: #10246B;
+            color: #F5F5F5;
+            font-size: 20px;
+            font-family: Roboto, sans-serif;
+            font-weight: 400;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .profile-button:hover {
+            background: #0e1f4a;
+        }
     </style>
 </head>
 <body>
@@ -80,6 +100,9 @@
         <div style="left: 50%; top: 30px; position: absolute; transform: translateX(-50%);">
             <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" style="width: 500px; height: auto;">
         </div>
+
+        <!-- Knop om naar profiel te gaan -->
+        <a href="{{ url_for('main.profile') }}" class="profile-button">Profiel</a>
 
         <!-- Knoppen voor acties -->
         <div class="button-container">
@@ -90,7 +113,7 @@
             <a href="{{ url_for('main.klussen') }}" class="button">Klus zoeken</a>
 
             <!-- Nieuwe knop voor "Mijn Klussen" -->
-            <a href="{{ url_for('main.mijn_klussen_selectie') }}" class="button">Mijn Klussen</a> <!-- Verwijs hier naar de 'mijn_klussen' pagina -->
+            <a href="{{ url_for('main.mijn_klussen_selectie') }}" class="button">Mijn Klussen</a>
         </div>
 
         <!-- Logout optie -->

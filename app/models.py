@@ -90,15 +90,18 @@ class Klus(db.Model):
     idnummer = db.Column(db.String(10), db.ForeignKey('persoon.idnummer'), nullable=False)
 
     persoon_aanbieder = db.relationship('Persoon', backref=db.backref('klussen', lazy=True))
+    
+    # Relatie met klussenzoekers (via de tussen tabel)
     klussen_zoekers = db.relationship(
         'Persoon', 
         secondary=klus_zoeker, 
-        backref=db.backref('geinteresseerd_in_klussen', lazy='dynamic'))
+        backref=db.backref('geinteresseerd_in_klussen', lazy='dynamic')
+    )
+
     categorie_ref = db.relationship('Categorie', backref='klussen', lazy=True)
 
     def __repr__(self):
         return f'<Klus {self.klusnummer} voor {self.locatie}>'
-
 
 # Categorie Model
 class Categorie(db.Model):

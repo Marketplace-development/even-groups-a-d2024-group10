@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, session, request, abort 
 from app import db
-from app.models import Persoon, Klusaanbieder, Kluszoeker, Categorie, Rating
+from app.models import Persoon, Klusaanbieder, Kluszoeker, Categorie, Rating, klus_zoeker
 from app.forms import PersoonForm, KlusaanbiederForm, KluszoekerForm, RegistrationForm, LoginForm, RatingForm
 import uuid
 from app.models import Klus  # Voeg deze regel toe om de Klus-klasse te importeren
@@ -118,18 +118,20 @@ def dashboard():
 # Route voor het profiel (weergeven van gebruikersgegevens)
 @main.route('/profile')
 def profile():
-    if 'user' not in session:
+    if 'user_id' not in session:
         flash('Je moet eerst inloggen om je profiel te bekijken.', 'warning')
         return redirect(url_for('main.login'))
     
-    username = session['user']
-    person = Persoon.query.filter_by(username=username).first()  # Verander Username naar username
+    user_id = session['user_id']
+    user = Persoon.query.get(user_id)  # Gebruik user_id om de juiste gebruiker op te halen
 
-    if person:
-        return render_template('profile.html', person=person)
+    if user:
+        return render_template('profile.html', user=user)
     else:
         flash('Profiel niet gevonden.', 'danger')
         return redirect(url_for('main.home'))
+
+
 
 # Route voor afmelden (logout)
 @main.route('/logout')
@@ -361,6 +363,11 @@ def accepteer_klus(klusnummer):
             flash('Gebruiker niet gevonden.', 'danger')
             return redirect(url_for('main.klussen'))
 
+        # Voeg de gebruiker toe aan de klus_zoeker relatie
+        if not any(klus.idnummer == user_id for klus in klus.klussen_zoekers):
+            klus.klussen_zoekers.append(gebruiker)
+            db.session.commit()
+
         # Werk de statistieken voor de categorie bij
         categorie_statistiek = CategorieStatistiek.query.filter_by(
             idnummer=user_id,
@@ -387,8 +394,6 @@ def accepteer_klus(klusnummer):
     else:
         flash('Deze klus is al geaccepteerd of bestaat niet.', 'danger')
         return redirect(url_for('main.klussen'))  # Terug naar het overzicht
-
-
 
 
 @main.route('/klus/<klusnummer>/geaccepteerd')
@@ -438,18 +443,18 @@ def bevestig_klus_accepteren(klusnummer):
 def submit_rating(klusnummer):
     klus = Klus.query.filter_by(klusnummer=klusnummer).first()
 
-    # Alleen een beoordeling indienen als de klus de status 'completed' heeft
-    if klus and klus.status != 'completed':
-        return redirect(url_for('mijn_klussen', klusnummer=klusnummer))  # Als de klus nog niet voltooid is, kan er geen beoordeling gegeven worden
+    # Alleen een beoordeling indienen als de klus de status 'voltooid' heeft
+    if klus and klus.status != 'voltooid':
+        return redirect(url_for('main.mijn_klussen', klusnummer=klusnummer))  # Redirect als de klus niet voltooid is
 
     form = RatingForm()
 
     if form.validate_on_submit():
         # Bepaal de id's van de kluszoeker en klusaanbieder
-        kluszoeker_id = klus.klussen_zoekers[0].idnummer  # Dit kan afhangen van de logica van je relatie
+        kluszoeker_id = klus.klussen_zoekers[0].idnummer  # Als het zo is dat de kluszoeker altijd aanwezig is
         klusaanbieder_id = klus.persoon_aanbieder.idnummer
 
-        # Maak de beoordeling aan
+        # Maak een nieuwe beoordeling
         new_rating = Rating(
             klusnummer=klusnummer,
             kluszoeker_id=kluszoeker_id,
@@ -465,10 +470,9 @@ def submit_rating(klusnummer):
         db.session.add(new_rating)
         db.session.commit()
 
-        return redirect(url_for('thank_you'))  # Redirect naar de bedankpagina of een andere pagina
+        return redirect(url_for('thank_you'))  # Redirect naar een bedankpagina of andere pagina
 
     return render_template('submit_rating.html', form=form, klusnummer=klusnummer)
-
 
 
 # Bedankpagina
@@ -479,39 +483,60 @@ def thank_you():
 # Beoordelingen weergeven
 @main.route('/ratings/<klusnummer>')
 def view_ratings(klusnummer):
-    # Zoek de klus op via het klusnummer
     klus = Klus.query.filter_by(klusnummer=klusnummer).first()
 
-    # Als de klus niet bestaat, redirect dan naar de homepage
     if not klus:
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.index'))  # Als de klus niet bestaat, terug naar de homepage
 
-    # Haal de ratings voor deze klus op
-    ratings = Rating.query.filter_by(klusnummer=klusnummer).all()
+    ratings = Rating.query.filter_by(klusnummer=klusnummer).all()  # Alle beoordelingen voor de klus
 
-    # Bereken de gemiddelde rating
+    # Bereken de gemiddelde beoordeling
     average_rating = 'Nog geen beoordelingen'
     if ratings:
-        total = sum(r.rating for r in ratings)
-        average_rating = round(total / len(ratings), 2)
+        total = sum(r.rating_zoeker + r.rating_aanbieder for r in ratings)  # Som van beoordelingen
+        average_rating = round(total / (len(ratings) * 2), 2)  # Gemiddelde beoordeling
 
     return render_template('ratings.html', ratings=ratings, average_rating=average_rating, klusnummer=klusnummer)
 
 
 # Markeer klus als voltooid (completed)
-@main.route('/klus/voltooien/<klusnummer>', methods=['POST'])
-def mark_klus_as_completed(klusnummer):
+@main.route('/klus/voltooien_en_verwijderen/<klusnummer>', methods=['POST'])
+def mark_klus_as_completed_and_delete(klusnummer):
     klus = Klus.query.filter_by(klusnummer=klusnummer).first()
 
     # Alleen de klusaanbieder kan de klus markeren als voltooid
     if klus and klus.status == 'geaccepteerd':
-        klus.status = 'completed'
-        db.session.commit()
-        return redirect(url_for('main.view_rating', klusnummer=klusnummer))  # Redirect naar de beoordelingspagina
+        # Markeer de klus als voltooid
+        klus.status = 'voltooid'
+        
+        # Haal de kluszoeker op
+        user_id = session.get('user_id')
+        if not user_id:
+            flash('Je moet ingelogd zijn om deze actie uit te voeren.', 'danger')
+            return redirect(url_for('main.klussen'))  # Redirect naar overzicht klussen
 
-    return redirect(url_for('main.mijn_klussen', klusnummer=klusnummer))  # Redirect bij een fout
+        # Haal de gebruiker op (kluszoeker)
+        persoon = Persoon.query.filter_by(idnummer=user_id).first()
 
+        if persoon:
+            # Verwijder de klus uit de gezochte klussen van de kluszoeker
+            persoon.geinteresseerd_in_klussen.remove(klus)
+            db.session.commit()
 
+            # Voeg de klus toe aan de voltooide gezochte klussen
+            persoon.voltooide_gezochte_klussen.append(klus)
+            db.session.commit()
+
+            # Sla de wijzigingen op
+            db.session.commit()
+
+            flash('De klus is gemarkeerd als voltooid en verplaatst naar je voltooide klussen!', 'success')
+
+        # Redirect naar de pagina voor voltooide gezochte klussen
+        return redirect(url_for('main.mijn_voltooide_gezochte_klussen'))
+
+    flash('Deze klus is al voltooid of je hebt geen toegang om deze actie uit te voeren.', 'danger')
+    return redirect(url_for('main.klussen'))  # Redirect naar overzicht klussen
 
 @main.route('/mijn_klussen')
 def mijn_klussen():
@@ -582,8 +607,7 @@ def mijn_aangeboden_klussen():
             'id': klus.klusnummer,  # Gebruik 'klusnummer' als unieke ID
             'naam': klus.naam,
             'datum': klus.datum.strftime('%d-%m-%Y') if klus.datum else 'Onbekend',  # Controleer op None
-            'geaccepteerd': 'Ja' if klus.status == 'geaccepteerd' else 'Nee',  # Status controleren
-            'voltooid': 'Ja' if klus.status == 'completed' else 'Nee',  # Voltooiingsstatus controleren
+            'status': klus.status,  # Gebruik de werkelijke status
         })
 
     # Als het formulier wordt verzonden (POST), update de voltooiingsstatus
@@ -594,14 +618,13 @@ def mijn_aangeboden_klussen():
             flash('Je kunt deze klus niet bijwerken.', 'danger')
             return redirect(url_for('main.mijn_aangeboden_klussen'))
 
-        # Update de voltooiingsstatus
-        klus.status = 'completed'
+        # Update de status naar 'voltooid' (of andere gewenste status)
+        klus.status = 'voltooid'
         db.session.commit()
         flash('Klus is gemarkeerd als voltooid!', 'success')
-        return redirect(url_for('main.mijn_aangeboden_klussen'))
+        return redirect(url_for('main.submit_rating'))
 
     return render_template('mijn_aangeboden_klussen.html', klussen=klussen_info)
-
 
 @main.route('/mijn_gezochte_klussen')
 def mijn_gezochte_klussen():
@@ -636,3 +659,40 @@ def leave_klus(klusnummer):
 def delete_klus(klusnummer):
     # Verwerkingslogica voor verwijderen
     pass
+
+@main.route('/mijn_voltooide_aangeboden_klussen', methods=['GET'])
+def mijn_voltooide_aangeboden_klussen():
+    user_id = session.get('user_id')  # Haal de ingelogde gebruiker op uit de sessie
+    if not user_id:
+        flash('Je moet ingelogd zijn om deze pagina te bekijken.', 'danger')
+        return redirect(url_for('main.login'))
+
+    # Query voor klussen aangeboden door de ingelogde gebruiker die 'voltooid' zijn
+    klussen = Klus.query.filter_by(idnummer=user_id, status='voltooid').all()
+
+    # Verwerk de klussen voor de weergave
+    klussen_info = []
+    for klus in klussen:
+        klussen_info.append({
+            'id': klus.klusnummer,  # Gebruik 'klusnummer' als unieke ID
+            'naam': klus.naam,
+            'datum': klus.datum.strftime('%d-%m-%Y') if klus.datum else 'Onbekend',  # Controleer op None
+            'status': klus.status,  # Gebruik de werkelijke status
+        })
+
+    return render_template('mijn_voltooide_aangeboden_klussen.html', klussen=klussen_info)
+
+@main.route('/mijn_voltooide_gezochte_klussen')
+def mijn_voltooide_gezochte_klussen():
+    user_id = session.get('user_id')  # Haal de ingelogde gebruiker op uit de sessie
+    if not user_id:
+        flash('Je moet ingelogd zijn om deze pagina te bekijken.', 'danger')
+        return redirect(url_for('main.login'))
+
+    # Query voor klussen waarin de gebruiker geïnteresseerd is en die voltooid zijn
+    klussen = Klus.query.filter(
+        Klus.klussen_zoekers.any(idnummer=user_id),
+        Klus.status == 'voltooid'
+    ).all()
+
+    return render_template('mijn_voltooide_gezochte_klussen.html', klussen=klussen)

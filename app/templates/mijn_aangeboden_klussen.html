@@ -124,25 +124,29 @@
             </thead>
             <tbody>
                 {% for klus in klussen %}
+                <!-- Verberg voltooide klussen -->
+                {% if klus.status != 'voltooid' %}
                 <tr>
                     <td>{{ klus.naam }}</td>
                     <td>{{ klus.datum }}</td>
-                    <td>{{ klus.status }}</td>
-                    <td>{{ klus.voltooid }}</td>
+                    <td>{{ klus.status or "beschikbaar" }}</td>
                     <td>
                         <!-- Formulier voor markeren als voltooid -->
-                        <form action="{{ url_for('main.mijn_aangeboden_klussen') }}" method="POST" style="display: inline-block;">
+                        {% if klus.status != 'voltooid' %}
+                        <form action="{{ url_for('main.mark_klus_as_completed_and_delete', klusnummer=klus.id) }}" method="POST" style="display: inline-block;">
                             <input type="hidden" name="klus_id" value="{{ klus.id }}">
-                            <button type="submit" class="btn btn-success">Markeer als Voltooid</button>
+                            <button type="submit" class="btn btn-success btn-sm">Markeer als Voltooid</button>
                         </form>
+                        {% endif %}
                         <!-- Formulier voor verwijderen -->
                         <form action="{{ url_for('main.delete_klus', klusnummer=klus.id) }}" method="POST" style="display: inline-block;">
-                            <button type="submit" class="btn btn-danger">Verwijder Klus</button>
+                            <button type="submit" class="btn btn-danger btn-sm">Verwijder Klus</button>
                         </form>
                     </td>
                 </tr>
+                {% endif %}
                 {% endfor %}
-            </tbody>
+            </tbody>            
         </table>
     </div>
 

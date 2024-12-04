@@ -5,18 +5,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profiel</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f7fa;
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        .profile-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .profile-header h2 {
+            font-size: 32px;
+            color: #10246B;
+        }
+        .profile-header p {
+            font-size: 18px;
+            color: #555;
+        }
+        .profile-info p {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        .profile-info strong {
+            font-weight: bold;
+            color: #10246B;
+        }
+        .btn-custom {
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+            background-color: #10246B;
+            color: white;
+            border-radius: 8px;
+            text-align: center;
+            text-decoration: none;
+            margin-top: 15px;
+            display: block;
+        }
+        .btn-custom:hover {
+            background-color: #0e1f4a;
+        }
+        .btn-danger {
+            background-color: #e74c3c;
+            border-color: #c0392b;
+        }
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+    </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Profiel van {{ user.voornaam }} {{ user.achternaam }}</h2>
-    <p><strong>Leeftijd:</strong> {{ user.leeftijd }}</p>
-    <p><strong>Email:</strong> {{ user.email }}</p>
-    <p><strong>Telefoonnummer:</strong> {{ user.telefoonnummer }}</p>
-    <p><strong>Adres:</strong> {{ user.adres }}</p>
+    <div class="profile-header">
+        <h2>Profiel van {{ user.voornaam }} {{ user.achternaam }}</h2>
+        <p>Welkom op je persoonlijke profielpagina</p>
+    </div>
     
-    <a href="{{ url_for('main.logout') }}" class="btn btn-danger">Log uit</a>
+    <div class="profile-info">
+        <p><strong>Leeftijd:</strong> {{ user.leeftijd }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Telefoonnummer:</strong> {{ user.telefoonnummer }}</p>
+        <p><strong>Adres:</strong> {{ user.adres }}</p>
+    </div>
+    
+    <!-- Knoppen voor de klussen -->
+    <a href="{{ url_for('main.mijn_aangeboden_klussen') }}" class="btn btn-custom">Mijn Aangeboden Klussen</a>
+    <a href="{{ url_for('main.mijn_gezochte_klussen') }}" class="btn btn-custom">Mijn Gezochte Klussen</a>
+    <a href="{{ url_for('main.mijn_voltooide_aangeboden_klussen') }}" class="btn btn-custom">Mijn Voltooide Aangeboden Klussen</a>
+    <a href="{{ url_for('main.mijn_voltooide_gezochte_klussen') }}" class="btn btn-custom">Mijn Voltooide Gezochte Klussen</a> <!-- Nieuwe knop -->
+
+    <!-- Logout knop -->
+    <a href="{{ url_for('main.logout') }}" class="btn btn-danger mt-3">Log uit</a>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

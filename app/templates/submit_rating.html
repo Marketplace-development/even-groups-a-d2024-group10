@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beoordeling indienen</title>
+    <style>
+        .rating input {
+            display: none;
+        }
+
+        .rating label {
+            color: gray;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        .rating input:checked ~ label {
+            color: gold;
+        }
+
+        .rating input:hover ~ label {
+            color: gold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Beoordeling voor klus {{ klusnummer }}</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        
+        <!-- Beoordeling voor de kluszoeker -->
+        <div class="form-group">
+            <label for="rating_zoeker">Beoordeel de kluszoeker (1-5):</label>
+            <div class="rating">
+                <input type="radio" name="rating_zoeker" value="1" id="rating_zoeker_1" required><label for="rating_zoeker_1">★</label>
+                <input type="radio" name="rating_zoeker" value="2" id="rating_zoeker_2"><label for="rating_zoeker_2">★</label>
+                <input type="radio" name="rating_zoeker" value="3" id="rating_zoeker_3"><label for="rating_zoeker_3">★</label>
+                <input type="radio" name="rating_zoeker" value="4" id="rating_zoeker_4"><label for="rating_zoeker_4">★</label>
+                <input type="radio" name="rating_zoeker" value="5" id="rating_zoeker_5"><label for="rating_zoeker_5">★</label>
+            </div>
+        </div>
+
+        <!-- Beoordeling voor de klusaanbieder -->
+        <div class="form-group">
+            <label for="rating_aanbieder">Beoordeel de klusaanbieder (1-5):</label>
+            <div class="rating">
+                <input type="radio" name="rating_aanbieder" value="1" id="rating_aanbieder_1" required><label for="rating_aanbieder_1">★</label>
+                <input type="radio" name="rating_aanbieder" value="2" id="rating_aanbieder_2"><label for="rating_aanbieder_2">★</label>
+                <input type="radio" name="rating_aanbieder" value="3" id="rating_aanbieder_3"><label for="rating_aanbieder_3">★</label>
+                <input type="radio" name="rating_aanbieder" value="4" id="rating_aanbieder_4"><label for="rating_aanbieder_4">★</label>
+                <input type="radio" name="rating_aanbieder" value="5" id="rating_aanbieder_5"><label for="rating_aanbieder_5">★</label>
+            </div>
+        </div>
+
+        <!-- Optioneel: commentaar voor de kluszoeker -->
+        <div class="form-group">
+            <label for="comment_zoeker">Commentaar voor de kluszoeker:</label>
+            <textarea name="comment_zoeker" id="comment_zoeker" rows="4" cols="50"></textarea>
+        </div>
+
+        <!-- Optioneel: commentaar voor de klusaanbieder -->
+        <div class="form-group">
+            <label for="comment_aanbieder">Commentaar voor de klusaanbieder:</label>
+            <textarea name="comment_aanbieder" id="comment_aanbieder" rows="4" cols="50"></textarea>
+        </div>
+
+        <button type="submit">Beoordeling indienen</button>
+    </form>
+</body>
+</html>
