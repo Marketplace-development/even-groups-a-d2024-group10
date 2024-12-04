@@ -128,3 +128,13 @@ class Rating(db.Model):
 
     def __repr__(self):
         return f'<Rating {self.id}>'
+
+
+class CategorieStatistiek(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    idnummer = db.Column(db.String(10), db.ForeignKey('persoon.idnummer'), nullable=False)
+    categorie = db.Column(db.String(50), db.ForeignKey('categorie.categorie'), nullable=False)
+    aantal_accepteerd = db.Column(db.Integer, default=0)
+
+    persoon = db.relationship('Persoon', backref='categorie_statistieken', lazy=True)
+    categorie_ref = db.relationship('Categorie', backref='gebruikers_statistieken', lazy=True)

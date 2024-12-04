@@ -255,12 +255,42 @@ def klus_detail(klusnummer):
     return render_template('klus_detail.html', klus=klus)
 
 
+from app.models import CategorieStatistiek, Klus, Persoon
 @main.route('/klussen')
 def klussen():
-    # Haal alle beschikbare klussen op (die niet geaccepteerd zijn)
-    klussen = Klus.query.filter_by(status='beschikbaar').all()
+    # Controleer of de gebruiker is ingelogd
+    if 'user_id' not in session:
+        flash('Je moet ingelogd zijn om klussen te bekijken.', 'danger')
+        return redirect(url_for('main.login'))
 
-    return render_template('klussen_overzicht.html', klussen=klussen)
+    user_id = session['user_id']
+
+    # Haal de categorieën op waar de gebruiker de meeste klussen in heeft geaccepteerd
+    categorie_voorkeuren = (
+        db.session.query(CategorieStatistiek.categorie)
+        .filter_by(idnummer=user_id)
+        .order_by(CategorieStatistiek.aantal_accepteerd.desc())
+        .all()
+    )
+
+    # Zet de categorieën in een volgorde van meest naar minst voorkomend
+    voorkeuren_volgorde = [voorkeur[0] for voorkeur in categorie_voorkeuren]
+
+    # Haal alle beschikbare klussen op
+    beschikbare_klussen = Klus.query.filter_by(status='beschikbaar').all()
+
+    # Sorteer de klussen op basis van de voorkeursvolgorde
+    def sorteer_klussen(klus):
+        try:
+            return voorkeuren_volgorde.index(klus.categorie)
+        except ValueError:
+            # Als de categorie niet in de voorkeursvolgorde zit, zet hem achteraan
+            return len(voorkeuren_volgorde)
+
+    gesorteerde_klussen = sorted(beschikbare_klussen, key=sorteer_klussen)
+
+    return render_template('klussen_overzicht.html', klussen=gesorteerde_klussen)
+
 
 
 @main.route('/meld_aan_voor_klus/<klusnummer>', methods=['POST'])
@@ -316,12 +346,40 @@ def accepteer_klus(klusnummer):
         flash('Je moet ingelogd zijn om deze klus te accepteren.', 'danger')
         return redirect(url_for('main.klussen'))  # Terug naar het overzicht van klussen
 
+    # Zoek de klus op basis van klusnummer
     klus = Klus.query.filter_by(klusnummer=klusnummer).first()
 
     if klus and klus.status == 'beschikbaar':  # Controleer of de klus beschikbaar is
         # Verander de status naar 'geaccepteerd'
         klus.status = 'geaccepteerd'
-        klus.geaccepteerd_door = session['user_id']  # Optioneel: voeg toe wie de klus accepteerde
+
+        # Haal de gebruiker op die de klus accepteert
+        user_id = session['user_id']
+        gebruiker = Persoon.query.filter_by(idnummer=user_id).first()
+
+        if not gebruiker:
+            flash('Gebruiker niet gevonden.', 'danger')
+            return redirect(url_for('main.klussen'))
+
+        # Werk de statistieken voor de categorie bij
+        categorie_statistiek = CategorieStatistiek.query.filter_by(
+            idnummer=user_id,
+            categorie=klus.categorie
+        ).first()
+
+        if categorie_statistiek:
+            # Als er al een statistiek bestaat, verhoog het aantal
+            categorie_statistiek.aantal_accepteerd += 1
+        else:
+            # Anders maak een nieuwe record aan
+            nieuwe_statistiek = CategorieStatistiek(
+                idnummer=user_id,
+                categorie=klus.categorie,
+                aantal_accepteerd=1
+            )
+            db.session.add(nieuwe_statistiek)
+
+        # Sla de wijzigingen op
         db.session.commit()
 
         flash('Je hebt de klus geaccepteerd!', 'success')
@@ -329,6 +387,7 @@ def accepteer_klus(klusnummer):
     else:
         flash('Deze klus is al geaccepteerd of bestaat niet.', 'danger')
         return redirect(url_for('main.klussen'))  # Terug naar het overzicht
+
 
 
 
