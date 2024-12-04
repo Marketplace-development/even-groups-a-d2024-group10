@@ -75,3 +75,10 @@ class KlusForm(FlaskForm):
     tijd = StringField('Tijd', validators=[DataRequired()])  # Nieuw veld voor tijd
     vergoeding = StringField('Vergoeding', validators=[DataRequired()])
     submit = SubmitField('Toevoegen')
+
+class RatingForm(FlaskForm):
+    rating_zoeker = IntegerField('Geef een rating aan de kluszoeker (1-5)', validators=[DataRequired(), NumberRange(min=1, max=5)])
+    rating_aanbieder = IntegerField('Geef een rating aan de klusaanbieder (1-5)', validators=[DataRequired(), NumberRange(min=1, max=5)])
+    comment_zoeker = TextAreaField('Commentaar voor de kluszoeker')
+    comment_aanbieder = TextAreaField('Commentaar voor de klusaanbieder')
+    submit = SubmitField('Indienen')

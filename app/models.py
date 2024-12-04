@@ -79,10 +79,10 @@ class Klus(db.Model):
     tijd = db.Column(db.Time, nullable=False)
     beschrijving = db.Column(db.Text)
     vergoeding = db.Column(db.Numeric(10, 2))
-    datum = db.Column(db.Date, nullable=False)  # Toegevoegd veld
-    verwachte_duur = db.Column(db.Integer, nullable=False)  # Toegevoegd veld
+    datum = db.Column(db.Date, nullable=False)
+    verwachte_duur = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.TIMESTAMP, nullable=False, default=datetime.utcnow)
-    status = db.Column(db.String(20), default='beschikbaar')
+    status = db.Column(db.String(20), default='beschikbaar')  # Status: beschikbaar, geaccepteerd, completed
     idnummer = db.Column(db.String(10), db.ForeignKey('persoon.idnummer'), nullable=False)
 
     persoon_aanbieder = db.relationship('Persoon', backref=db.backref('klussen', lazy=True))
@@ -105,3 +105,22 @@ class Categorie(db.Model):
 
     def __repr__(self):
         return f'<Categorie {self.categorie}>'
+    
+
+class Rating(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    klusnummer = db.Column(db.String(36), db.ForeignKey('klus.klusnummer'), nullable=False)
+    kluszoeker_id = db.Column(db.String(10), db.ForeignKey('persoon.idnummer'), nullable=False)
+    klusaanbieder_id = db.Column(db.String(10), db.ForeignKey('persoon.idnummer'), nullable=False)
+    rating_zoeker = db.Column(db.Integer, nullable=False)  # Rating voor de kluszoeker
+    rating_aanbieder = db.Column(db.Integer, nullable=False)  # Rating voor de klusaanbieder
+    comment_zoeker = db.Column(db.String(500), nullable=True)  # Commentaar voor de kluszoeker
+    comment_aanbieder = db.Column(db.String(500), nullable=True)  # Commentaar voor de klusaanbieder
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    klus = db.relationship('Klus', backref=db.backref('ratings', lazy=True))
+    kluszoeker = db.relationship('Persoon', foreign_keys=[kluszoeker_id])
+    klusaanbieder = db.relationship('Persoon', foreign_keys=[klusaanbieder_id])
+
+    def __repr__(self):
+        return f'<Rating {self.id}>'

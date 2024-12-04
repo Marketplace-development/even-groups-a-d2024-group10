@@ -1,10 +1,11 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, session
+from flask import Blueprint, render_template, redirect, url_for, flash, session, request
 from app import db
-from app.models import Persoon, Klusaanbieder, Kluszoeker, Categorie
-from app.forms import PersoonForm, KlusaanbiederForm, KluszoekerForm, RegistrationForm, LoginForm, KlusForm
+from app.models import Persoon, Klusaanbieder, Kluszoeker, Categorie, Rating
+from app.forms import PersoonForm, KlusaanbiederForm, KluszoekerForm, RegistrationForm, LoginForm, RatingForm
 import uuid
 from app.models import Klus  # Voeg deze regel toe om de Klus-klasse te importeren
 from flask_login import current_user, login_required
+from datetime import datetime
 
 # Maak een blueprint
 main = Blueprint('main', __name__)
@@ -371,3 +372,132 @@ def bevestig_klus_accepteren(klusnummer):
         flash('Deze klus kan niet worden geaccepteerd.', 'danger')
         return redirect(url_for('main.klussen'))
 
+
+
+# Beoordelingen indienen via POST request
+@main.route('/submit-rating/<klusnummer>', methods=['GET', 'POST'])
+def submit_rating(klusnummer):
+    klus = Klus.query.filter_by(klusnummer=klusnummer).first()
+
+    # Alleen een beoordeling indienen als de klus de status 'completed' heeft
+    if klus and klus.status != 'completed':
+        return redirect(url_for('mijn_klussen', klusnummer=klusnummer))  # Als de klus nog niet voltooid is, kan er geen beoordeling gegeven worden
+
+    form = RatingForm()
+
+    if form.validate_on_submit():
+        # Bepaal de id's van de kluszoeker en klusaanbieder
+        kluszoeker_id = klus.klussen_zoekers[0].idnummer  # Dit kan afhangen van de logica van je relatie
+        klusaanbieder_id = klus.persoon_aanbieder.idnummer
+
+        # Maak de beoordeling aan
+        new_rating = Rating(
+            klusnummer=klusnummer,
+            kluszoeker_id=kluszoeker_id,
+            klusaanbieder_id=klusaanbieder_id,
+            rating_zoeker=form.rating_zoeker.data,  # Rating voor de kluszoeker
+            rating_aanbieder=form.rating_aanbieder.data,  # Rating voor de klusaanbieder
+            comment_zoeker=form.comment_zoeker.data,  # Commentaar voor de kluszoeker
+            comment_aanbieder=form.comment_aanbieder.data,  # Commentaar voor de klusaanbieder
+            created_at=datetime.now()
+        )
+
+        # Sla de beoordeling op in de database
+        db.session.add(new_rating)
+        db.session.commit()
+
+        return redirect(url_for('thank_you'))  # Redirect naar de bedankpagina of een andere pagina
+
+    return render_template('submit_rating.html', form=form, klusnummer=klusnummer)
+
+
+
+# Bedankpagina
+@main.route('/thank-you')
+def thank_you():
+    return render_template('thank_you.html')
+
+# Beoordelingen weergeven
+@main.route('/ratings/<klusnummer>')
+def view_ratings(klusnummer):
+    # Zoek de klus op via het klusnummer
+    klus = Klus.query.filter_by(klusnummer=klusnummer).first()
+
+    # Als de klus niet bestaat, redirect dan naar de homepage
+    if not klus:
+        return redirect(url_for('main.index'))
+
+    # Haal de ratings voor deze klus op
+    ratings = Rating.query.filter_by(klusnummer=klusnummer).all()
+
+    # Bereken de gemiddelde rating
+    average_rating = 'Nog geen beoordelingen'
+    if ratings:
+        total = sum(r.rating for r in ratings)
+        average_rating = round(total / len(ratings), 2)
+
+    return render_template('ratings.html', ratings=ratings, average_rating=average_rating, klusnummer=klusnummer)
+
+
+# Markeer klus als voltooid (completed)
+@main.route('/klus/voltooien/<klusnummer>', methods=['POST'])
+def mark_klus_as_completed(klusnummer):
+    klus = Klus.query.filter_by(klusnummer=klusnummer).first()
+
+    # Alleen de klusaanbieder kan de klus markeren als voltooid
+    if klus and klus.status == 'geaccepteerd':
+        klus.status = 'completed'
+        db.session.commit()
+        return redirect(url_for('main.view_rating', klusnummer=klusnummer))  # Redirect naar de beoordelingspagina
+
+    return redirect(url_for('main.mijn_klussen', klusnummer=klusnummer))  # Redirect bij een fout
+
+
+
+@main.route('/mijn_klussen')
+def mijn_klussen():
+    # Controleer of de gebruiker is ingelogd via de sessie
+    if 'user_id' not in session:
+        return redirect(url_for('main.login'))  # Als er geen user_id in de sessie is, doorverwijzen naar login
+
+    user_id = session['user_id']
+    user = Persoon.query.get(user_id)
+    
+    # Haal de klussen van de ingelogde gebruiker op
+    klussen = Klus.query.filter(Klus.idnummer == user.idnummer, Klus.status == 'geaccepteerd').all()
+
+    return render_template('mijn_klussen.html', klussen=klussen)
+
+@main.route('/beoordelen/<klusnummer>', methods=['GET', 'POST'])
+def view_rating(klusnummer):
+    klus = Klus.query.filter_by(klusnummer=klusnummer).first()
+
+    if not klus or klus.status != 'completed':
+        return redirect(url_for('main.mijn_klussen', klusnummer=klusnummer))  # Redirect naar klus als de status niet 'completed' is
+
+    form = RatingForm()  # Je kunt een bestaande RatingForm gebruiken die je eerder hebt gedefinieerd.
+
+    if form.validate_on_submit():
+        # Haal de id's van de kluszoeker en klusaanbieder
+        kluszoeker_id = klus.klussen_zoekers[0].idnummer  # Dit kan afhangen van de logica van je relatie
+        klusaanbieder_id = klus.persoon_aanbieder.idnummer
+
+        # Maak de beoordeling aan
+        new_rating = Rating(
+            klusnummer=klusnummer,
+            kluszoeker_id=kluszoeker_id,
+            klusaanbieder_id=klusaanbieder_id,
+            rating_zoeker=form.rating_zoeker.data,  # Rating voor de kluszoeker
+            rating_aanbieder=form.rating_aanbieder.data,  # Rating voor de klusaanbieder
+            comment_zoeker=form.comment_zoeker.data,  # Commentaar voor de kluszoeker
+            comment_aanbieder=form.comment_aanbieder.data,  # Commentaar voor de klusaanbieder
+            created_at=datetime.now()
+        )
+
+        # Sla de beoordeling op in de database
+        db.session.add(new_rating)
+        db.session.commit()
+
+        return redirect(url_for('thank_you'))  # Redirect naar een bedankpagina of een andere pagina
+
+    return render_template('submit_ratings.html', form=form, klusnummer=klusnummer)

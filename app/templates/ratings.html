@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div style="max-width: 800px; margin: 50px auto; padding: 20px; background-color: #f9f9f9; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius: 8px;">
+        <h1 style="text-align: center; color: #10246B;">Beoordelingen voor Klus: {{ klusnummer }}</h1>
+
+        {% if ratings %}
+            <h3 style="color: #10246B;">Gemiddelde Beoordeling: {{ average_rating }}</h3>
+            <ul>
+                {% for rating in ratings %}
+                    <li>
+                        <strong>Beoordeling door Kluszoeker: {{ rating.rating_zoeker }} / 5</strong>
+                        <p>{{ rating.comment_zoeker }}</p>
+                        <strong>Beoordeling door Klusaanbieder: {{ rating.rating_aanbieder }} / 5</strong>
+                        <p>{{ rating.comment_aanbieder }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Er zijn nog geen beoordelingen voor deze klus.</p>
+        {% endif %}
+    </div>
+{% endblock %}
