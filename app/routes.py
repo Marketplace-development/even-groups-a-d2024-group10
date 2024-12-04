@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, session, request
+from flask import Blueprint, render_template, redirect, url_for, flash, session, request, abort 
 from app import db
 from app.models import Persoon, Klusaanbieder, Kluszoeker, Categorie, Rating
 from app.forms import PersoonForm, KlusaanbiederForm, KluszoekerForm, RegistrationForm, LoginForm, RatingForm
@@ -501,3 +501,79 @@ def view_rating(klusnummer):
         return redirect(url_for('thank_you'))  # Redirect naar een bedankpagina of een andere pagina
 
     return render_template('submit_ratings.html', form=form, klusnummer=klusnummer)
+
+@main.route('/mijn_klussen_selectie', methods=['GET'])
+def mijn_klussen_selectie():
+    return render_template('mijn_klussen_selectie.html')
+
+@main.route('/mijn_aangeboden_klussen', methods=['GET', 'POST'])
+def mijn_aangeboden_klussen():
+    user_id = session.get('user_id')  # Haal de ingelogde gebruiker op uit de sessie
+    if not user_id:
+        flash('Je moet ingelogd zijn om deze pagina te bekijken.', 'danger')
+        return redirect(url_for('main.login'))
+
+    # Query voor klussen aangeboden door de ingelogde gebruiker, gesorteerd op datum (meest recent eerst)
+    klussen = Klus.query.filter_by(idnummer=user_id).order_by(Klus.datum.desc()).all()
+
+    # Verwerk de klussen voor de weergave
+    klussen_info = []
+    for klus in klussen:
+        klussen_info.append({
+            'id': klus.klusnummer,  # Gebruik 'klusnummer' als unieke ID
+            'naam': klus.naam,
+            'datum': klus.datum.strftime('%d-%m-%Y') if klus.datum else 'Onbekend',  # Controleer op None
+            'geaccepteerd': 'Ja' if klus.status == 'geaccepteerd' else 'Nee',  # Status controleren
+            'voltooid': 'Ja' if klus.status == 'completed' else 'Nee',  # Voltooiingsstatus controleren
+        })
+
+    # Als het formulier wordt verzonden (POST), update de voltooiingsstatus
+    if request.method == 'POST':
+        klus_id = request.form.get('klus_id')  # Haal de klus ID op uit het formulier
+        klus = Klus.query.get_or_404(klus_id)
+        if klus.idnummer != user_id:
+            flash('Je kunt deze klus niet bijwerken.', 'danger')
+            return redirect(url_for('main.mijn_aangeboden_klussen'))
+
+        # Update de voltooiingsstatus
+        klus.status = 'completed'
+        db.session.commit()
+        flash('Klus is gemarkeerd als voltooid!', 'success')
+        return redirect(url_for('main.mijn_aangeboden_klussen'))
+
+    return render_template('mijn_aangeboden_klussen.html', klussen=klussen_info)
+
+
+@main.route('/mijn_gezochte_klussen')
+def mijn_gezochte_klussen():
+    user_id = session.get('user_id')  # Haal de ingelogde gebruiker op uit de sessie
+    if not user_id:
+        flash('Je moet ingelogd zijn om deze pagina te bekijken.', 'danger')
+        return redirect(url_for('main.login'))
+
+    # Query voor klussen waarin de gebruiker geïnteresseerd is
+    klussen = Klus.query.filter(Klus.klussen_zoekers.any(idnummer=user_id)).all()
+    return render_template('mijn_gezochte_klussen.html', klussen=klussen)
+
+
+@main.route('/leave_klus/<string:klusnummer>', methods=['POST'])
+def leave_klus(klusnummer):
+    # Haal de klus op aan de hand van het klusnummer
+    klus = Klus.query.get_or_404(klusnummer)
+
+    # Controleer of de gebruiker is gekoppeld als zoeker
+    zoeker = next((zoeker for zoeker in klus.klussen_zoekers if zoeker.idnummer == current_user.idnummer), None)
+    if not zoeker:
+        flash('Je bent niet gekoppeld aan deze klus.', 'danger')
+        return redirect(url_for('main.mijn_gezochte_klussen'))
+
+    # Verwijder de gebruiker als zoeker
+    klus.klussen_zoekers.remove(zoeker)
+    db.session.commit()
+    flash('Je bent succesvol uitgeschreven van deze klus.', 'success')
+    return redirect(url_for('main.mijn_gezochte_klussen'))
+
+@main.route('/delete_klus/<uuid:klusnummer>', methods=['POST'])
+def delete_klus(klusnummer):
+    # Verwerkingslogica voor verwijderen
+    pass

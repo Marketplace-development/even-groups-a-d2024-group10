@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="text-align: center; margin-top: 50px; padding: 20px;">
+    <!-- Logo -->
+    <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" 
+         alt="Kluskompas Logo" 
+         style="width: 300px; height: auto; margin-bottom: 30px;">
+
+    <!-- Titel -->
+    <h1 style="color: #10246B; margin-bottom: 20px;">Mijn Klussen</h1>
+    
+    <!-- Knoppen -->
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 30px;">
+        <!-- Knop voor Mijn Aangeboden Klussen -->
+        <a href="{{ url_for('main.mijn_aangeboden_klussen') }}" 
+           aria-label="Bekijk mijn aangeboden klussen"
+           style="background-color: #28a745; color: white; padding: 15px 30px; border-radius: 8px; text-decoration: none; font-size: 18px; transition: 0.3s;">
+            Mijn Aangeboden Klussen
+        </a>
+
+        <!-- Knop voor Mijn Gezochte Klussen -->
+        <a href="{{ url_for('main.mijn_gezochte_klussen') }}" 
+           aria-label="Bekijk mijn gezochte klussen"
+           style="background-color: #007bff; color: white; padding: 15px 30px; border-radius: 8px; text-decoration: none; font-size: 18px; transition: 0.3s;">
+            Mijn Gezochte Klussen
+        </a>
+    </div>
+</div>
+
+<!-- Toevoegen van CSS voor Hover Effecten -->
+<style>
+    a:hover {
+        opacity: 0.9;
+        transform: scale(1.05); /* Lichte zoom voor hover */
+    }
+
+    @media (max-width: 768px) {
+        a {
+            width: 80%; /* Breedte aanpassen op kleinere schermen */
+            text-align: center;
+        }
+    }
+</style>
+{% endblock %}

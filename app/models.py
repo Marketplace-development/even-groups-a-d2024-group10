@@ -37,6 +37,10 @@ class Persoon(db.Model):
     klusaanbieders = db.relationship('Klusaanbieder', backref='persoon_aanbieder', lazy='joined')
     kluszoekers = db.relationship('Kluszoeker', backref='persoon_zoeker', lazy='joined')
 
+    @property
+    def naam(self):
+        return f"{self.voornaam} {self.achternaam}"
+
     def __repr__(self):
         return f'<Persoon {self.voornaam} {self.achternaam}>'
 
