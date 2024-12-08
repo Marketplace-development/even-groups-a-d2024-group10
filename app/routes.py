@@ -184,16 +184,20 @@ def profiel_verwijderen():
     CategorieStatistiek.query.filter_by(idnummer=user_id).update({
         "idnummer": "0000000000"  # Of een andere standaardwaarde
     })
-    
+
+    # Update gekoppelde klus records
+    Klus.query.filter_by(idnummer=user_id).update({
+        "idnummer": "0000000000"  # Of een andere standaardwaarde
+    })
+
     # Verwijder de gebruiker
     db.session.delete(user)
     db.session.commit()
 
+    # Clear de sessie
     session.clear()  # Log de gebruiker uit
     flash('Je profiel is succesvol verwijderd.', 'success')
     return redirect(url_for('main.home'))
-
-
 
 
 # Route voor het toevoegen van een persoon (voorbeeld)
