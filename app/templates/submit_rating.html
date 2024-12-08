@@ -3,69 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beoordeling indienen</title>
+    <title>Beoordeling Indienen</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .rating input {
+        body {
+            background-color: #f4f7fa;
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h2 {
+            font-size: 28px;
+            color: #10246B;
+        }
+        .header p {
+            font-size: 16px;
+            color: #555;
+        }
+        .criteria {
+            margin-bottom: 20px;
+        }
+        .criteria label {
+            font-weight: bold;
+            color: #10246B;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .criteria .comment {
+            margin-top: 5px;
+        }
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+        }
+        .star-rating input[type="radio"] {
             display: none;
         }
-
-        .rating label {
-            color: gray;
+        .star-rating label {
             font-size: 30px;
+            color: #ddd;
             cursor: pointer;
         }
-
-        .rating input:checked ~ label {
-            color: gold;
+        .star-rating input[type="radio"]:checked ~ label,
+        .star-rating label:hover,
+        .star-rating label:hover ~ label {
+            color: #f5c518;
         }
-
-        .rating input:hover ~ label {
-            color: gold;
+        .btn-submit {
+            width: 100%;
+            background-color: #10246B;
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+        }
+        .btn-submit:hover {
+            background-color: #0e1f4a;
         }
     </style>
 </head>
 <body>
-    <h1>Beoordeling voor klus {{ klusnummer }}</h1>
-    <form method="POST">
+
+<div class="container">
+    <div class="header">
+        <h2>Beoordeling voor klus "{{ klus.naam }}"</h2>
+        <p>{{ "Beoordeel de kluszoeker" if is_aangeboden else "Beoordeel de klusaanbieder" }}</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('main.submit_rating', klusnummer=klus.klusnummer) }}">
         {{ form.hidden_tag() }}
         
-        <!-- Beoordeling voor de kluszoeker -->
-        <div class="form-group">
-            <label for="rating_zoeker">Beoordeel de kluszoeker (1-5):</label>
-            <div class="rating">
-                <input type="radio" name="rating_zoeker" value="1" id="rating_zoeker_1" required><label for="rating_zoeker_1">★</label>
-                <input type="radio" name="rating_zoeker" value="2" id="rating_zoeker_2"><label for="rating_zoeker_2">★</label>
-                <input type="radio" name="rating_zoeker" value="3" id="rating_zoeker_3"><label for="rating_zoeker_3">★</label>
-                <input type="radio" name="rating_zoeker" value="4" id="rating_zoeker_4"><label for="rating_zoeker_4">★</label>
-                <input type="radio" name="rating_zoeker" value="5" id="rating_zoeker_5"><label for="rating_zoeker_5">★</label>
+        <!-- Communicatie -->
+        <div class="criteria">
+            <label for="communicatie">Communicatie</label>
+            <div class="star-rating">
+                {% for i in range(10, 0, -1) %}
+                <input type="radio" name="communicatie" value="{{ i }}" id="communicatie-{{ i }}" {% if form.communicatie.data == i %}checked{% endif %}>
+                <label for="communicatie-{{ i }}">&#9733;</label>
+                {% endfor %}
             </div>
+            {{ form.communicatie_comment(class_="form-control comment", placeholder="Optioneel: voeg commentaar toe over Communicatie") }}
         </div>
 
-        <!-- Beoordeling voor de klusaanbieder -->
-        <div class="form-group">
-            <label for="rating_aanbieder">Beoordeel de klusaanbieder (1-5):</label>
-            <div class="rating">
-                <input type="radio" name="rating_aanbieder" value="1" id="rating_aanbieder_1" required><label for="rating_aanbieder_1">★</label>
-                <input type="radio" name="rating_aanbieder" value="2" id="rating_aanbieder_2"><label for="rating_aanbieder_2">★</label>
-                <input type="radio" name="rating_aanbieder" value="3" id="rating_aanbieder_3"><label for="rating_aanbieder_3">★</label>
-                <input type="radio" name="rating_aanbieder" value="4" id="rating_aanbieder_4"><label for="rating_aanbieder_4">★</label>
-                <input type="radio" name="rating_aanbieder" value="5" id="rating_aanbieder_5"><label for="rating_aanbieder_5">★</label>
+        <!-- Betrouwbaarheid -->
+        <div class="criteria">
+            <label for="betrouwbaarheid">Betrouwbaarheid</label>
+            <div class="star-rating">
+                {% for i in range(10, 0, -1) %}
+                <input type="radio" name="betrouwbaarheid" value="{{ i }}" id="betrouwbaarheid-{{ i }}" {% if form.betrouwbaarheid.data == i %}checked{% endif %}>
+                <label for="betrouwbaarheid-{{ i }}">&#9733;</label>
+                {% endfor %}
             </div>
+            {{ form.betrouwbaarheid_comment(class_="form-control comment", placeholder="Optioneel: voeg commentaar toe over Betrouwbaarheid") }}
         </div>
 
-        <!-- Optioneel: commentaar voor de kluszoeker -->
-        <div class="form-group">
-            <label for="comment_zoeker">Commentaar voor de kluszoeker:</label>
-            <textarea name="comment_zoeker" id="comment_zoeker" rows="4" cols="50"></textarea>
+        <!-- Tijdigheid -->
+        <div class="criteria">
+            <label for="tijdigheid">Tijdigheid</label>
+            <div class="star-rating">
+                {% for i in range(10, 0, -1) %}
+                <input type="radio" name="tijdigheid" value="{{ i }}" id="tijdigheid-{{ i }}" {% if form.tijdigheid.data == i %}checked{% endif %}>
+                <label for="tijdigheid-{{ i }}">&#9733;</label>
+                {% endfor %}
+            </div>
+            {{ form.tijdigheid_comment(class_="form-control comment", placeholder="Optioneel: voeg commentaar toe over Tijdigheid") }}
         </div>
 
-        <!-- Optioneel: commentaar voor de klusaanbieder -->
-        <div class="form-group">
-            <label for="comment_aanbieder">Commentaar voor de klusaanbieder:</label>
-            <textarea name="comment_aanbieder" id="comment_aanbieder" rows="4" cols="50"></textarea>
+        <!-- Kwaliteit -->
+        <div class="criteria">
+            <label for="kwaliteit">Kwaliteit</label>
+            <div class="star-rating">
+                {% for i in range(10, 0, -1) %}
+                <input type="radio" name="kwaliteit" value="{{ i }}" id="kwaliteit-{{ i }}" {% if form.kwaliteit.data == i %}checked{% endif %}>
+                <label for="kwaliteit-{{ i }}">&#9733;</label>
+                {% endfor %}
+            </div>
+            {{ form.kwaliteit_comment(class_="form-control comment", placeholder="Optioneel: voeg commentaar toe over Kwaliteit") }}
         </div>
 
-        <button type="submit">Beoordeling indienen</button>
+        <!-- Algemene Ervaring -->
+        <div class="criteria">
+            <label for="algemene_ervaring">Algemene Ervaring</label>
+            <div class="star-rating">
+                {% for i in range(10, 0, -1) %}
+                <input type="radio" name="algemene_ervaring" value="{{ i }}" id="algemene_ervaring-{{ i }}" {% if form.algemene_ervaring.data == i %}checked{% endif %}>
+                <label for="algemene_ervaring-{{ i }}">&#9733;</label>
+                {% endfor %}
+            </div>
+            {{ form.algemene_ervaring_comment(class_="form-control comment", placeholder="Optioneel: voeg commentaar toe over Algemene Ervaring") }}
+        </div>
+
+        <button type="submit" class="btn-submit">{{ form.submit.label }}</button>
     </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

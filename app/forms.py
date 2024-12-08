@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, DecimalField, DateField, TextAreaField, SelectField, TimeField
-from wtforms.validators import DataRequired, Email, Length, NumberRange, InputRequired
+from wtforms.validators import DataRequired, Email, Length, NumberRange, InputRequired, Optional
 import random
 import string
 
@@ -75,8 +75,14 @@ class LoginForm(FlaskForm):
 
 
 class RatingForm(FlaskForm):
-    rating_zoeker = IntegerField('Geef een rating aan de kluszoeker (1-5)', validators=[DataRequired(), NumberRange(min=1, max=5)])
-    rating_aanbieder = IntegerField('Geef een rating aan de klusaanbieder (1-5)', validators=[DataRequired(), NumberRange(min=1, max=5)])
-    comment_zoeker = TextAreaField('Commentaar voor de kluszoeker')
-    comment_aanbieder = TextAreaField('Commentaar voor de klusaanbieder')
+    communicatie = IntegerField('Communicatie', validators=[DataRequired()])
+    communicatie_comment = StringField('Commentaar over Communicatie', validators=[Optional()])
+    betrouwbaarheid = IntegerField('Betrouwbaarheid', validators=[DataRequired()])
+    betrouwbaarheid_comment = StringField('Commentaar over Betrouwbaarheid', validators=[Optional()])
+    tijdigheid = IntegerField('Tijdigheid', validators=[DataRequired()])
+    tijdigheid_comment = StringField('Commentaar over Tijdigheid', validators=[Optional()])
+    kwaliteit = IntegerField('Kwaliteit', validators=[DataRequired()])
+    kwaliteit_comment = StringField('Commentaar over Kwaliteit', validators=[Optional()])
+    algemene_ervaring = IntegerField('Algemene Ervaring', validators=[DataRequired()])
+    algemene_ervaring_comment = StringField('Commentaar over Algemene Ervaring', validators=[Optional()])
     submit = SubmitField('Indienen')

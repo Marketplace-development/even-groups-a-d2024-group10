@@ -444,39 +444,76 @@ def bevestiging_klus(klusnummer):
 # Beoordelingen indienen via POST request
 @main.route('/submit-rating/<klusnummer>', methods=['GET', 'POST'])
 def submit_rating(klusnummer):
+    # Haal de klus op
     klus = Klus.query.filter_by(klusnummer=klusnummer).first()
 
-    # Alleen een beoordeling indienen als de klus de status 'voltooid' heeft
-    if klus and klus.status != 'voltooid':
-        return redirect(url_for('main.mijn_klussen', klusnummer=klusnummer))  # Redirect als de klus niet voltooid is
+    if not klus:
+        flash("Klus niet gevonden.", "danger")
+        return redirect(url_for('main.mijn_geschiedenis'))
 
+    # Controleer of de huidige gebruiker de aanbieder is
+    is_aangeboden = klus.idnummer == session.get('user_id')
+
+    # Haal de juiste partijen op
+    kluszoeker_id = None
+    if klus.klussen_zoekers:
+        kluszoeker_id = klus.klussen_zoekers[0].idnummer
+
+    klusaanbieder_id = klus.idnummer
+
+    # Controleer of er al een beoordeling bestaat voor deze combinatie
+    bestaande_rating = Rating.query.filter_by(
+        klusnummer=klusnummer,
+        kluszoeker_id=kluszoeker_id if is_aangeboden else session.get('user_id'),
+        klusaanbieder_id=klusaanbieder_id if not is_aangeboden else session.get('user_id')
+    ).first()
+
+    if bestaande_rating:
+        flash("Beoordeling is al ingediend voor deze klus.", "warning")
+        return redirect(url_for('main.mijn_geschiedenis'))
+
+    # Formulier instantiëren
     form = RatingForm()
 
+    # Debugging (alleen bij POST-verzoeken)
+    if request.method == 'POST':
+        print(f"Formulier Data: {form.data}")
+        print(f"Validatie Succesvol: {form.validate_on_submit()}")
+        if not form.validate_on_submit():
+            print(f"Formulier Fouten: {form.errors}")
+
+    # Wanneer het formulier is ingediend
     if form.validate_on_submit():
-        # Bepaal de id's van de kluszoeker en klusaanbieder
-        kluszoeker_id = klus.klussen_zoekers[0].idnummer  # Als het zo is dat de kluszoeker altijd aanwezig is
-        klusaanbieder_id = klus.persoon_aanbieder.idnummer
+        try:
+            # Maak een nieuwe beoordeling aan
+            new_rating = Rating(
+                klusnummer=klusnummer,
+                kluszoeker_id=kluszoeker_id if is_aangeboden else session.get('user_id'),
+                klusaanbieder_id=klusaanbieder_id if not is_aangeboden else session.get('user_id'),
+                communicatie=form.communicatie.data,
+                betrouwbaarheid=form.betrouwbaarheid.data,
+                tijdigheid=form.tijdigheid.data,
+                kwaliteit=form.kwaliteit.data,
+                algemene_ervaring=form.algemene_ervaring.data,
+                comment=f"Communicatie: {form.communicatie_comment.data or 'N.v.t.'}\n"
+                        f"Betrouwbaarheid: {form.betrouwbaarheid_comment.data or 'N.v.t.'}\n"
+                        f"Tijdigheid: {form.tijdigheid_comment.data or 'N.v.t.'}\n"
+                        f"Kwaliteit: {form.kwaliteit_comment.data or 'N.v.t.'}\n"
+                        f"Algemene Ervaring: {form.algemene_ervaring_comment.data or 'N.v.t.'}"
+            )
 
-        # Maak een nieuwe beoordeling
-        new_rating = Rating(
-            klusnummer=klusnummer,
-            kluszoeker_id=kluszoeker_id,
-            klusaanbieder_id=klusaanbieder_id,
-            rating_zoeker=form.rating_zoeker.data,  # Rating voor de kluszoeker
-            rating_aanbieder=form.rating_aanbieder.data,  # Rating voor de klusaanbieder
-            comment_zoeker=form.comment_zoeker.data,  # Commentaar voor de kluszoeker
-            comment_aanbieder=form.comment_aanbieder.data,  # Commentaar voor de klusaanbieder
-            created_at=datetime.now()
-        )
+            # Sla de beoordeling op
+            db.session.add(new_rating)
+            db.session.commit()
 
-        # Sla de beoordeling op in de database
-        db.session.add(new_rating)
-        db.session.commit()
+            flash("Beoordeling succesvol ingediend!", "success")
+            return redirect(url_for('main.mijn_geschiedenis'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f"Er is een fout opgetreden bij het opslaan van de beoordeling: {e}", "danger")
+            print(f"Database Fout: {e}")
 
-        return redirect(url_for('thank_you'))  # Redirect naar een bedankpagina of andere pagina
-
-    return render_template('submit_rating.html', form=form, klusnummer=klusnummer)
-
+    return render_template('submit_rating.html', form=form, klus=klus, is_aangeboden=is_aangeboden)
 
 # Bedankpagina
 @main.route('/thank-you')
@@ -722,8 +759,6 @@ def mijn_geschiedenis():
         aangeboden_klussen=aangeboden_klussen,
         gezochte_klussen=gezochte_klussen
     )
-
-
 
 
 @main.route('/klus/<klusnummer>/markeer_voltooid', methods=['POST'])
