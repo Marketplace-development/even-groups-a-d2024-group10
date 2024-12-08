@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profiel</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -62,6 +61,17 @@
         .btn-danger:hover {
             background-color: #c0392b;
         }
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .action-buttons .btn-left {
+            margin-right: auto;
+        }
+        .action-buttons .btn-right {
+            margin-left: auto;
+        }
     </style>
 </head>
 <body>
@@ -78,15 +88,25 @@
         <p><strong>Telefoonnummer:</strong> {{ user.telefoonnummer }}</p>
         <p><strong>Adres:</strong> {{ user.adres }}</p>
     </div>
-    
-    <!-- Knoppen voor de klussen -->
+
+    <!-- Bestaande knoppen -->
     <a href="{{ url_for('main.mijn_aangeboden_klussen') }}" class="btn btn-custom">Mijn Aangeboden Klussen</a>
     <a href="{{ url_for('main.mijn_gezochte_klussen') }}" class="btn btn-custom">Mijn Gezochte Klussen</a>
-    <a href="{{ url_for('main.mijn_voltooide_aangeboden_klussen') }}" class="btn btn-custom">Mijn Voltooide Aangeboden Klussen</a>
-    <a href="{{ url_for('main.mijn_voltooide_gezochte_klussen') }}" class="btn btn-custom">Mijn Voltooide Gezochte Klussen</a> <!-- Nieuwe knop -->
+    <a href="{{ url_for('main.mijn_geschiedenis') }}" class="btn btn-custom">Mijn Geschiedenis</a>
 
-    <!-- Logout knop -->
-    <a href="{{ url_for('main.logout') }}" class="btn btn-danger mt-3">Log uit</a>
+    <!-- Nieuwe knoppen -->
+    <a href="{{ url_for('main.profiel_bewerken') }}" class="btn btn-custom">Profiel Bewerken</a>
+
+    <!-- Terug, Verwijder en Logout Knoppen -->
+    <div class="action-buttons">
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary btn-left">Terug</a>
+        <div class="btn-right">
+            <form action="{{ url_for('main.profiel_verwijderen') }}" method="POST" style="display: inline-block;">
+                <button type="submit" class="btn btn-danger">Profiel Verwijderen</button>
+            </form>
+            <a href="{{ url_for('main.logout') }}" class="btn btn-danger mt-3">Log uit</a>
+        </div>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

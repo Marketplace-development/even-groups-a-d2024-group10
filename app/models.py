@@ -72,22 +72,22 @@ class Kluszoeker(db.Model):
     def __repr__(self):
         return f'<Kluszoeker {self.idnummer}>'
 
-# Klus Model
 class Klus(db.Model):
-    _tablename_ = 'klus'
-    
+    __tablename__ = 'klus'
+
     klusnummer = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     naam = db.Column(db.String(100), nullable=False)
-    categorie = db.Column(db.String(50), db.ForeignKey('categorie.categorie', ondelete="SET NULL"), nullable=True)
-    locatie = db.Column(db.String(100))
-    tijd = db.Column(db.Time, nullable=False)
-    beschrijving = db.Column(db.Text)
-    vergoeding = db.Column(db.Numeric(10, 2))
-    datum = db.Column(db.Date, nullable=False)
-    verwachte_duur = db.Column(db.Integer, nullable=False)
-    created_at = db.Column(db.TIMESTAMP, nullable=False, default=datetime.utcnow)
-    status = db.Column(db.String(20), default='beschikbaar')  # Status: beschikbaar, geaccepteerd, completed
+    beschrijving = db.Column(db.Text, nullable=False)
+    categorie = db.Column(db.String(50), db.ForeignKey('categorie.categorie'), nullable=False)  # ForeignKey toegevoegd
+    locatie = db.Column(db.String(100), nullable=False)
+    tijd = db.Column(db.Time, nullable=False)  # Tijd als TIME
+    vergoeding = db.Column(db.Numeric(10, 2), nullable=False)  # Decimal voor geld
+    datum = db.Column(db.Date, nullable=False)  # Datum als DATE
+    verwachte_duur = db.Column(db.Integer, nullable=False)  # Integer voor uren
+    created_at = db.Column(db.TIMESTAMP, default=datetime.utcnow, nullable=False)
+    status = db.Column(db.String(20), default='beschikbaar', nullable=False)  # Status
     idnummer = db.Column(db.String(10), db.ForeignKey('persoon.idnummer'), nullable=False)
+    voltooid_op = db.Column(db.DateTime, nullable=True)
 
     persoon_aanbieder = db.relationship('Persoon', backref=db.backref('klussen', lazy=True))
     
@@ -98,21 +98,20 @@ class Klus(db.Model):
         backref=db.backref('geinteresseerd_in_klussen', lazy='dynamic')
     )
 
+    # Relatie naar Categorie (via ForeignKey 'categorie')
     categorie_ref = db.relationship('Categorie', backref='klussen', lazy=True)
 
     def __repr__(self):
         return f'<Klus {self.klusnummer} voor {self.locatie}>'
-
-# Categorie Model
-class Categorie(db.Model):
-    _tablename_ = 'categorie'
     
-    categorie = db.Column(db.String(50), primary_key=True)
+class Categorie(db.Model):
+    __tablename__ = 'categorie'  # Correcte naamgeving
+
+    categorie = db.Column(db.String(50), primary_key=True)  # Unieke identificatie
     naam = db.Column(db.String(100), nullable=False)
 
     def __repr__(self):
         return f'<Categorie {self.categorie}>'
-    
 
 class Rating(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -135,9 +134,10 @@ class Rating(db.Model):
 
 class CategorieStatistiek(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    idnummer = db.Column(db.String(10), db.ForeignKey('persoon.idnummer'), nullable=False)
+    idnummer = db.Column(db.String(10), db.ForeignKey('persoon.idnummer', ondelete='CASCADE'), nullable=False)
     categorie = db.Column(db.String(50), db.ForeignKey('categorie.categorie'), nullable=False)
     aantal_accepteerd = db.Column(db.Integer, default=0)
 
     persoon = db.relationship('Persoon', backref='categorie_statistieken', lazy=True)
     categorie_ref = db.relationship('Categorie', backref='gebruikers_statistieken', lazy=True)
+

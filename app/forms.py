@@ -19,29 +19,32 @@ class PersoonForm(FlaskForm):
     voorkeur_categorie = StringField('Voorkeur Categorie', validators=[DataRequired()])
     submit = SubmitField('Toevoegen')
 
+from flask_wtf import FlaskForm
+from wtforms import StringField, IntegerField, SubmitField, DecimalField, DateField, TextAreaField, SelectField, TimeField
+from wtforms.validators import DataRequired, Length, NumberRange
+
 class KlusaanbiederForm(FlaskForm):
     naam = StringField('Naam van de klus', validators=[DataRequired()])
-    
     categorie = SelectField('Categorie', choices=[
         ('buitenshuis', 'Buitenshuis'), 
         ('binnenshuis', 'Binnenshuis'),
         ('tuin', 'Tuin'),
         ('techniek', 'Techniek'),
-        ('oppassen', 'Oppassen'),  # Nieuwe categorie
-        ('boodschappen', 'Boodschappen doen'),  # Nieuwe categorie
-        ('schoonmaak', 'Schoonmaak'),  # Nieuwe categorie
-        ('verhuis', 'Verhuizen'),  # Nieuwe categorie
-        ('hulp_thuis', 'Hulp thuis'),  # Nieuwe categorie
-        ('administratie', 'Administratie'),  # Nieuwe categorie
-        ('zorg', 'Zorg & Verzorging')  # Nieuwe categorie
+        ('oppassen', 'Oppassen'),
+        ('boodschappen', 'Boodschappen doen'),
+        ('schoonmaak', 'Schoonmaak'),
+        ('verhuis', 'Verhuizen'),
+        ('hulp_thuis', 'Hulp thuis'),
+        ('administratie', 'Administratie'),
+        ('zorg', 'Zorg & Verzorging')
     ], validators=[DataRequired()])
-
-    tijd = TimeField('Verwachte tijd', format='%H:%M', validators=[DataRequired()])
-    locatie = StringField('Locatie', validators=[DataRequired()])
+    locatie = StringField('Locatie', validators=[DataRequired(), Length(max=100)])
+    tijd = TimeField('Tijd', format='%H:%M', validators=[DataRequired()])  # Tijd als TIME
     beschrijving = TextAreaField('Beschrijving', validators=[DataRequired()])
-    vergoeding = DecimalField('Vergoeding', places=2, validators=[DataRequired()])
-    datum = DateField('Datum van de klus', validators=[DataRequired()])
-    verwachte_duur = IntegerField('Verwachte tijdsduur in uren', validators=[DataRequired()])
+    vergoeding = DecimalField('Vergoeding', places=2, validators=[DataRequired()])  # Decimal voor geld
+    datum = DateField('Datum', format='%Y-%m-%d', validators=[DataRequired()])  # Datum als DATE
+    verwachte_duur = IntegerField('Verwachte duur (in uren)', validators=[DataRequired(), NumberRange(min=1)])
+    submit = SubmitField('Toevoegen')
 
 class KluszoekerForm(FlaskForm):
     idnummer = StringField('ID Nummer', validators=[DataRequired()])
@@ -56,25 +59,20 @@ class RegistrationForm(FlaskForm):
     voornaam = StringField('Voornaam', validators=[DataRequired()])
     achternaam = StringField('Achternaam', validators=[DataRequired()])
     leeftijd = IntegerField('Leeftijd', validators=[InputRequired(), NumberRange(min=18, max=100)])
-    gender = StringField('Geslacht')
-    telefoonnummer = StringField('Telefoonnummer')
-    adres = StringField('Adres')
+    gender = SelectField('Geslacht', choices=[('', 'Selecteer'), ('Man', 'Man'), ('Vrouw', 'Vrouw'), ('Andere', 'Andere')])
+    telefoonnummer = StringField('Telefoonnummer', validators=[
+        DataRequired(),
+        Length(min=10, max=15, message='Telefoonnummer moet tussen 10 en 15 cijfers zijn.')
+    ])
+    adres = StringField('Adres', validators=[DataRequired()])
     submit = SubmitField('Registeren')
+
 
 # Formulier voor inloggen (alleen gebruikersnaam)
 class LoginForm(FlaskForm):
     username = StringField('Gebruikersnaam', validators=[DataRequired()])
     submit = SubmitField('Login')
 
-class KlusForm(FlaskForm):
-    naam = StringField('Naam van de klus', validators=[DataRequired()])  # Nieuw veld voor de naam van de klus
-    beschrijving = StringField('Behrijving', validators=[DataRequired()])
-    categorie = StringField('Categorie', validators=[DataRequired()])
-    prijs = DecimalField('Prijs', validators=[DataRequired()])  # Gebruik DecimalField voor prijs
-    locatie = StringField('Locatie', validators=[DataRequired()])
-    tijd = StringField('Tijd', validators=[DataRequired()])  # Nieuw veld voor tijd
-    vergoeding = StringField('Vergoeding', validators=[DataRequired()])
-    submit = SubmitField('Toevoegen')
 
 class RatingForm(FlaskForm):
     rating_zoeker = IntegerField('Geef een rating aan de kluszoeker (1-5)', validators=[DataRequired(), NumberRange(min=1, max=5)])

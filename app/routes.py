@@ -78,20 +78,23 @@ from flask import session
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():
-    print("Login route is reached")  # Dit moet in je terminal verschijnen
+    print("Login route is reached")  # Debug om te zien of de route wordt aangeroepen
     form = LoginForm()
-    
-    if form.validate_on_submit():
+
+    # Controleer of het formulier wordt verzonden
+    if form.validate_on_submit():  # Dit gebeurt alleen bij een POST-verzoek
         username = form.username.data
         user = Persoon.query.filter_by(username=username).first()
-        
+
         if user:
-            session['user_id'] = user.idnummer  # Sla het 'idnummer' op in de sessie
-            flash(f'Ingelogd als {user.username}', 'success')
-            return redirect(url_for('main.dashboard'))  # Redirect naar het dashboard of de oorspronkelijke pagina
+            # Sla gebruiker op in de sessie en stuur door naar dashboard
+            session['user_id'] = user.idnummer
+            return redirect(url_for('main.dashboard'))
         else:
-            flash('Username niet gevonden', 'danger')
-    
+            # Flash alleen een foutmelding bij een foute gebruikersnaam
+            flash('Ongeldige gebruikersnaam', 'danger')
+
+    # Render het formulier (zonder flash-meldingen voor ingelogde gebruikers)
     return render_template('login.html', form=form)
 
 
@@ -112,6 +115,7 @@ def dashboard():
     geaccepteerde_klussen = Klus.query.filter_by(idnummer=user.idnummer, status='geaccepteerd').all()
     aangeboden_klussen = Klus.query.filter_by(idnummer=user.idnummer).all()
 
+
     return render_template('dashboard.html', user=user, geaccepteerde_klussen=geaccepteerde_klussen, aangeboden_klussen=aangeboden_klussen)
 
 
@@ -128,17 +132,68 @@ def profile():
     if user:
         return render_template('profile.html', user=user)
     else:
-        flash('Profiel niet gevonden.', 'danger')
+        flash('Profiel niet gevonden.', 'danger')   
         return redirect(url_for('main.home'))
 
 
 
-# Route voor afmelden (logout)
 @main.route('/logout')
 def logout():
-    session.pop('username', None)  # Verwijder de username uit de sessie
-    flash('Je bent uitgelogd.', 'info')
-    return redirect(url_for('main.klussen'))
+    session.clear()  # Wis de sessie om de gebruiker uit te loggen
+    flash('Je bent succesvol uitgelogd.', 'success')
+    return redirect(url_for('main.login'))  # Stuur de gebruiker naar de loginpagina
+
+
+@main.route('/profiel_bewerken', methods=['GET', 'POST'])
+def profiel_bewerken():
+    user_id = session.get('user_id')
+    if not user_id:
+        flash('Je moet ingelogd zijn om je profiel te bewerken.', 'danger')
+        return redirect(url_for('main.login'))
+
+    user = Persoon.query.get(user_id)
+
+    if request.method == 'POST':
+        user.voornaam = request.form['voornaam']
+        user.achternaam = request.form['achternaam']
+        user.leeftijd = request.form['leeftijd']
+        user.email = request.form['email']
+        user.telefoonnummer = request.form['telefoonnummer']
+        user.adres = request.form['adres']
+        db.session.commit()
+        flash('Profiel succesvol bijgewerkt!', 'success')
+        return redirect(url_for('main.profile'))
+
+    return render_template('profiel_bewerken.html', user=user)
+
+
+@main.route('/profiel_verwijderen', methods=['POST'])
+def profiel_verwijderen():
+    user_id = session.get('user_id')
+    if not user_id:
+        flash('Je moet ingelogd zijn om je profiel te verwijderen.', 'danger')
+        return redirect(url_for('main.login'))
+
+    user = Persoon.query.filter_by(idnummer=user_id).first()
+
+    if not user:
+        flash('Profiel niet gevonden.', 'danger')
+        return redirect(url_for('main.profile'))
+
+    # Update gekoppelde categorie_statistiek records
+    CategorieStatistiek.query.filter_by(idnummer=user_id).update({
+        "idnummer": "0000000000"  # Of een andere standaardwaarde
+    })
+    
+    # Verwijder de gebruiker
+    db.session.delete(user)
+    db.session.commit()
+
+    session.clear()  # Log de gebruiker uit
+    flash('Je profiel is succesvol verwijderd.', 'success')
+    return redirect(url_for('main.home'))
+
+
 
 
 # Route voor het toevoegen van een persoon (voorbeeld)
@@ -192,7 +247,7 @@ def add_klusaanbieder():
                 verwachte_duur=form.verwachte_duur.data,
                 idnummer=persoon.idnummer
             )
-            db.session.add(nieuwe_klus)
+            db.session.add(nieuwe_klus) 
             db.session.commit()
 
             flash('Klus succesvol toegevoegd!', 'success')
@@ -340,62 +395,6 @@ def bekijk_klus(klusnummer):
         return redirect(url_for('main.klussen'))
 
 
-
-@main.route('/klus/<klusnummer>/accepteren', methods=['POST'])
-def accepteer_klus(klusnummer):
-    # Controleer of de gebruiker is ingelogd
-    if 'user_id' not in session:
-        flash('Je moet ingelogd zijn om deze klus te accepteren.', 'danger')
-        return redirect(url_for('main.klussen'))  # Terug naar het overzicht van klussen
-
-    # Zoek de klus op basis van klusnummer
-    klus = Klus.query.filter_by(klusnummer=klusnummer).first()
-
-    if klus and klus.status == 'beschikbaar':  # Controleer of de klus beschikbaar is
-        # Verander de status naar 'geaccepteerd'
-        klus.status = 'geaccepteerd'
-
-        # Haal de gebruiker op die de klus accepteert
-        user_id = session['user_id']
-        gebruiker = Persoon.query.filter_by(idnummer=user_id).first()
-
-        if not gebruiker:
-            flash('Gebruiker niet gevonden.', 'danger')
-            return redirect(url_for('main.klussen'))
-
-        # Voeg de gebruiker toe aan de klus_zoeker relatie
-        if not any(klus.idnummer == user_id for klus in klus.klussen_zoekers):
-            klus.klussen_zoekers.append(gebruiker)
-            db.session.commit()
-
-        # Werk de statistieken voor de categorie bij
-        categorie_statistiek = CategorieStatistiek.query.filter_by(
-            idnummer=user_id,
-            categorie=klus.categorie
-        ).first()
-
-        if categorie_statistiek:
-            # Als er al een statistiek bestaat, verhoog het aantal
-            categorie_statistiek.aantal_accepteerd += 1
-        else:
-            # Anders maak een nieuwe record aan
-            nieuwe_statistiek = CategorieStatistiek(
-                idnummer=user_id,
-                categorie=klus.categorie,
-                aantal_accepteerd=1
-            )
-            db.session.add(nieuwe_statistiek)
-
-        # Sla de wijzigingen op
-        db.session.commit()
-
-        flash('Je hebt de klus geaccepteerd!', 'success')
-        return redirect(url_for('main.geaccepteerde_klussen'))  # Redirect naar geaccepteerde klussen
-    else:
-        flash('Deze klus is al geaccepteerd of bestaat niet.', 'danger')
-        return redirect(url_for('main.klussen'))  # Terug naar het overzicht
-
-
 @main.route('/klus/<klusnummer>/geaccepteerd')
 def klus_geaccepteerd(klusnummer):
     klus = Klus.query.filter_by(klusnummer=klusnummer).first()
@@ -427,15 +426,15 @@ def aangeboden_klussen():
     return render_template('klussen_overzicht.html', klussen=klussen)
 
 
-@main.route('/klus/<klusnummer>/bevestigen', methods=['GET'])
-def bevestig_klus_accepteren(klusnummer):
+@main.route('/klus/<klusnummer>/bevestiging', methods=['GET'])
+def bevestiging_klus(klusnummer):
     klus = Klus.query.filter_by(klusnummer=klusnummer).first()
-    if klus and klus.status == 'beschikbaar':
-        return render_template('klus_bevestigen.html', klus=klus)
-    else:
-        flash('Deze klus kan niet worden geaccepteerd.', 'danger')
-        return redirect(url_for('main.klussen'))
 
+    if klus:
+        return render_template('bevestiging_klus.html', klus=klus)
+    else:
+        flash('Deze klus bestaat niet.', 'danger')
+        return redirect(url_for('main.klussen'))
 
 
 # Beoordelingen indienen via POST request
@@ -498,45 +497,6 @@ def view_ratings(klusnummer):
 
     return render_template('ratings.html', ratings=ratings, average_rating=average_rating, klusnummer=klusnummer)
 
-
-# Markeer klus als voltooid (completed)
-@main.route('/klus/voltooien_en_verwijderen/<klusnummer>', methods=['POST'])
-def mark_klus_as_completed_and_delete(klusnummer):
-    klus = Klus.query.filter_by(klusnummer=klusnummer).first()
-
-    # Alleen de klusaanbieder kan de klus markeren als voltooid
-    if klus and klus.status == 'geaccepteerd':
-        # Markeer de klus als voltooid
-        klus.status = 'voltooid'
-        
-        # Haal de kluszoeker op
-        user_id = session.get('user_id')
-        if not user_id:
-            flash('Je moet ingelogd zijn om deze actie uit te voeren.', 'danger')
-            return redirect(url_for('main.klussen'))  # Redirect naar overzicht klussen
-
-        # Haal de gebruiker op (kluszoeker)
-        persoon = Persoon.query.filter_by(idnummer=user_id).first()
-
-        if persoon:
-            # Verwijder de klus uit de gezochte klussen van de kluszoeker
-            persoon.geinteresseerd_in_klussen.remove(klus)
-            db.session.commit()
-
-            # Voeg de klus toe aan de voltooide gezochte klussen
-            persoon.voltooide_gezochte_klussen.append(klus)
-            db.session.commit()
-
-            # Sla de wijzigingen op
-            db.session.commit()
-
-            flash('De klus is gemarkeerd als voltooid en verplaatst naar je voltooide klussen!', 'success')
-
-        # Redirect naar de pagina voor voltooide gezochte klussen
-        return redirect(url_for('main.mijn_voltooide_gezochte_klussen'))
-
-    flash('Deze klus is al voltooid of je hebt geen toegang om deze actie uit te voeren.', 'danger')
-    return redirect(url_for('main.klussen'))  # Redirect naar overzicht klussen
 
 @main.route('/mijn_klussen')
 def mijn_klussen():
@@ -622,21 +582,26 @@ def mijn_aangeboden_klussen():
         klus.status = 'voltooid'
         db.session.commit()
         flash('Klus is gemarkeerd als voltooid!', 'success')
-        return redirect(url_for('main.submit_rating'))
+        return redirect(url_for('main.mijn_aangeboden_klussen'))
 
     return render_template('mijn_aangeboden_klussen.html', klussen=klussen_info)
 
 @main.route('/mijn_gezochte_klussen')
 def mijn_gezochte_klussen():
-    user_id = session.get('user_id')  # Haal de ingelogde gebruiker op uit de sessie
+    user_id = session.get('user_id')
     if not user_id:
         flash('Je moet ingelogd zijn om deze pagina te bekijken.', 'danger')
         return redirect(url_for('main.login'))
 
-    # Query voor klussen waarin de gebruiker geïnteresseerd is
-    klussen = Klus.query.filter(Klus.klussen_zoekers.any(idnummer=user_id)).all()
-    return render_template('mijn_gezochte_klussen.html', klussen=klussen)
+    # Haal klussen op waar de gebruiker geaccepteerd is
+    gezochte_klussen = Klus.query.filter(
+        Klus.status == 'geaccepteerd',
+        Klus.klussen_zoekers.any(Persoon.idnummer == user_id)
+    ).order_by(Klus.created_at.desc()).all()
 
+    print(f"Gezochte klussen gevonden: {[klus.naam for klus in gezochte_klussen]}")
+    
+    return render_template('mijn_gezochte_klussen.html', gezochte_klussen=gezochte_klussen)
 
 @main.route('/leave_klus/<string:klusnummer>', methods=['POST'])
 def leave_klus(klusnummer):
@@ -657,42 +622,142 @@ def leave_klus(klusnummer):
 
 @main.route('/delete_klus/<uuid:klusnummer>', methods=['POST'])
 def delete_klus(klusnummer):
-    # Verwerkingslogica voor verwijderen
-    pass
+    # Haal de klus op
+    klus = Klus.query.filter_by(klusnummer=str(klusnummer)).first()
 
-@main.route('/mijn_voltooide_aangeboden_klussen', methods=['GET'])
-def mijn_voltooide_aangeboden_klussen():
-    user_id = session.get('user_id')  # Haal de ingelogde gebruiker op uit de sessie
+    if not klus:
+        flash('Klus niet gevonden.', 'danger')
+        return redirect(url_for('main.mijn_aangeboden_klussen'))
+
+    # Controleer of de ingelogde gebruiker de aanbieder is
+    user_id = session.get('user_id')
+    if klus.idnummer != user_id:
+        flash('Je hebt geen toestemming om deze klus te verwijderen.', 'danger')
+        return redirect(url_for('main.mijn_aangeboden_klussen'))
+
+    # Verwijder de klus
+    db.session.delete(klus)
+    db.session.commit()
+
+    flash(f'De klus "{klus.naam}" is succesvol verwijderd.', 'success')
+    return redirect(url_for('main.mijn_aangeboden_klussen'))
+
+
+@main.route('/klus/<klusnummer>/accepteren', methods=['POST'])
+def accepteer_klus(klusnummer):
+    # Controleer of de gebruiker is ingelogd
+    if 'user_id' not in session:
+        flash('Je moet ingelogd zijn om deze klus te accepteren.', 'danger')
+        return redirect(url_for('main.klussen'))  # Terug naar het overzicht van klussen
+
+    # Zoek de klus op basis van klusnummer
+    klus = Klus.query.filter_by(klusnummer=klusnummer).first()
+
+    if klus and klus.status == 'beschikbaar':  # Controleer of de klus beschikbaar is
+        # Verander de status naar 'geaccepteerd'
+        klus.status = 'geaccepteerd'
+
+        # Haal de gebruiker op die de klus accepteert
+        user_id = session['user_id']
+        gebruiker = Persoon.query.filter_by(idnummer=user_id).first()
+
+        if not gebruiker:
+            flash('Gebruiker niet gevonden.', 'danger')
+            return redirect(url_for('main.klussen'))
+
+        # Voeg de gebruiker toe aan de klus_zoeker relatie
+        if gebruiker not in klus.klussen_zoekers:
+            klus.klussen_zoekers.append(gebruiker)
+            db.session.commit()
+
+        # Werk de statistieken voor de categorie bij
+        categorie_statistiek = CategorieStatistiek.query.filter_by(
+            idnummer=user_id,
+            categorie=klus.categorie
+        ).first()
+
+        if categorie_statistiek:
+            # Als er al een statistiek bestaat, verhoog het aantal
+            categorie_statistiek.aantal_accepteerd += 1
+        else:
+            # Anders maak een nieuwe record aan
+            nieuwe_statistiek = CategorieStatistiek(
+                idnummer=user_id,
+                categorie=klus.categorie,
+                aantal_accepteerd=1
+            )
+            db.session.add(nieuwe_statistiek)
+
+        # Sla de wijzigingen op
+        db.session.commit()
+
+        flash('Je hebt de klus geaccepteerd!', 'success')
+        return redirect(url_for('main.mijn_gezochte_klussen'))  # Redirect naar de juiste pagina
+    else:
+        flash('Deze klus is al geaccepteerd of bestaat niet.', 'danger')
+        return redirect(url_for('main.klussen'))  # Terug naar het overzicht
+
+@main.route('/mijn_geschiedenis')
+def mijn_geschiedenis():
+    user_id = session.get('user_id')
     if not user_id:
         flash('Je moet ingelogd zijn om deze pagina te bekijken.', 'danger')
         return redirect(url_for('main.login'))
 
-    # Query voor klussen aangeboden door de ingelogde gebruiker die 'voltooid' zijn
-    klussen = Klus.query.filter_by(idnummer=user_id, status='voltooid').all()
+    # Aangeboden klussen: Klussen die de gebruiker heeft aangeboden, gesorteerd op voltooiingstijd
+    aangeboden_klussen = Klus.query.filter_by(idnummer=user_id, status='voltooid').order_by(Klus.voltooid_op.desc()).all()
 
-    # Verwerk de klussen voor de weergave
-    klussen_info = []
-    for klus in klussen:
-        klussen_info.append({
-            'id': klus.klusnummer,  # Gebruik 'klusnummer' als unieke ID
-            'naam': klus.naam,
-            'datum': klus.datum.strftime('%d-%m-%Y') if klus.datum else 'Onbekend',  # Controleer op None
-            'status': klus.status,  # Gebruik de werkelijke status
-        })
-
-    return render_template('mijn_voltooide_aangeboden_klussen.html', klussen=klussen_info)
-
-@main.route('/mijn_voltooide_gezochte_klussen')
-def mijn_voltooide_gezochte_klussen():
-    user_id = session.get('user_id')  # Haal de ingelogde gebruiker op uit de sessie
-    if not user_id:
-        flash('Je moet ingelogd zijn om deze pagina te bekijken.', 'danger')
-        return redirect(url_for('main.login'))
-
-    # Query voor klussen waarin de gebruiker geïnteresseerd is en die voltooid zijn
-    klussen = Klus.query.filter(
-        Klus.klussen_zoekers.any(idnummer=user_id),
+    # Gezochte klussen: Klussen waarbij de gebruiker een van de zoekers is, gesorteerd op voltooiingstijd
+    gezochte_klussen = Klus.query.join(Klus.klussen_zoekers).filter(
+        Persoon.idnummer == user_id,
         Klus.status == 'voltooid'
-    ).all()
+    ).order_by(Klus.voltooid_op.desc()).all()
 
-    return render_template('mijn_voltooide_gezochte_klussen.html', klussen=klussen)
+    return render_template(
+        'mijn_geschiedenis.html',
+        aangeboden_klussen=aangeboden_klussen,
+        gezochte_klussen=gezochte_klussen
+    )
+
+
+
+
+@main.route('/klus/<klusnummer>/markeer_voltooid', methods=['POST'])
+def markeer_klus_voltooid(klusnummer):
+    # Haal de klus op
+    klus = Klus.query.filter_by(klusnummer=klusnummer).first()
+
+    if not klus:
+        flash('Klus niet gevonden.', 'danger')
+        return redirect(url_for('main.mijn_aangeboden_klussen'))
+
+    # Haal de ingelogde gebruiker op
+    user_id = session.get('user_id')
+    if not user_id:
+        flash('Je moet ingelogd zijn om deze actie uit te voeren.', 'danger')
+        return redirect(url_for('main.login'))
+
+    # Controleer of de ingelogde gebruiker de aanbieder is
+    if klus.idnummer != user_id:
+        flash('Je hebt geen toestemming om deze klus te voltooien.', 'danger')
+        return redirect(url_for('main.mijn_aangeboden_klussen'))
+
+    # Markeer de klus als voltooid
+    klus.status = 'voltooid'
+    klus.voltooid_op = datetime.utcnow()
+    db.session.commit()
+
+    # Verplaats de klus naar geschiedenis voor de aanbieder
+    flash(f"De klus '{klus.naam}' is gemarkeerd als voltooid en toegevoegd aan je geschiedenis.", 'success')
+
+    # Update geschiedenis voor alle gekoppelde zoekers
+    zoekers = klus.klussen_zoekers
+    for zoeker in zoekers:
+        # Controleer of de klus nog in de gezochte klussen van de zoeker staat
+        if klus in zoeker.geinteresseerd_in_klussen:
+            zoeker.geinteresseerd_in_klussen.remove(klus)
+            db.session.commit()
+
+        flash(f"Klus '{klus.naam}' is verplaatst naar de geschiedenis van zoeker {zoeker.naam}.", 'info')
+
+    return redirect(url_for('main.mijn_geschiedenis'))

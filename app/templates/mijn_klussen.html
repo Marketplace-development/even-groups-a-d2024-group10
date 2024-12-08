@@ -37,7 +37,7 @@
                                     <span style="font-size: 18px; color: green;">Klus Voltooid</span>
                                 {% else %}
                                     <!-- Formulier voor het markeren van de klus als voltooid -->
-                                    <form action="{{ url_for('main.mark_klus_as_completed', klusnummer=klus.klusnummer) }}" method="POST">
+                                    <form action="{{ url_for('main.markeer_klus_voltooid', klusnummer=klus.klusnummer) }}" method="POST">
                                         <button type="submit" style="display: inline-block; background-color: #10246B; color: white; padding: 10px 20px; border-radius: 8px; font-size: 18px;">
                                             Markeer als Voltooid
                                         </button>

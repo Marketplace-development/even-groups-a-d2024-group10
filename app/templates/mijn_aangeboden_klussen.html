@@ -16,61 +16,17 @@
         .container {
             position: relative;
             width: 100%;
-            height: 100vh;
+            min-height: 100vh;
             background: white;
             border: 1px solid white;
+            padding-top: 200px; /* Verhoogde padding-top om ruimte te maken voor het logo */
         }
 
-        .button-container {
+        .logo {
             position: absolute;
             left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .button {
-            width: 354px;
-            height: 73px;
-            margin-bottom: 20px;
-            background: #10246B;
-            color: #F5F5F5;
-            font-size: 45px;
-            font-family: Roboto, sans-serif;
-            font-weight: 400;
-            text-align: center;
-            line-height: 73px;
-            border: 1px solid #2C2C2C;
-            border-radius: 8px;
-            cursor: pointer;
-            text-decoration: none;
-            display: block;
-        }
-
-        .button:hover {
-            background: #0e1f4a;
-        }
-
-        .logout {
-            position: absolute;
-            left: 41px;
-            bottom: 20px;
-            text-align: center;
-        }
-
-        .logout-icon {
-            width: 200px;
-            height: 200px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 50%;
-            overflow: hidden;
-        }
-
-        .logout-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            top: 30px;
+            transform: translateX(-50%);
         }
 
         .klussen-table {
@@ -99,13 +55,36 @@
             font-size: 16px;
             margin: 5px 0;
         }
+
+        .back {
+            position: absolute;
+            left: 41px;
+            bottom: 20px;
+            text-align: center;
+        }
+
+        .back-icon {
+            width: 200px;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .back-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <!-- Logo en decoratie -->
-    <div style="left: 50%; top: 30px; position: absolute; transform: translateX(-50%);">
+    <div class="logo">
         <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" style="width: 500px; height: auto;">
     </div>
 
@@ -118,13 +97,12 @@
                     <th>Klusnaam</th>
                     <th>Datum</th>
                     <th>Status</th>
-                    <th>Voltooid</th>
                     <th>Acties</th>
                 </tr>
             </thead>
             <tbody>
                 {% for klus in klussen %}
-                <!-- Verberg voltooide klussen -->
+                <!-- Toon alleen niet-voltooide klussen -->
                 {% if klus.status != 'voltooid' %}
                 <tr>
                     <td>{{ klus.naam }}</td>
@@ -132,12 +110,10 @@
                     <td>{{ klus.status or "beschikbaar" }}</td>
                     <td>
                         <!-- Formulier voor markeren als voltooid -->
-                        {% if klus.status != 'voltooid' %}
-                        <form action="{{ url_for('main.mark_klus_as_completed_and_delete', klusnummer=klus.id) }}" method="POST" style="display: inline-block;">
+                        <form action="{{ url_for('main.markeer_klus_voltooid', klusnummer=klus.id) }}" method="POST" style="display: inline-block;">
                             <input type="hidden" name="klus_id" value="{{ klus.id }}">
                             <button type="submit" class="btn btn-success btn-sm">Markeer als Voltooid</button>
                         </form>
-                        {% endif %}
                         <!-- Formulier voor verwijderen -->
                         <form action="{{ url_for('main.delete_klus', klusnummer=klus.id) }}" method="POST" style="display: inline-block;">
                             <button type="submit" class="btn btn-danger btn-sm">Verwijder Klus</button>
@@ -146,16 +122,15 @@
                 </tr>
                 {% endif %}
                 {% endfor %}
-            </tbody>            
+            </tbody>
         </table>
     </div>
 
-    <!-- Logout optie -->
-    <div class="logout">
-        <!-- Afbeelding als logout-icoon -->
-        <div class="logout-icon">
-            <a href="{{ url_for('main.login') }}">
-                <img src="{{ url_for('static', filename='images/logout.png') }}" alt="Logout" style="width: 100px; height: auto;">
+    <!-- Terug knop -->
+    <div class="back">
+        <div class="back-icon">
+            <a href="{{ url_for('main.mijn_klussen_selectie') }}">
+                <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" style="width: 100px; height: auto;">
             </a>
         </div>
     </div>
