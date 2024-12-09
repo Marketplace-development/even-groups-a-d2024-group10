@@ -634,15 +634,20 @@ def mijn_gezochte_klussen():
         flash('Je moet ingelogd zijn om deze pagina te bekijken.', 'danger')
         return redirect(url_for('main.login'))
 
-    # Haal klussen op waar de gebruiker geaccepteerd is
+    # Haal klussen op waar de gebruiker aan gekoppeld is als zoeker
     gezochte_klussen = Klus.query.filter(
         Klus.status == 'geaccepteerd',
         Klus.klussen_zoekers.any(Persoon.idnummer == user_id)
     ).order_by(Klus.created_at.desc()).all()
 
-    print(f"Gezochte klussen gevonden: {[klus.naam for klus in gezochte_klussen]}")
+    # Debugging
+    for klus in gezochte_klussen:
+        print(f"Klus in template: {klus.naam}, Status: {klus.status}, Zoekers: {[zoeker.idnummer for zoeker in klus.klussen_zoekers]}")
     
-    return render_template('mijn_gezochte_klussen.html', gezochte_klussen=gezochte_klussen)
+    # Variabele naam consistent maken met de template
+    return render_template('mijn_gezochte_klussen.html', klussen=gezochte_klussen)
+
+
 
 @main.route('/leave_klus/<string:klusnummer>', methods=['POST'])
 def leave_klus(klusnummer):
@@ -731,12 +736,20 @@ def accepteer_klus(klusnummer):
 
         # Sla de wijzigingen op
         db.session.commit()
+        print(f"Klusstatus na accepteren: {klus.status}")
+        print(f"Zoekers gekoppeld aan klus: {[zoeker.idnummer for zoeker in klus.klussen_zoekers]}")
+
 
         flash('Je hebt de klus geaccepteerd!', 'success')
         return redirect(url_for('main.mijn_gezochte_klussen'))  # Redirect naar de juiste pagina
     else:
         flash('Deze klus is al geaccepteerd of bestaat niet.', 'danger')
         return redirect(url_for('main.klussen'))  # Terug naar het overzicht
+
+from flask import session, redirect, url_for, render_template, flash
+from app.models import Klus, Persoon
+from datetime import datetime
+from app import db
 
 @main.route('/mijn_geschiedenis')
 def mijn_geschiedenis():
@@ -745,15 +758,29 @@ def mijn_geschiedenis():
         flash('Je moet ingelogd zijn om deze pagina te bekijken.', 'danger')
         return redirect(url_for('main.login'))
 
-    # Aangeboden klussen: Klussen die de gebruiker heeft aangeboden, gesorteerd op voltooiingstijd
-    aangeboden_klussen = Klus.query.filter_by(idnummer=user_id, status='voltooid').order_by(Klus.voltooid_op.desc()).all()
-
-    # Gezochte klussen: Klussen waarbij de gebruiker een van de zoekers is, gesorteerd op voltooiingstijd
-    gezochte_klussen = Klus.query.join(Klus.klussen_zoekers).filter(
-        Persoon.idnummer == user_id,
-        Klus.status == 'voltooid'
+    # Aangeboden klussen: Klussen die de gebruiker heeft aangeboden en voltooid zijn
+    aangeboden_klussen = Klus.query.filter(
+        Klus.idnummer == user_id,           # Alleen klussen van de ingelogde gebruiker
+        Klus.status == 'voltooid',         # Alleen klussen met de status 'voltooid'
+        Klus.voltooid_op.isnot(None)       # Zorg dat 'voltooid_op' is ingesteld
     ).order_by(Klus.voltooid_op.desc()).all()
 
+    # Debugging voor aangeboden klussen
+    for klus in aangeboden_klussen:
+        print(f"Aangeboden klus: {klus.naam}, Status: {klus.status}, Voltooid op: {klus.voltooid_op}")
+
+    # Gezochte klussen: Klussen waarbij de gebruiker een van de zoekers is en die voltooid zijn
+    gezochte_klussen = Klus.query.join(Klus.klussen_zoekers).filter(
+        Persoon.idnummer == user_id,       # Alleen klussen waar de gebruiker een zoeker is
+        Klus.status == 'voltooid',        # Alleen klussen met de status 'voltooid'
+        Klus.voltooid_op.isnot(None)      # Zorg dat 'voltooid_op' is ingesteld
+    ).order_by(Klus.voltooid_op.desc()).all()
+
+    # Debugging voor gezochte klussen
+    for klus in gezochte_klussen:
+        print(f"Gezochte klus: {klus.naam}, Status: {klus.status}, Voltooid op: {klus.voltooid_op}, Zoekers: {[zoeker.idnummer for zoeker in klus.klussen_zoekers]}")
+
+    # Render de template
     return render_template(
         'mijn_geschiedenis.html',
         aangeboden_klussen=aangeboden_klussen,
@@ -786,17 +813,13 @@ def markeer_klus_voltooid(klusnummer):
     klus.voltooid_op = datetime.utcnow()
     db.session.commit()
 
-    # Verplaats de klus naar geschiedenis voor de aanbieder
+    # Flash-bericht voor de aanbieder
     flash(f"De klus '{klus.naam}' is gemarkeerd als voltooid en toegevoegd aan je geschiedenis.", 'success')
 
-    # Update geschiedenis voor alle gekoppelde zoekers
+    # Meldingen voor alle gekoppelde zoekers
     zoekers = klus.klussen_zoekers
     for zoeker in zoekers:
-        # Controleer of de klus nog in de gezochte klussen van de zoeker staat
-        if klus in zoeker.geinteresseerd_in_klussen:
-            zoeker.geinteresseerd_in_klussen.remove(klus)
-            db.session.commit()
-
-        flash(f"Klus '{klus.naam}' is verplaatst naar de geschiedenis van zoeker {zoeker.naam}.", 'info')
+        flash(f"Klus '{klus.naam}' is toegevoegd aan de geschiedenis van zoeker {zoeker.voornaam} {zoeker.achternaam}.", 'info')
 
     return redirect(url_for('main.mijn_geschiedenis'))
+    

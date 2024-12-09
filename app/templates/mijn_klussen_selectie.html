@@ -28,18 +28,32 @@
     </div>
 </div>
 
-<!-- Toevoegen van CSS voor Hover Effecten -->
+<!-- Terug optie -->
+<div class="logout">
+    <div class="terug-icon">
+        <a href="{{ url_for('main.dashboard') }}">
+            <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" style="width: 100px; height: auto;">
+        </a>
+    </div>
+</div>
+
+<!-- CSS -->
 <style>
-    a:hover {
-        opacity: 0.9;
-        transform: scale(1.05); /* Lichte zoom voor hover */
+    .logout {
+        position: fixed;
+        left: 20px;
+        bottom: 20px;
+        z-index: 1000; /* Zorgt ervoor dat de knop altijd bovenaan blijft */
     }
 
-    @media (max-width: 768px) {
-        a {
-            width: 80%; /* Breedte aanpassen op kleinere schermen */
-            text-align: center;
-        }
+    .terug-icon img {
+        width: 100px;
+        height: auto;
+        cursor: pointer;
+    }
+
+    .terug-icon img:hover {
+        opacity: 0.8;
     }
 </style>
 {% endblock %}

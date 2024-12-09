@@ -49,5 +49,12 @@
                 {% endfor %}
             </ul>
         </div>
+
+        <!-- Terugknop -->
+        <div style="position: fixed; bottom: 20px; left: 20px;">
+            <a href="{{ url_for('main.dashboard') }}">
+                <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" style="width: 100px; height: auto;">
+            </a>
+        </div>
     </div>
 {% endblock %}
