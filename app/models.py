@@ -17,8 +17,8 @@ klus_zoeker = db.Table('klus_zoeker',
 
 # Persoon Model
 class Persoon(db.Model):
-    _tablename_ = 'persoon'
-    
+    __tablename__ = 'persoon'
+
     idnummer = db.Column(db.String(10), primary_key=True, default=generate_id_number)
     voornaam = db.Column(db.String(100), nullable=False)
     achternaam = db.Column(db.String(100))
@@ -28,21 +28,27 @@ class Persoon(db.Model):
     email = db.Column(db.String(100), nullable=False, unique=True, index=True)
     telefoonnummer = db.Column(db.String(15))
     username = db.Column(db.String(20), nullable=False, unique=True, index=True)
-    
     voorkeur_categorie = db.Column(db.String(50), db.ForeignKey('categorie.categorie'), nullable=True)
     created_at = db.Column(db.TIMESTAMP, nullable=False, default=datetime.utcnow)
 
     voorkeur_categorie_rel = db.relationship('Categorie', backref='personen', lazy=True)
-
     klusaanbieders = db.relationship('Klusaanbieder', backref='persoon_aanbieder', lazy='joined')
     kluszoekers = db.relationship('Kluszoeker', backref='persoon_zoeker', lazy='joined')
 
-    @property
-    def naam(self):
-        return f"{self.voornaam} {self.achternaam}"
+    def gemiddelde_score(self):
+        ratings = Rating.query.filter(
+            (Rating.kluszoeker_id == self.idnummer) | (Rating.klusaanbieder_id == self.idnummer)
+        ).all()
 
-    def __repr__(self):
-        return f'<Persoon {self.voornaam} {self.achternaam}>'
+        if not ratings:
+            return 'Geen beoordelingen'
+
+        total_score = sum(
+            r.rating_zoeker + r.rating_aanbieder for r in ratings
+        )
+        aantal_cijfers = len(ratings) * 2
+        return round(total_score / aantal_cijfers, 2)
+
 
 # Klusaanbieder Model
 class Klusaanbieder(db.Model):
@@ -118,18 +124,22 @@ class Rating(db.Model):
     klusnummer = db.Column(db.String(36), db.ForeignKey('klus.klusnummer'), nullable=False)
     kluszoeker_id = db.Column(db.String(10), db.ForeignKey('persoon.idnummer'), nullable=False)
     klusaanbieder_id = db.Column(db.String(10), db.ForeignKey('persoon.idnummer'), nullable=False)
-    rating_zoeker = db.Column(db.Integer, nullable=False)  # Rating voor de kluszoeker
-    rating_aanbieder = db.Column(db.Integer, nullable=False)  # Rating voor de klusaanbieder
-    comment_zoeker = db.Column(db.String(500), nullable=True)  # Commentaar voor de kluszoeker
-    comment_aanbieder = db.Column(db.String(500), nullable=True)  # Commentaar voor de klusaanbieder
+    communicatie = db.Column(db.Integer, nullable=False)  # Cijfer op 10
+    betrouwbaarheid = db.Column(db.Integer, nullable=False)  # Cijfer op 10
+    tijdigheid = db.Column(db.Integer, nullable=False)  # Cijfer op 10
+    kwaliteit = db.Column(db.Integer, nullable=False)  # Cijfer op 10
+    algemene_ervaring = db.Column(db.Integer, nullable=False)  # Cijfer op 10
+    comment = db.Column(db.String(500), nullable=True)  # Optioneel commentaar
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
+    # Relaties
     klus = db.relationship('Klus', backref=db.backref('ratings', lazy=True))
     kluszoeker = db.relationship('Persoon', foreign_keys=[kluszoeker_id])
     klusaanbieder = db.relationship('Persoon', foreign_keys=[klusaanbieder_id])
 
     def __repr__(self):
         return f'<Rating {self.id}>'
+
 
 
 class CategorieStatistiek(db.Model):

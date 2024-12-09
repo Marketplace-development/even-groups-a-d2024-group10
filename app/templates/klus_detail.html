@@ -65,7 +65,7 @@
             text-align: center;
             margin-top: 20px;
         }
-        .buttons button {
+        .buttons button, .buttons a {
             width: 100%;
             padding: 12px;
             background: #10246B;
@@ -75,16 +75,11 @@
             font-size: 16px;
             margin-bottom: 10px;
             cursor: pointer;
-        }
-        .buttons button:hover {
-            background: #0e1f4a;
-        }
-        .back-link {
-            display: block;
-            text-align: center;
-            margin-top: 10px;
             text-decoration: none;
-            color: #10246B;
+            text-align: center;
+        }
+        .buttons button:hover, .buttons a:hover {
+            background: #0e1f4a;
         }
     </style>
 </head>
@@ -136,9 +131,8 @@
 
         <!-- Actieknoppen -->
         <div class="buttons">
-            <form action="{{ url_for('main.accepteer_klus', klusnummer=klus.klusnummer) }}" method="POST">
-                <button type="submit">Accepteer klus</button>
-            </form>
+            <!-- Link naar bevestigingspagina -->
+            <a href="{{ url_for('main.bevestiging_klus', klusnummer=klus.klusnummer) }}">Accepteer klus</a>
             <a href="{{ url_for('main.dashboard') }}" class="back-link">Terug naar overzicht</a>
         </div>
     </div>

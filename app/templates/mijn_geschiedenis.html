@@ -55,6 +55,17 @@
             font-size: 12px;
             color: #888;
         }
+        .btn-rating {
+            background-color: #10246B;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .btn-rating:hover {
+            background-color: #0e1f4a;
+        }
         .back-to-dashboard {
             margin: 20px 0;
             text-align: center;
@@ -103,6 +114,11 @@
                                     {% else %}
                                     <p class="completion-date">Voltooid op: Onbekend</p>
                                     {% endif %}
+                                    {% if not klus.ratings %}
+                                        <a href="{{ url_for('main.submit_rating', klusnummer=klus.klusnummer) }}" class="btn-rating">Beoordeling Indienen</a>
+                                    {% else %}
+                                        <p>Beoordeling al ingediend.</p>
+                                    {% endif %}
                                 </li>
                             {% endfor %}
                         </ul>
@@ -130,6 +146,11 @@
                                     <p class="completion-date">Voltooid op: {{ klus.voltooid_op.strftime('%d-%m-%Y %H:%M') }}</p>
                                     {% else %}
                                     <p class="completion-date">Voltooid op: Onbekend</p>
+                                    {% endif %}
+                                    {% if not klus.ratings %}
+                                        <a href="{{ url_for('main.submit_rating', klusnummer=klus.klusnummer) }}" class="btn-rating">Beoordeling Indienen</a>
+                                    {% else %}
+                                        <p>Beoordeling al ingediend.</p>
                                     {% endif %}
                                 </li>
                             {% endfor %}
