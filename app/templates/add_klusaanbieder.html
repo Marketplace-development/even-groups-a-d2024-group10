@@ -1,173 +1,94 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Klus Aanmaken</title>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: white;
-        }
-        .header {
-            width: 100%;
-            height: 100px;
-            background-color: #10246B;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
+{% extends 'base.html' %}
 
-        .container {
-            width: 100%;
-            max-width: 400px;
-            margin: 200px auto 0;
-            padding: 20px;
-            border: 1px solid black;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
+{% block title %}Klus Aanmaken - KLUSKOMPAS{% endblock %}
 
-        .header img {
-            height: 40px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-            position: relative;
-        }
-        .form-group label {
-            position: absolute;
-            top: -10px;
-            left: 10px;
-            background: white;
-            padding: 0 5px;
-            font-size: 14px;
-            color: #767676;
-        }
-        .form-control {
-            width: 100%;
-            height: 50px;
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #B2B2B2;
-            border-radius: 4px;
-            background: white;
-            box-sizing: border-box;
-        }
-        textarea.form-control {
-            height: auto;
-        }
-        select.form-control {
-            height: 50px;
-            background-color: white;
-        }
-        .submit-btn {
-            width: 100%;
-            height: 60px;
-            background: #10246B;
-            color: white;
-            font-size: 20px;
-            font-weight: 700;
-            text-align: center;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-        }
-        .submit-btn:hover {
-            background: #0d1c59;
-        }
-        .terug {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-        }
-        .terug-icon img {
-            width: 50px;
-            height: auto;
-        }
-    </style>
-</head>
-<body>
-    <!-- Logo en decoratie -->
-    <div style="left: 50%; top: 30px; position: absolute; transform: translateX(-50%);">
-        <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" style="width: 500px; height: auto;">
-    </div>
-
-    <!-- Formulier Container -->
-    <div class="container">
+{% block content %}
+<!-- Centraal geplaatste container met originele lay-out -->
+<div class="main-container" style="display: flex; justify-content: center; align-items: center; height: calc(100vh - 80px);">
+    <div class="form-container" style="width: 400px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); background: white;">
+        <h1 style="text-align: center; color: #10246B; margin-bottom: 20px;">Klus Aanmaken</h1>
         <form method="POST" action="{{ url_for('main.add_klusaanbieder') }}">
             {{ form.hidden_tag() }} <!-- Voeg een CSRF-token toe -->
 
             <!-- Titel -->
-            <div class="form-group">
-                <label for="naam">Titel:</label>
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label for="naam" style="font-size: 16px; font-weight: bold; color: #10246B;">Titel:</label>
                 {{ form.naam(class_="form-control", placeholder="Voer een titel in") }}
             </div>
             
             <!-- Categorie -->
-            <div class="form-group">
-                <label for="categorie">Categorie:</label>
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label for="categorie" style="font-size: 16px; font-weight: bold; color: #10246B;">Categorie:</label>
                 {{ form.categorie(class_="form-control") }}
             </div>
             
             <!-- Plaats -->
-            <div class="form-group">
-                <label for="locatie">Plaats:</label>
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label for="locatie" style="font-size: 16px; font-weight: bold; color: #10246B;">Plaats:</label>
                 {{ form.locatie(class_="form-control", placeholder="Voer een plaats in") }}
             </div>
             
             <!-- Beschrijving -->
-            <div class="form-group">
-                <label for="beschrijving">Beschrijving:</label>
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label for="beschrijving" style="font-size: 16px; font-weight: bold; color: #10246B;">Beschrijving:</label>
                 {{ form.beschrijving(class_="form-control", placeholder="Beschrijf de klus") }}
             </div>
 
             <!-- Datum -->
-            <div class="form-group">
-                <label for="datum">Datum:</label>
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label for="datum" style="font-size: 16px; font-weight: bold; color: #10246B;">Datum:</label>
                 {{ form.datum(class_="form-control", placeholder="Selecteer een datum") }}
-            </div>            
+            </div>
 
             <!-- Tijd -->
-            <div class="form-group">
-                <label for="tijd">Tijd:</label>
-                <div style="display: flex; gap: 5px; align-items: center;">
-                    {{ form.uren(class_="form-control", id="tijd-uren", style="width: 100px;") }}
-                    <span>:</span>
-                    {{ form.minuten(class_="form-control", id="tijd-minuten", style="width: 100px;") }}
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label for="tijd" style="font-size: 16px; font-weight: bold; color: #10246B;">Tijd:</label>
+                <div style="display: flex; gap: 5px;">
+                    {{ form.uren(class_="form-control", id="tijd-uren", style="width: 50%;") }}
+                    {{ form.minuten(class_="form-control", id="tijd-minuten", style="width: 50%;") }}
                 </div>
-            </div>            
-            
+            </div>
+
             <!-- Geschatte duur -->
-            <div class="form-group">
-                <label for="verwachte_duur">Geschatte duur:</label>
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label for="verwachte_duur" style="font-size: 16px; font-weight: bold; color: #10246B;">Geschatte duur:</label>
                 {{ form.verwachte_duur(class_="form-control", placeholder="Voer de geschatte duur in") }}
             </div>
-            
+
             <!-- Vergoeding -->
-            <div class="form-group">
-                <label for="vergoeding">Vergoeding:</label>
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label for="vergoeding" style="font-size: 16px; font-weight: bold; color: #10246B;">Vergoeding:</label>
                 {{ form.vergoeding(class_="form-control", placeholder="Voer de vergoeding in") }}
             </div>
-            
+
             <!-- Aanmaken knop -->
-            <button type="submit" class="submit-btn">Aanmaken</button>
+            <button type="submit" style="width: 100%; padding: 12px; font-size: 18px; background: #10246B; color: white; border: none; border-radius: 8px; cursor: pointer;">Aanmaken</button>
         </form>
     </div>
+</div>
 
-    <!-- Terug Knop -->
-    <div class="terug">
-        <div class="terug-icon">
-            <a href="{{ url_for('main.dashboard') }}">
-                <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" style="width: 100px; height: auto;">
-            </a>
-        </div>
-    </div>
-</body>
-</html>
+<!-- Stijlen behouden -->
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        margin: 0;
+        background-color: #f4f4f9;
+    }
+
+    .form-container {
+        margin-top: 50px;
+    }
+
+    .form-control {
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 8px;
+        border: 1px solid #B2B2B2;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #10246B;
+    }
+</style>
+{% endblock %}

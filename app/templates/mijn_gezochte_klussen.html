@@ -1,69 +1,150 @@
 {% extends 'base.html' %}
 
+{% block title %}Mijn Gezochte Klussen - KLUSKOMPAS{% endblock %}
+
 {% block content %}
-<div>
-    <!-- Logo en decoratie -->
-    <div style="left: 50%; top: 30px; position: absolute; transform: translateX(-50%);">
-        <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" style="width: 300px; height: auto;">
+<div class="container">
+    <!-- Titel -->
+    <div class="header text-center mb-4">
+        <h2>Mijn Gezochte Klussen</h2>
     </div>
 
-    <!-- Mijn Gezochte Klussen Container -->
-    <div style="width: 80%; max-width: 1200px; margin: 100px auto; padding: 20px; background-color: #f9f9f9; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius: 8px;">
-        <h1 style="text-align: center; color: #10246B;">Mijn Gezochte Klussen</h1>
+    <!-- Klussenlijst -->
+    <div class="klus-list">
+        {% if klussen %}
+            {% for klus in klussen %}
+                <div class="klus-card">
+                    <!-- Titel van de klus -->
+                    <h3>{{ klus.naam }}</h3>
 
-        <!-- Klussen Lijst -->
-        <ul style="list-style: none; padding: 0; margin: 0;">
-            {% if klussen %}
-                {% for klus in klussen %}
-                    <li style="background-color: #ffffff; margin: 20px 0; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-                        <!-- Titel van de klus -->
-                        <h2 style="color: #10246B; font-size: 28px; margin-bottom: 10px;">{{ klus.naam }}</h2>
+                    <!-- Klusdetails -->
+                    <p><strong>Locatie:</strong> {{ klus.locatie }}</p>
+                    <p><strong>Tijd:</strong> {{ klus.tijd }}</p>
+                    <p><strong>Datum:</strong> {{ klus.datum }}</p>
+                    <p><strong>Vergoeding:</strong> €{{ klus.vergoeding }}</p>
+                    <p><strong>Categorie:</strong> {{ klus.categorie_ref.naam if klus.categorie_ref else 'Onbekend' }}</p>
+                    <p><strong>Verwachte Duur:</strong> {{ klus.verwachte_duur }} uur</p>
+                    <p><strong>Beschrijving:</strong> {{ klus.beschrijving }}</p>
 
-                        <!-- Locatie en andere klusdetails -->
-                        <div style="margin-bottom: 15px;">
-                            <strong>Locatie:</strong> {{ klus.locatie }}<br>
-                            <strong>Tijd:</strong> {{ klus.tijd }}<br>
-                            <strong>Datum:</strong> {{ klus.datum }}<br>
-                            <strong>Vergoeding:</strong> €{{ klus.vergoeding }}<br>
-                            <strong>Categorie:</strong> {{ klus.categorie_ref.naam if klus.categorie_ref else 'Onbekend' }}<br>
-                            <strong>Verwachte Duur:</strong> {{ klus.verwachte_duur }} uur<br>
-                            <strong>Beschrijving:</strong> {{ klus.beschrijving }}<br>
-                        </div>
+                    <!-- Status van de klus -->
+                    <p><strong>Status:</strong> 
+                        {% if klus.status == 'completed' %}
+                            <span class="status-completed">Klus Voltooid</span>
+                        {% elif klus.status == 'geaccepteerd' %}
+                            <span class="status-accepted">Klus Geaccepteerd</span>
+                        {% endif %}
+                    </p>
 
-                        <!-- Status van de klus -->
-                        <div style="margin-top: 20px;">
-                            <strong>Status:</strong> {{ klus.status }}<br>
-                            {% if klus.status == 'completed' %}
-                                <span style="font-size: 18px; color: green;">Klus Voltooid</span>
-                            {% elif klus.status == 'geaccepteerd' %}
-                                <span style="font-size: 18px; color: orange;">Klus Geaccepteerd</span>
-                            {% endif %}
-                        </div>
+                    <!-- Acties -->
+                    {% if klus.status == 'geaccepteerd' %}
+                        <form action="{{ url_for('main.leave_klus', klusnummer=klus.klusnummer) }}" method="POST" class="text-center">
+                            <button type="submit" class="btn btn-danger btn-sm">Annuleren</button>
+                        </form>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-info text-center">
+                Je hebt nog geen geaccepteerde gezochte klussen.
+            </div>
+        {% endif %}
+    </div>
 
-                        <!-- Acties -->
-                        <div style="text-align: center; margin-top: 20px;">
-                            {% if klus.status == 'geaccepteerd' %}
-                                <!-- Actie om de klus te annuleren of verder te gaan -->
-                                <form action="{{ url_for('main.leave_klus', klusnummer=klus.klusnummer) }}" method="POST">
-                                    <button type="submit" style="background-color: #dc3545; color: white; padding: 10px 20px; border-radius: 8px; font-size: 16px;">
-                                        Annuleren
-                                    </button>
-                                </form>
-                            {% endif %}
-                        </div>
-                    </li>
-                {% endfor %}
-            {% else %}
-                <p style="text-align: center; font-size: 18px; color: #555;">Je hebt nog geen geaccepteerde gezochte klussen.</p>
-            {% endif %}
-        </ul>
+    <!-- Terugknop -->
+    <div class="back">
+        <a href="{{ url_for('main.dashboard') }}">
+            <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" class="back-icon">
+        </a>
     </div>
 </div>
 
-<!-- Terugknop -->
-<div style="position: fixed; left: 20px; bottom: 20px;">
-    <a href="{{ url_for('main.dashboard') }}">
-        <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" style="width: 100px; height: auto;">
-    </a>
-</div>
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f7fa;
+        color: #333;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 50px auto;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .header h2 {
+        color: #10246B;
+        margin-bottom: 20px;
+    }
+
+    .klus-list {
+        margin-top: 20px;
+    }
+
+    .klus-card {
+        background: #ffffff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .klus-card h3 {
+        color: #10246B;
+        margin-bottom: 10px;
+    }
+
+    .klus-card p {
+        margin: 5px 0;
+        font-size: 14px;
+    }
+
+    .status-completed {
+        color: green;
+        font-weight: bold;
+    }
+
+    .status-accepted {
+        color: orange;
+        font-weight: bold;
+    }
+
+    .back {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+    }
+
+    .back-icon {
+        width: 50px;
+        height: auto;
+    }
+
+    .alert {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        color: #333;
+        padding: 15px;
+        border-radius: 5px;
+    }
+
+    .btn {
+        padding: 8px 12px;
+        font-size: 14px;
+        border-radius: 8px;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333;
+    }
+</style>
 {% endblock %}
