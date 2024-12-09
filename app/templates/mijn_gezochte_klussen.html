@@ -11,20 +11,6 @@
     <div style="width: 80%; max-width: 1200px; margin: 100px auto; padding: 20px; background-color: #f9f9f9; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius: 8px;">
         <h1 style="text-align: center; color: #10246B;">Mijn Gezochte Klussen</h1>
 
-        <!-- Debugging sectie -->
-        <div style="margin-bottom: 20px; background-color: #fff3cd; padding: 10px; border: 1px solid #ffeeba; border-radius: 8px;">
-            <h3>Debugging:</h3>
-            <ul>
-                {% for klus in klussen %}
-                    <li>
-                        Klusnaam: {{ klus.naam }}<br>
-                        Status: {{ klus.status }}<br>
-                        Zoekers: {{ klus.klussen_zoekers }}
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-
         <!-- Klussen Lijst -->
         <ul style="list-style: none; padding: 0; margin: 0;">
             {% if klussen %}
