@@ -98,7 +98,7 @@ def login():
     return render_template('login.html', form=form)
 
 
-# Controleer of de gebruiker is ingelogd in een andere route
+
 @main.route('/dashboard')
 def dashboard():
     if 'user_id' not in session:
@@ -657,22 +657,36 @@ def mijn_gezochte_klussen():
 
 
 
-@main.route('/leave_klus/<string:klusnummer>', methods=['POST'])
+@main.route('/leave_klus/<klusnummer>', methods=['POST'])
 def leave_klus(klusnummer):
-    # Haal de klus op aan de hand van het klusnummer
-    klus = Klus.query.get_or_404(klusnummer)
+    # Zoek de ingelogde gebruiker via de sessie
+    user_id = session.get('user_id')
+    if not user_id:
+        flash("Je bent niet ingelogd.", "danger")
+        return redirect(url_for('main.login'))
 
-    # Controleer of de gebruiker is gekoppeld als zoeker
-    zoeker = next((zoeker for zoeker in klus.klussen_zoekers if zoeker.idnummer == current_user.idnummer), None)
-    if not zoeker:
-        flash('Je bent niet gekoppeld aan deze klus.', 'danger')
+    # Zoek de klus op basis van klusnummer
+    klus = Klus.query.filter_by(klusnummer=klusnummer).first()
+    if not klus:
+        flash("Klus niet gevonden.", "danger")
         return redirect(url_for('main.mijn_gezochte_klussen'))
 
-    # Verwijder de gebruiker als zoeker
-    klus.klussen_zoekers.remove(zoeker)
+    # Zoek de kluszoeker die gekoppeld is aan de klus en ingelogde gebruiker
+    kluszoeker = next((zoeker for zoeker in klus.klussen_zoekers if zoeker.idnummer == user_id), None)
+    if not kluszoeker:
+        flash("Je hebt deze klus niet geaccepteerd.", "danger")
+        return redirect(url_for('main.mijn_gezochte_klussen'))
+
+    # Verwijder de gebruiker van de klus en update de status
+    klus.klussen_zoekers.remove(kluszoeker)
+    klus.status = "beschikbaar"
+
+    # Wijzigingen opslaan
     db.session.commit()
-    flash('Je bent succesvol uitgeschreven van deze klus.', 'success')
+
+    flash("De klus is geannuleerd en opnieuw beschikbaar gemaakt.", "success")
     return redirect(url_for('main.mijn_gezochte_klussen'))
+
 
 @main.route('/delete_klus/<uuid:klusnummer>', methods=['POST'])
 def delete_klus(klusnummer):
