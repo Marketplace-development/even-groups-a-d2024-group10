@@ -239,11 +239,18 @@ def add_klusaanbieder():
     
     if form.validate_on_submit():
         try:
+            # Haal de uur en minuut op uit het formulier
+            tijd_uren = int(form.uren.data)  # Velden moeten bestaan in het formulier
+            tijd_minuten = int(form.minuten.data)
+
+            # Combineer het uur en de minuut in een tijd in het formaat 'HH:MM'
+            tijd = f"{tijd_uren:02}:{tijd_minuten:02}"
+
             # Maak een nieuwe Klus aan
             nieuwe_klus = Klus(
                 naam=form.naam.data,
                 locatie=form.locatie.data,
-                tijd=form.tijd.data,
+                tijd=tijd,  # De gecombineerde tijd
                 beschrijving=form.beschrijving.data,
                 vergoeding=form.vergoeding.data,
                 categorie=form.categorie.data,
@@ -266,6 +273,7 @@ def add_klusaanbieder():
 
     # Toon het formulier
     return render_template('add_klusaanbieder.html', form=form)
+
 
 
 # Route voor het toevoegen van een kluszoeker

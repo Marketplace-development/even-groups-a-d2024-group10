@@ -39,7 +39,8 @@ class KlusaanbiederForm(FlaskForm):
         ('zorg', 'Zorg & Verzorging')
     ], validators=[DataRequired()])
     locatie = StringField('Locatie', validators=[DataRequired(), Length(max=100)])
-    tijd = TimeField('Tijd', format='%H:%M', validators=[DataRequired()])  # Tijd als TIME
+    uren = SelectField('Uur', choices=[(str(i), f'{i:02}') for i in range(0, 24)], coerce=int, validators=[DataRequired()])
+    minuten = SelectField('Minuut', choices=[('00', '00'), ('15', '15'), ('30', '30'), ('45', '45')], validators=[DataRequired()])
     beschrijving = TextAreaField('Beschrijving', validators=[DataRequired()])
     vergoeding = DecimalField('Vergoeding', places=2, validators=[DataRequired()])  # Decimal voor geld
     datum = DateField('Datum', format='%Y-%m-%d', validators=[DataRequired()])  # Datum als DATE

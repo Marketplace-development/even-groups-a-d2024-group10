@@ -122,23 +122,27 @@
                 {{ form.locatie(class_="form-control", placeholder="Voer een plaats in") }}
             </div>
             
-            <!-- Tijd -->
-            <div class="form-group">
-                <label for="tijd">Tijd:</label>
-                {{ form.tijd(class_="form-control", placeholder="Voer een tijd in") }}
-            </div>
-            
             <!-- Beschrijving -->
             <div class="form-group">
                 <label for="beschrijving">Beschrijving:</label>
                 {{ form.beschrijving(class_="form-control", placeholder="Beschrijf de klus") }}
             </div>
-            
+
             <!-- Datum -->
             <div class="form-group">
                 <label for="datum">Datum:</label>
                 {{ form.datum(class_="form-control", placeholder="Selecteer een datum") }}
-            </div>
+            </div>            
+
+            <!-- Tijd -->
+            <div class="form-group">
+                <label for="tijd">Tijd:</label>
+                <div style="display: flex; gap: 5px; align-items: center;">
+                    {{ form.uren(class_="form-control", id="tijd-uren", style="width: 100px;") }}
+                    <span>:</span>
+                    {{ form.minuten(class_="form-control", id="tijd-minuten", style="width: 100px;") }}
+                </div>
+            </div>            
             
             <!-- Geschatte duur -->
             <div class="form-group">
