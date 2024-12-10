@@ -325,7 +325,7 @@ def klus_detail(klusnummer):
 
 
 from app.models import CategorieStatistiek, Klus, Persoon
-@main.route('/klussen')
+@main.route('/klussen', methods=['GET'])
 def klussen():
     # Controleer of de gebruiker is ingelogd
     if 'user_id' not in session:
@@ -345,8 +345,29 @@ def klussen():
     # Zet de categorieën in een volgorde van meest naar minst voorkomend
     voorkeuren_volgorde = [voorkeur[0] for voorkeur in categorie_voorkeuren]
 
-    # Haal alle beschikbare klussen op
-    beschikbare_klussen = Klus.query.filter_by(status='beschikbaar').all()
+    # Basis query voor beschikbare klussen
+    query = Klus.query.filter_by(status='beschikbaar')
+
+    # Filteren op Categorie
+    categorie_filter = request.args.get('categorie')
+    if categorie_filter:
+        query = query.filter(Klus.categorie == categorie_filter)
+
+    # Filteren op Locatie
+    locatie_filter = request.args.get('locatie')
+    if locatie_filter:
+        query = query.filter(Klus.locatie == locatie_filter)
+
+    # Filteren op Tijd (start_date en end_date)
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    if start_date:
+        query = query.filter(Klus.datum >= datetime.strptime(start_date, '%Y-%m-%d'))
+    if end_date:
+        query = query.filter(Klus.datum <= datetime.strptime(end_date, '%Y-%m-%d'))
+
+    # Haal de gefilterde klussen op
+    gefilterde_klussen = query.all()
 
     # Sorteer de klussen op basis van de voorkeursvolgorde
     def sorteer_klussen(klus):
@@ -356,9 +377,18 @@ def klussen():
             # Als de categorie niet in de voorkeursvolgorde zit, zet hem achteraan
             return len(voorkeuren_volgorde)
 
-    gesorteerde_klussen = sorted(beschikbare_klussen, key=sorteer_klussen)
+    gesorteerde_klussen = sorted(gefilterde_klussen, key=sorteer_klussen)
 
-    return render_template('klussen_overzicht.html', klussen=gesorteerde_klussen)
+    # Haal unieke categorieën en locaties op uit de gefilterde klussen
+    categorieën = list({klus.categorie for klus in gefilterde_klussen})
+    locaties = list({klus.locatie for klus in gefilterde_klussen})
+
+    return render_template(
+        'klussen_overzicht.html',
+        klussen=gesorteerde_klussen,
+        categorieën=sorted(categorieën),
+        locaties=sorted(locaties)
+    )
 
 
 

@@ -9,6 +9,41 @@
         <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo">
     </div>
 
+    <!-- Filter Sectie -->
+    <div class="filter-section">
+        <form method="GET" action="{{ url_for('main.klussen') }}">
+            <!-- Categorie Dropdown -->
+            <select name="categorie" class="form-select">
+                <option value="">Selecteer Categorie</option>
+                {% for categorie in categorieën %}
+                    <option value="{{ categorie }}" {% if request.args.get('categorie') == categorie %}selected{% endif %}>{{ categorie }}</option>
+                {% endfor %}
+            </select>
+
+            <!-- Locatie Dropdown -->
+            <select name="locatie" class="form-select">
+                <option value="">Selecteer Locatie</option>
+                {% for locatie in locaties %}
+                    <option value="{{ locatie }}" {% if request.args.get('locatie') == locatie %}selected{% endif %}>{{ locatie }}</option>
+                {% endfor %}
+            </select>
+
+            <!-- Datumrange -->
+            <div class="mb-3">
+                <label for="start_date" class="form-label">Van</label>
+                <input type="date" id="start_date" name="start_date" class="form-select" value="{{ request.args.get('start_date') }}">
+            </div>
+            <div class="mb-3">
+                <label for="end_date" class="form-label">Tot</label>
+                <input type="date" id="end_date" name="end_date" class="form-select" value="{{ request.args.get('end_date') }}">
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </form>
+    </div>
+
+
     <!-- Titel van de pagina -->
     <h1 class="text-center" style="font-size: 28px; color: #10246B;">Alle Klussen</h1>
 
@@ -61,6 +96,16 @@
         width: 300px;
     }
 
+    .filter-section {
+        margin-bottom: 30px;
+    }
+
+    .filter-section select, .filter-section input {
+        margin-right: 15px;
+        padding: 10px;
+        border-radius: 5px;
+    }
+
     .klus-card {
         width: 90%;
         max-width: 400px;
@@ -95,18 +140,26 @@
     }
 
     .logout {
-        margin-top: 20px;
+        position: fixed; /* Zorg dat de knop altijd op dezelfde plaats blijft */
+        bottom: 20px; /* Plaats het aan de onderkant van het scherm */
+        left: 20px; /* Plaats het helemaal links */
+        text-align: center;
     }
 
     .logout-icon {
-        width: 100px;
-        height: auto;
-        margin: 0 auto;
+        width: 150px; /* Maak de knop kleiner */
+        height: 150px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        overflow: hidden;
     }
 
     .logout-icon img {
-        width: 100px;
-        height: auto;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 </style>
 {% endblock %}

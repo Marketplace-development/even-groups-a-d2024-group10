@@ -78,24 +78,33 @@ class Kluszoeker(db.Model):
     def __repr__(self):
         return f'<Kluszoeker {self.idnummer}>'
 
+# Klus Model
 class Klus(db.Model):
-    __tablename__ = 'klus'
-
+    _tablename_ = 'klus'
+    
     klusnummer = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     naam = db.Column(db.String(100), nullable=False)
-    beschrijving = db.Column(db.Text, nullable=False)
-    categorie = db.Column(db.String(50), db.ForeignKey('categorie.categorie'), nullable=False)  # ForeignKey toegevoegd
-    locatie = db.Column(db.String(100), nullable=False)
-    tijd = db.Column(db.Time, nullable=False)  # Tijd als TIME
-    vergoeding = db.Column(db.Numeric(10, 2), nullable=False)  # Decimal voor geld
-    datum = db.Column(db.Date, nullable=False)  # Datum als DATE
-    verwachte_duur = db.Column(db.Integer, nullable=False)  # Integer voor uren
-    created_at = db.Column(db.TIMESTAMP, default=datetime.utcnow, nullable=False)
-    status = db.Column(db.String(20), default='beschikbaar', nullable=False)  # Status
+    categorie = db.Column(db.String(50), db.ForeignKey('categorie.categorie', ondelete="SET NULL"), nullable=True)
+    locatie = db.Column(db.String(100))
+    tijd = db.Column(db.Time, nullable=False)
+    beschrijving = db.Column(db.Text)
+    vergoeding = db.Column(db.Numeric(10, 2))
+    datum = db.Column(db.Date, nullable=False)
+    verwachte_duur = db.Column(db.Integer, nullable=False)
+    created_at = db.Column(db.TIMESTAMP, nullable=False, default=datetime.utcnow)
+    status = db.Column(db.String(20), default='beschikbaar')  # Status: beschikbaar, geaccepteerd, completed
     idnummer = db.Column(db.String(10), db.ForeignKey('persoon.idnummer'), nullable=False)
-    voltooid_op = db.Column(db.DateTime, nullable=True)
 
     persoon_aanbieder = db.relationship('Persoon', backref=db.backref('klussen', lazy=True))
+    klussen_zoekers = db.relationship(
+        'Persoon', 
+        secondary=klus_zoeker, 
+        backref=db.backref('geinteresseerd_in_klussen', lazy='dynamic'))
+    categorie_ref = db.relationship('Categorie', backref='klussen', lazy=True)
+
+    def __repr__(self):
+        return f'<Klus {self.klusnummer} voor {self.locatie}>'
+
     
     # Relatie met klussenzoekers (via de tussen tabel)
     klussen_zoekers = db.relationship(
