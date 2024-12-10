@@ -4,8 +4,10 @@ from app.models import Persoon, Klusaanbieder, Kluszoeker, Categorie, Rating, kl
 from app.forms import PersoonForm, KlusaanbiederForm, KluszoekerForm, RegistrationForm, LoginForm, RatingForm
 import uuid
 from app.models import Klus  # Voeg deze regel toe om de Klus-klasse te importeren
-from flask_login import current_user, login_required
+from flask_login import current_user, login_required, LoginManager
 from datetime import datetime
+from flask_login import LoginManager
+
 
 # Maak een blueprint
 main = Blueprint('main', __name__)
@@ -76,6 +78,8 @@ def register():
 
 from flask import session
 
+from flask_login import login_user
+
 @main.route('/login', methods=['GET', 'POST'])
 def login():
     print("Login route is reached")  # Debug om te zien of de route wordt aangeroepen
@@ -87,8 +91,8 @@ def login():
         user = Persoon.query.filter_by(username=username).first()
 
         if user:
-            # Sla gebruiker op in de sessie en stuur door naar dashboard
-            session['user_id'] = user.idnummer
+            # Gebruik Flask-Login om de gebruiker in te loggen
+            login_user(user)
             return redirect(url_for('main.dashboard'))
         else:
             # Flash alleen een foutmelding bij een foute gebruikersnaam
@@ -96,6 +100,7 @@ def login():
 
     # Render het formulier (zonder flash-meldingen voor ingelogde gebruikers)
     return render_template('login.html', form=form)
+
 
 
 
@@ -875,3 +880,55 @@ def markeer_klus_voltooid(klusnummer):
 
     return redirect(url_for('main.mijn_geschiedenis'))
     
+
+#chat route
+from flask import render_template, request, redirect, url_for
+from flask_login import login_required, current_user
+from app.chat import chat  # Zorg ervoor dat je blueprint correct is geïmporteerd
+from .models import Klus, Persoon, Bericht  # Import de relevante modellen
+from app import db
+@chat.route('/chat/<klusnummer>', methods=['GET', 'POST'])
+@login_required
+def chat_page(klusnummer):
+    # Ophalen van klus en ontvanger
+    klus = Klus.query.get_or_404(klusnummer)
+    if klus.idnummer == current_user.idnummer:
+        ontvanger = klus.klussen_zoekers[0]  # Neem de eerste zoeker als ontvanger
+    else:
+        ontvanger = klus.persoon_aanbieder
+
+    # Berichten ophalen
+    berichten = Bericht.query.filter_by(klusnummer=klusnummer).order_by(Bericht.verzonden_op).all()
+
+    if request.method == 'POST':
+        inhoud = request.form.get('inhoud')
+
+        if not inhoud:
+            flash('Het bericht mag niet leeg zijn.', 'error')
+        else:
+            bericht = Bericht(
+                afzender_id=current_user.idnummer,
+                ontvanger_id=ontvanger.idnummer,
+                klusnummer=klusnummer,
+                inhoud=inhoud
+            )
+            db.session.add(bericht)
+            db.session.commit()
+            flash('Bericht verzonden!', 'success')
+            return redirect(request.url)
+
+    return render_template(
+        'chat.html',
+        klus=klus,
+        ontvanger=ontvanger,
+        berichten=berichten
+    )
+
+
+
+from . import login_manager  # Zorg ervoor dat je de juiste instantie van login_manager importeert
+
+# Voeg de user_loader functie toe
+@login_manager.user_loader
+def load_user(user_id):
+    return Persoon.query.get(int(user_id))  # Laad de gebruiker op basis van het id

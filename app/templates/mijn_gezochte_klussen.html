@@ -40,6 +40,13 @@
                         <form action="{{ url_for('main.leave_klus', klusnummer=klus.klusnummer) }}" method="POST" class="text-center">
                             <button type="submit" class="btn btn-danger btn-sm">Annuleren</button>
                         </form>
+
+                        <!-- Chat-knop voor geaccepteerde klus -->
+                        <div class="text-center mt-3">
+                            <a href="{{ url_for('chat.chat_page', klusnummer=klus.klusnummer, aanbieder_id=klus.persoon_aanbieder.idnummer) }}" class="btn btn-primary btn-sm">
+                                Chat met Aanbieder
+                            </a>
+                        </div>
                     {% endif %}
                 </div>
             {% endfor %}
@@ -145,6 +152,16 @@
 
     .btn-danger:hover {
         background-color: #c82333;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
     }
 </style>
 {% endblock %}

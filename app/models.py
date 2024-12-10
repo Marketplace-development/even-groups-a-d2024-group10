@@ -3,6 +3,8 @@ from . import db  # Gebruik de geïmporteerde instantie van SQLAlchemy
 import uuid
 from flask_login import current_user
 from sqlalchemy import CheckConstraint
+from flask_login import UserMixin
+
 
 
 # Functie om een ID-nummer te genereren
@@ -16,7 +18,7 @@ klus_zoeker = db.Table('klus_zoeker',
 )
 
 # Persoon Model
-class Persoon(db.Model):
+class Persoon(db.Model, UserMixin):
     __tablename__ = 'persoon'
 
     idnummer = db.Column(db.String(10), primary_key=True, default=generate_id_number)
@@ -34,6 +36,13 @@ class Persoon(db.Model):
     voorkeur_categorie_rel = db.relationship('Categorie', backref='personen', lazy=True)
     klusaanbieders = db.relationship('Klusaanbieder', backref='persoon_aanbieder', lazy='joined')
     kluszoekers = db.relationship('Kluszoeker', backref='persoon_zoeker', lazy='joined')
+    is_active_flag = db.Column(db.Boolean, default=True)  # Bijvoorbeeld een vlag die aangeeft of een gebruiker actief is
+
+    def get_id(self):
+        return str(self.idnummer)
+
+    def is_active(self):
+        return self.is_active_flag  # Deze methode moet `True` of `False` teruggeven
 
     def gemiddelde_score(self):
         ratings = Rating.query.filter(
@@ -160,3 +169,23 @@ class CategorieStatistiek(db.Model):
     persoon = db.relationship('Persoon', backref='categorie_statistieken', lazy=True)
     categorie_ref = db.relationship('Categorie', backref='gebruikers_statistieken', lazy=True)
 
+
+
+#chat functie
+class Bericht(db.Model):
+    __tablename__ = 'bericht'
+
+    id = db.Column(db.Integer, primary_key=True)
+    afzender_id = db.Column(db.String(10), db.ForeignKey('persoon.idnummer'), nullable=False)
+    ontvanger_id = db.Column(db.String(10), db.ForeignKey('persoon.idnummer'), nullable=False)
+    klusnummer = db.Column(db.String(36), db.ForeignKey('klus.klusnummer'), nullable=True)
+    inhoud = db.Column(db.Text, nullable=False)
+    verzonden_op = db.Column(db.TIMESTAMP, nullable=False, default=datetime.utcnow)
+
+    # Relaties
+    afzender = db.relationship('Persoon', foreign_keys=[afzender_id], backref='verzonden_berichten')
+    ontvanger = db.relationship('Persoon', foreign_keys=[ontvanger_id], backref='ontvangen_berichten')
+    klus = db.relationship('Klus', backref=db.backref('berichten', lazy=True))
+
+    def __repr__(self):
+        return f'<Bericht {self.id} van {self.afzender_id} naar {self.ontvanger_id}>'
