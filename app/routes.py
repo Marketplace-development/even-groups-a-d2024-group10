@@ -652,6 +652,7 @@ def mijn_aangeboden_klussen():
             'naam': klus.naam,
             'datum': klus.datum.strftime('%d-%m-%Y') if klus.datum else 'Onbekend',  # Controleer op None
             'status': klus.status,  # Gebruik de werkelijke status
+            'persoon_aanbieder': {'idnummer': klus.persoon_aanbieder.idnummer}  # Veronderstel dat dit een relatie is
         })
 
     # Als het formulier wordt verzonden (POST), update de voltooiingsstatus

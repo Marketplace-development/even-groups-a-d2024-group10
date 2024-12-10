@@ -18,6 +18,7 @@
                     <th>Klusnaam</th>
                     <th>Datum</th>
                     <th>Status</th>
+                    <th>Aanbieder</th>
                     <th>Acties</th>
                 </tr>
             </thead>
@@ -29,16 +30,39 @@
                     <td>{{ klus.naam }}</td>
                     <td>{{ klus.datum }}</td>
                     <td>{{ klus.status or "beschikbaar" }}</td>
+                    
+                    <!-- Toon de naam van de aanbieder als de status 'geaccepteerd' is -->
+                    <td>
+                        {% if klus.status == 'geaccepteerd' %}
+                            {% if klus.persoon_aanbieder %}
+                                <p>{{ klus.persoon_aanbieder.naam }}</p>
+                            {% else %}
+                                <p>Onbekend</p>
+                            {% endif %}
+                        {% else %}
+                            <p>Niet geaccepteerd</p>
+                        {% endif %}
+                    </td>
+
                     <td>
                         <!-- Formulier voor markeren als voltooid -->
-                        <form action="{{ url_for('main.markeer_klus_voltooid', klusnummer=klus.id) }}" method="POST" style="display: inline-block;">
-                            <input type="hidden" name="klus_id" value="{{ klus.id }}">
+                        <form action="{{ url_for('main.markeer_klus_voltooid', klusnummer=klus.klusnummer) }}" method="POST" style="display: inline-block;">
+                            <input type="hidden" name="klus_id" value="{{ klus.klusnummer }}">
                             <button type="submit" class="btn btn-success btn-sm">Markeer als Voltooid</button>
                         </form>
                         <!-- Formulier voor verwijderen -->
-                        <form action="{{ url_for('main.delete_klus', klusnummer=klus.id) }}" method="POST" style="display: inline-block;">
+                        <form action="{{ url_for('main.delete_klus', klusnummer=klus.klusnummer) }}" method="POST" style="display: inline-block;">
                             <button type="submit" class="btn btn-danger btn-sm">Verwijder Klus</button>
                         </form>
+
+                        <!-- Chat-knop voor geaccepteerde klus -->
+                        {% if klus.status == 'geaccepteerd' %}
+                            <div class="text-center mt-3">
+                                <a href="{{ url_for('chat.chat_page', klusnummer=klus['id'], aanbieder_id=klus['persoon_aanbieder']['idnummer']) }}" class="btn btn-primary btn-sm">
+                                    Chat met Uitvoerder
+                                </a>
+                            </div>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endif %}
