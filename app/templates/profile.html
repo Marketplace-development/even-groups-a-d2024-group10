@@ -15,20 +15,62 @@
             <p><strong>Adres:</strong> {{ user.adres }}</p>
         </div>
 
-        <!-- Knoppen -->
-        <div class="col-md-6 d-flex flex-column justify-content-between button-section">
-            <a href="{{ url_for('main.mijn_aangeboden_klussen') }}" class="btn btn-primary btn-custom">Mijn Aangeboden Klussen</a>
-            <a href="{{ url_for('main.mijn_gezochte_klussen') }}" class="btn btn-primary btn-custom">Mijn Gezochte Klussen</a>
-            <a href="{{ url_for('main.mijn_geschiedenis') }}" class="btn btn-primary btn-custom">Mijn Geschiedenis</a>
-            <a href="{{ url_for('main.profiel_bewerken') }}" class="btn btn-secondary btn-custom">Profiel Bewerken</a>
-
-            <div class="d-flex justify-content-between mt-3">
-                <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">Terug</a>
-                <form action="{{ url_for('main.profiel_verwijderen') }}" method="POST" class="d-inline">
-                    <button type="submit" class="btn btn-danger">Profiel Verwijderen</button>
-                </form>
-                <a href="{{ url_for('main.logout') }}" class="btn btn-danger ms-2">Log uit</a>
+        <!-- Gemiddelde beoordelingen -->
+        <div class="col-md-6">
+            <!-- Gemiddelde beoordeling als Kluszoeker -->
+            <div class="rating-section">
+                <h4>Gemiddelde beoordeling als Kluszoeker:</h4>
+                <div class="star-rating">
+                    {% set gemiddelde_score_zoeker = user.gemiddelde_score_zoeker() %}
+                    {% if gemiddelde_score_zoeker == 0 %}
+                        <p>Geen beoordelingen ontvangen.</p> <!-- Bericht als er geen beoordelingen zijn -->
+                    {% else %}
+                        {% for i in range(1, 11) %}
+                            {% if gemiddelde_score_zoeker >= i %}
+                                <span class="star full"></span>
+                            {% elif gemiddelde_score_zoeker + 0.5 >= i %}
+                                <span class="star half"></span>
+                            {% else %}
+                                <span class="star empty"></span>
+                            {% endif %}
+                        {% endfor %}
+                        <p>{{ gemiddelde_score_zoeker }}/10</p>
+                    {% endif %}
+                </div>
             </div>
+
+            <!-- Gemiddelde beoordeling als Klusaanbieder -->
+            <div class="rating-section mt-4">
+                <h4>Gemiddelde beoordeling als Klusaanbieder:</h4>
+                <div class="star-rating">
+                    {% set gemiddelde_score_aanbieder = user.gemiddelde_score_aanbieder() %}
+                    {% if gemiddelde_score_aanbieder == 0 %}
+                        <p>Geen beoordelingen ontvangen.</p> <!-- Bericht als er geen beoordelingen zijn -->
+                    {% else %}
+                        {% for i in range(1, 11) %}
+                            {% if gemiddelde_score_aanbieder >= i %}
+                                <span class="star full"></span>
+                            {% elif gemiddelde_score_aanbieder + 0.5 >= i %}
+                                <span class="star half"></span>
+                            {% else %}
+                                <span class="star empty"></span>
+                            {% endif %}
+                        {% endfor %}
+                        <p>{{ gemiddelde_score_aanbieder }}/10</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigatieknoppen -->
+    <div class="row mt-5">
+        <div class="col-md-12 d-flex justify-content-between">
+            <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">Terug naar Dashboard</a>
+            <a href="{{ url_for('main.profiel_bewerken') }}" class="btn btn-primary">Profiel Bewerken</a>
+            <form action="{{ url_for('main.profiel_verwijderen') }}" method="POST" class="d-inline">
+                <button type="submit" class="btn btn-danger">Profiel Verwijderen</button>
+            </form>
         </div>
     </div>
 </div>
@@ -59,26 +101,40 @@
     .profile-info strong {
         color: #10246B;
     }
-    .button-section {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
+    .rating-section {
+        margin-top: 20px;
     }
-    .btn-custom {
-        padding: 12px 20px;
+    .rating-section h4 {
+        color: #10246B;
+        font-size: 20px;
+    }
+    .star-rating {
+        display: flex;
+        align-items: center;
+    }
+    .star {
+        width: 20px;
+        height: 20px;
+        display: inline-block;
+        margin-right: 2px;
+        background-size: cover;
+    }
+    .star.full {
+        background-image: url('/static/images/star-full.png');
+    }
+    .star.half {
+        background-image: url('/static/images/star-half.png');
+    }
+    .star.empty {
+        background-image: url('/static/images/star-empty.png');
+    }
+    .btn {
+        padding: 10px 20px;
         font-size: 16px;
         font-weight: bold;
         text-align: center;
         border-radius: 8px;
         text-decoration: none;
-    }
-    .btn-primary {
-        background-color: #10246B;
-        color: white;
-        border: none;
-    }
-    .btn-primary:hover {
-        background-color: #0e1f4a;
     }
     .btn-secondary {
         background-color: #6c757d;
@@ -88,6 +144,14 @@
     .btn-secondary:hover {
         background-color: #5a6268;
     }
+    .btn-primary {
+        background-color: #10246B;
+        color: white;
+        border: none;
+    }
+    .btn-primary:hover {
+        background-color: #0e1f4a;
+    }
     .btn-danger {
         background-color: #e74c3c;
         border: none;
@@ -95,15 +159,6 @@
     }
     .btn-danger:hover {
         background-color: #c0392b;
-    }
-    .d-inline {
-        display: inline-block;
-    }
-    .mt-3 {
-        margin-top: 15px;
-    }
-    .ms-2 {
-        margin-left: 10px;
     }
 </style>
 {% endblock %}

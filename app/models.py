@@ -1,5 +1,5 @@
 from datetime import datetime
-from . import db  # Gebruik de geïmporteerde instantie van SQLAlchemy
+from . import db  # Verwijzen naar extensiemodule
 import uuid
 from flask_login import current_user
 from sqlalchemy import CheckConstraint
@@ -34,20 +34,43 @@ class Persoon(db.Model):
     voorkeur_categorie_rel = db.relationship('Categorie', backref='personen', lazy=True)
     klusaanbieders = db.relationship('Klusaanbieder', backref='persoon_aanbieder', lazy='joined')
     kluszoekers = db.relationship('Kluszoeker', backref='persoon_zoeker', lazy='joined')
+    
 
-    def gemiddelde_score(self):
-        ratings = Rating.query.filter(
-            (Rating.kluszoeker_id == self.idnummer) | (Rating.klusaanbieder_id == self.idnummer)
-        ).all()
-
+    def gemiddelde_score_zoeker(self):
+        ratings = Rating.query.filter(Rating.kluszoeker_id == self.idnummer).all()
         if not ratings:
-            return 'Geen beoordelingen'
+            return 0.0  # Geen beoordelingen
 
-        total_score = sum(
-            r.rating_zoeker + r.rating_aanbieder for r in ratings
-        )
-        aantal_cijfers = len(ratings) * 2
-        return round(total_score / aantal_cijfers, 2)
+    # Bereken het gemiddelde voor elke beoordeling en het algemene gemiddelde
+        scores = []
+        for r in ratings:
+            totaal = sum([
+                r.vriendelijkheid_zoeker or 0,
+                r.tijdigheid or 0,
+                r.kwaliteit or 0,
+                r.communicatie_zoeker or 0,
+                r.algemene_ervaring_zoeker or 0
+            ])
+            scores.append(totaal / 5)  # Gemiddelde per beoordelingscriterium
+        return round(sum(scores) / len(scores), 2) if scores else 0
+
+    def gemiddelde_score_aanbieder(self):
+        ratings = Rating.query.filter(Rating.klusaanbieder_id == self.idnummer).all()
+        if not ratings:
+            return 0.0  # Geen beoordelingen
+
+        scores = []
+        for r in ratings:
+            totaal = sum([
+                r.vriendelijkheid_aanbieder or 0,
+                r.gastvrijheid or 0,
+                r.betrouwbaarheid or 0,
+                r.communicatie_aanbieder or 0,
+                r.algemene_ervaring_aanbieder or 0
+            ])
+            scores.append(totaal / 5)  # Gemiddelde per beoordelingscriterium
+        return round(sum(scores) / len(scores), 2) if scores else 0
+
 
 
 # Klusaanbieder Model
@@ -107,6 +130,12 @@ class Klus(db.Model):
     # Relatie naar Categorie (via ForeignKey 'categorie')
     categorie_ref = db.relationship('Categorie', backref='klussen', lazy=True)
 
+    def is_gewaardeerd_door_aanbieder(self):
+        return any(r.vriendelijkheid_zoeker is not None for r in self.ratings)
+
+    def is_gewaardeerd_door_zoeker(self):
+        return any(r.vriendelijkheid_aanbieder is not None for r in self.ratings)
+    
     def __repr__(self):
         return f'<Klus {self.klusnummer} voor {self.locatie}>'
     
@@ -120,25 +149,39 @@ class Categorie(db.Model):
         return f'<Categorie {self.categorie}>'
 
 class Rating(db.Model):
+    __tablename__ = 'rating'
+
     id = db.Column(db.Integer, primary_key=True)
     klusnummer = db.Column(db.String(36), db.ForeignKey('klus.klusnummer'), nullable=False)
-    kluszoeker_id = db.Column(db.String(10), db.ForeignKey('persoon.idnummer'), nullable=False)
-    klusaanbieder_id = db.Column(db.String(10), db.ForeignKey('persoon.idnummer'), nullable=False)
-    communicatie = db.Column(db.Integer, nullable=False)  # Cijfer op 10
-    betrouwbaarheid = db.Column(db.Integer, nullable=False)  # Cijfer op 10
-    tijdigheid = db.Column(db.Integer, nullable=False)  # Cijfer op 10
-    kwaliteit = db.Column(db.Integer, nullable=False)  # Cijfer op 10
-    algemene_ervaring = db.Column(db.Integer, nullable=False)  # Cijfer op 10
-    comment = db.Column(db.String(500), nullable=True)  # Optioneel commentaar
+    
+    # Velden voor rate_zoeker (beoordeling door klusaanbieder)
+    kluszoeker_id = db.Column(db.String(10), db.ForeignKey('persoon.idnummer'), nullable=True)
+    vriendelijkheid_zoeker = db.Column(db.Integer, nullable=True)  # Score van 1-10
+    tijdigheid = db.Column(db.Integer, nullable=True)  # Score van 1-10
+    kwaliteit = db.Column(db.Integer, nullable=True)  # Score van 1-10
+    communicatie_zoeker = db.Column(db.Integer, nullable=True)  # Score van 1-10
+    algemene_ervaring_zoeker = db.Column(db.Integer, nullable=True)  # Score van 1-10
+
+    # Velden voor rate_aanbieder (beoordeling door kluszoeker)
+    klusaanbieder_id = db.Column(db.String(10), db.ForeignKey('persoon.idnummer'), nullable=True)
+    vriendelijkheid_aanbieder = db.Column(db.Integer, nullable=True)  # Score van 1-10
+    gastvrijheid = db.Column(db.Integer, nullable=True)  # Score van 1-10
+    betrouwbaarheid = db.Column(db.Integer, nullable=True)  # Score van 1-10
+    communicatie_aanbieder = db.Column(db.Integer, nullable=True)  # Score van 1-10
+    algemene_ervaring_aanbieder = db.Column(db.Integer, nullable=True)  # Score van 1-10
+
+    # Algemene velden
+    comment = db.Column(db.String(500), nullable=True)  # Optionele commentaar
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     # Relaties
     klus = db.relationship('Klus', backref=db.backref('ratings', lazy=True))
-    kluszoeker = db.relationship('Persoon', foreign_keys=[kluszoeker_id])
-    klusaanbieder = db.relationship('Persoon', foreign_keys=[klusaanbieder_id])
+    kluszoeker = db.relationship('Persoon', foreign_keys=[kluszoeker_id], backref='zoeker_ratings')
+    klusaanbieder = db.relationship('Persoon', foreign_keys=[klusaanbieder_id], backref='aanbieder_ratings')
 
     def __repr__(self):
-        return f'<Rating {self.id}>'
+        return f'<Rating {self.id} - Klusnummer {self.klusnummer}>'
+
 
 
 
@@ -151,3 +194,30 @@ class CategorieStatistiek(db.Model):
     persoon = db.relationship('Persoon', backref='categorie_statistieken', lazy=True)
     categorie_ref = db.relationship('Categorie', backref='gebruikers_statistieken', lazy=True)
 
+
+
+
+
+
+
+
+
+
+
+class Bericht(db.Model):
+    __tablename__ = 'bericht'
+
+    id = db.Column(db.Integer, primary_key=True)
+    afzender_id = db.Column(db.String(10), db.ForeignKey('persoon.idnummer'), nullable=False)
+    ontvanger_id = db.Column(db.String(10), db.ForeignKey('persoon.idnummer'), nullable=False)
+    klusnummer = db.Column(db.String(36), db.ForeignKey('klus.klusnummer'), nullable=True)
+    inhoud = db.Column(db.Text, nullable=False)
+    verzonden_op = db.Column(db.TIMESTAMP, nullable=False, default=datetime.utcnow)
+
+    # Relaties
+    afzender = db.relationship('Persoon', foreign_keys=[afzender_id], backref='verzonden_berichten')
+    ontvanger = db.relationship('Persoon', foreign_keys=[ontvanger_id], backref='ontvangen_berichten')
+    klus = db.relationship('Klus', backref=db.backref('berichten', lazy=True))
+
+    def __repr__(self):
+        return f'<Bericht {self.id} van {self.afzender_id} naar {self.ontvanger_id}>'

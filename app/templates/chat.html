@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}Chat voor Klus - KLUSKOMPAS{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Chat voor Klus: {{ klus.naam }}</h2>
+
+    <!-- Berichtenlijst -->
+    <div class="chat-box">
+        {% for bericht in berichten %}
+            <div class="chat-message {{ 'sent' if bericht.afzender_id == session['user_id'] else 'received' }}">
+                <div class="message-content">
+                    <p>{{ bericht.inhoud }}</p>
+                    <span class="message-time">{{ bericht.verzonden_op.strftime('%d-%m-%Y %H:%M') }}</span>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Bericht verzenden -->
+    <form method="POST" action="{{ url_for('chat.chat_page', klusnummer=klus.klusnummer) }}">
+        <div class="input-group">
+            <textarea name="inhoud" placeholder="Type een bericht..." required></textarea>
+            <button type="submit" class="btn btn-primary">Verzenden</button>
+        </div>
+    </form>
+</div>
+
+<style>
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding-top: 50px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        padding: 20px;
+    }
+
+    h2 {
+        text-align: center;
+        color: #10246B;
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    .chat-box {
+        max-height: 400px;
+        overflow-y: auto;
+        background-color: #f9f9f9;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        background-color: #fafafa;
+    }
+
+    .chat-message {
+        margin-bottom: 10px;
+    }
+
+    .sent {
+        text-align: right;
+    }
+
+    .received {
+        text-align: left;
+    }
+
+    .message-content {
+        display: inline-block;
+        max-width: 70%;
+        padding: 10px;
+        border-radius: 8px;
+        background-color: #e3e3e3;
+        margin: 5px;
+        font-size: 14px;
+    }
+
+    .sent .message-content {
+        background-color: #007bff;
+        color: white;
+        margin-left: auto;
+    }
+
+    .received .message-content {
+        background-color: #e4e4e4;
+        color: #333;
+    }
+
+    .message-time {
+        display: block;
+        font-size: 12px;
+        color: #999;
+        margin-top: 5px;
+    }
+
+    .input-group {
+        display: flex;
+        align-items: center;
+    }
+
+    textarea {
+        width: 85%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        resize: none;
+        height: 60px;
+    }
+
+    button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        margin-left: 10px;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    button:focus {
+        outline: none;
+    }
+
+    .back {
+        text-align: center;
+        margin-top: 20px;
+    }
+</style>
+{% endblock %}

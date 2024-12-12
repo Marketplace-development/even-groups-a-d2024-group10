@@ -22,15 +22,19 @@
                                 <li>
                                     <strong>{{ klus.naam }}</strong> - {{ klus.datum.strftime('%d-%m-%Y') }}
                                     <p>Locatie: {{ klus.locatie }}</p>
-                                    {% if klus.voltooid_op %}
                                     <p class="completion-date">Voltooid op: {{ klus.voltooid_op.strftime('%d-%m-%Y %H:%M') }}</p>
+
+                                    <!-- Debugging -->
+                                    <p>Debug: Beoordeeld door aanbieder: {{ klus.is_gewaardeerd_door_aanbieder() }}</p>
+                                    <p>Debug: Beoordeeld door zoeker: {{ klus.is_gewaardeerd_door_zoeker() }}</p>
+
+                                    <!-- Condities voor knop zichtbaar maken -->
+                                    {% if klus.is_gewaardeerd_door_aanbieder() and klus.is_gewaardeerd_door_zoeker() %}
+                                        <p>Beide beoordelingen zijn ingediend.</p>
+                                    {% elif klus.is_gewaardeerd_door_aanbieder() %}
+                                        <p>Beoordeling door jou als klusaanbieder is al ingediend.</p>
                                     {% else %}
-                                    <p class="completion-date">Voltooid op: Onbekend</p>
-                                    {% endif %}
-                                    {% if not klus.ratings %}
-                                        <a href="{{ url_for('main.submit_rating', klusnummer=klus.klusnummer) }}" class="btn-rating">Beoordeling Indienen</a>
-                                    {% else %}
-                                        <p>Beoordeling al ingediend.</p>
+                                        <a href="{{ url_for('main.rate_zoeker', klusnummer=klus.klusnummer) }}" class="btn-rating">Beoordeling Indienen</a>
                                     {% endif %}
                                 </li>
                             {% endfor %}
@@ -55,15 +59,19 @@
                                 <li>
                                     <strong>{{ klus.naam }}</strong> - {{ klus.datum.strftime('%d-%m-%Y') }}
                                     <p>Locatie: {{ klus.locatie }}</p>
-                                    {% if klus.voltooid_op %}
                                     <p class="completion-date">Voltooid op: {{ klus.voltooid_op.strftime('%d-%m-%Y %H:%M') }}</p>
+
+                                    <!-- Debugging -->
+                                    <p>Debug: Beoordeeld door aanbieder: {{ klus.is_gewaardeerd_door_aanbieder() }}</p>
+                                    <p>Debug: Beoordeeld door zoeker: {{ klus.is_gewaardeerd_door_zoeker() }}</p>
+
+                                    <!-- Condities voor knop zichtbaar maken -->
+                                    {% if klus.is_gewaardeerd_door_zoeker() and klus.is_gewaardeerd_door_aanbieder() %}
+                                        <p>Beide beoordelingen zijn ingediend.</p>
+                                    {% elif klus.is_gewaardeerd_door_zoeker() %}
+                                        <p>Beoordeling door jou als kluszoeker is al ingediend.</p>
                                     {% else %}
-                                    <p class="completion-date">Voltooid op: Onbekend</p>
-                                    {% endif %}
-                                    {% if not klus.ratings %}
-                                        <a href="{{ url_for('main.submit_rating', klusnummer=klus.klusnummer) }}" class="btn-rating">Beoordeling Indienen</a>
-                                    {% else %}
-                                        <p>Beoordeling al ingediend.</p>
+                                        <a href="{{ url_for('main.rate_aanbieder', klusnummer=klus.klusnummer) }}" class="btn-rating">Beoordeling Indienen</a>
                                     {% endif %}
                                 </li>
                             {% endfor %}
@@ -76,6 +84,7 @@
         </div>
     </div>
 </div>
+
 
 <style>
     body {

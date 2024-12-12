@@ -2,10 +2,9 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
-# Maak één instantie van SQLAlchemy aan
+# Maak één instantie van SQLAlchemy en Migrate aan
 db = SQLAlchemy()
 migrate = Migrate()
-
 
 def create_app():
     app = Flask(__name__)
@@ -18,8 +17,10 @@ def create_app():
     migrate.init_app(app, db)
 
     # Registreer de blueprints
-    from .routes import main
+    from .routes import main  # Importeer de routes-Blueprint
+    from .chat import chat   # Zorg dat chat expliciet wordt geïmporteerd
     app.register_blueprint(main)
+    app.register_blueprint(chat, url_prefix='/chat')  # Registreer de chat-Blueprint
 
     # Stel de geheime sleutel in (gebruik een veilige waarde in productie)
     app.secret_key = 'SECRET_KEY'

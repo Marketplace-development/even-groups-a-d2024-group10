@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Mijn Chats - KLUSKOMPAS{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Mijn Chats</h2>
+
+    <!-- Container voor de klussen naast elkaar -->
+    <div class="row">
+        <!-- Aangeboden Klussen -->
+        <div class="col-md-6">
+            <h3>Aangeboden Klussen</h3>
+            {% for klus in klussen %}
+                {% if klus.type == 'aangeboden' %}
+                    <div class="klus-card">
+                        <h4>{{ klus.naam }} ({{ klus.status }})</h4>
+                        <p><strong>Klusnaam:</strong> {{ klus.naam }}</p>
+                        <p><strong>Naam:</strong> {{ klus.other_person_name }}</p>  <!-- De naam van de andere persoon -->
+
+                        <!-- Toon berichten alleen als er berichten zijn -->
+                        {% if klus.berichten %}
+                            <div class="chat-preview">
+                                <p><strong>Aantal berichten:</strong> {{ klus.berichten|length }}</p>
+                                <p><strong>Laatste bericht:</strong> {{ klus.berichten[0].inhoud[:50] }}...</p>
+                            </div>
+                        {% else %}
+                            <p>Er zijn geen berichten in deze chat.</p>
+                        {% endif %}
+
+                        <a href="{{ url_for('chat.chat_page', klusnummer=klus.klusnummer) }}" class="btn btn-primary btn-sm">Bekijk Chat</a>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <!-- Gezochte Klussen -->
+        <div class="col-md-6">
+            <h3>Gezochte Klussen</h3>
+            {% for klus in klussen %}
+                {% if klus.type == 'gezocht' %}
+                    <div class="klus-card">
+                        <h4>{{ klus.naam }} ({{ klus.status }})</h4>
+                        <p><strong>Klusnaam:</strong> {{ klus.naam }}</p>
+                        <p><strong>Naam: </strong> {{ klus.other_person_name }}</p>  <!-- De naam van de andere persoon -->
+
+                        <!-- Toon berichten alleen als er berichten zijn -->
+                        {% if klus.berichten %}
+                            <div class="chat-preview">
+                                <p><strong>Aantal berichten:</strong> {{ klus.berichten|length }}</p>
+                                <p><strong>Laatste bericht:</strong> {{ klus.berichten[0].inhoud[:50] }}...</p>
+                            </div>
+                        {% else %}
+                            <p>Er zijn geen berichten in deze chat.</p>
+                        {% endif %}
+
+                        <a href="{{ url_for('chat.chat_page', klusnummer=klus.klusnummer) }}" class="btn btn-primary btn-sm">Bekijk Chat</a>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding-top: 50px;
+    }
+
+    .row {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .col-md-6 {
+        width: 48%;
+    }
+
+    .klus-card {
+        background: #ffffff;
+        border: 1px solid #ddd;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    h3 {
+        color: #10246B;
+    }
+
+    .chat-preview {
+        background-color: #f9f9f9;
+        padding: 10px;
+        border: 1px solid #ddd;
+        margin-bottom: 15px;
+        border-radius: 8px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+    }
+
+    .btn:hover {
+        background-color: #0056b3;
+    }
+</style>
+{% endblock %}

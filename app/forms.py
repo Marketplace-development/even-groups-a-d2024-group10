@@ -87,3 +87,31 @@ class RatingForm(FlaskForm):
     algemene_ervaring = IntegerField('Algemene Ervaring', validators=[DataRequired()])
     algemene_ervaring_comment = StringField('Commentaar over Algemene Ervaring', validators=[Optional()])
     submit = SubmitField('Indienen')
+
+
+class RatingFormForZoeker(FlaskForm):
+    vriendelijkheid = IntegerField('Vriendelijkheid', validators=[DataRequired()])
+    vriendelijkheid_comment = StringField('Commentaar over Vriendelijkheid', validators=[Optional()])
+    tijdigheid = IntegerField('Tijdigheid', validators=[DataRequired()])
+    tijdigheid_comment = StringField('Commentaar over Tijdigheid', validators=[Optional()])
+    kwaliteit = IntegerField('Kwaliteit', validators=[DataRequired()])
+    kwaliteit_comment = StringField('Commentaar over Kwaliteit', validators=[Optional()])
+    communicatie = IntegerField('Communicatie', validators=[DataRequired()])
+    communicatie_comment = StringField('Commentaar over Communicatie', validators=[Optional()])
+    algemene_ervaring = IntegerField('Algemene Ervaring', validators=[DataRequired()])
+    algemene_ervaring_comment = StringField('Commentaar over Algemene Ervaring', validators=[Optional()])
+    submit = SubmitField('Indienen')
+
+
+class RatingFormForAanbieder(FlaskForm):
+    vriendelijkheid = IntegerField('Vriendelijkheid', validators=[DataRequired()])
+    vriendelijkheid_comment = StringField('Commentaar over Vriendelijkheid', validators=[Optional()])
+    gastvrijheid = IntegerField('Gastvrijheid', validators=[DataRequired()])
+    gastvrijheid_comment = StringField('Commentaar over Gastvrijheid', validators=[Optional()])
+    betrouwbaarheid = IntegerField('Betrouwbaarheid', validators=[DataRequired()])
+    betrouwbaarheid_comment = StringField('Commentaar over Betrouwbaarheid', validators=[Optional()])
+    communicatie = IntegerField('Communicatie', validators=[DataRequired()])
+    communicatie_comment = StringField('Commentaar over Communicatie', validators=[Optional()])
+    algemene_ervaring = IntegerField('Algemene Ervaring', validators=[DataRequired()])
+    algemene_ervaring_comment = StringField('Commentaar over Algemene Ervaring', validators=[Optional()])
+    submit = SubmitField('Indienen')

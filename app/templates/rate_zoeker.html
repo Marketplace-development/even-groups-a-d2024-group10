@@ -80,34 +80,22 @@
 <div class="container">
     <div class="header">
         <h2>Beoordeling voor klus "{{ klus.naam }}"</h2>
-        <p>{{ "Beoordeel de kluszoeker" if is_aangeboden else "Beoordeel de klusaanbieder" }}</p>
+        <p>Beoordeel de kluszoeker</p>
     </div>
 
-    <form method="POST" action="{{ url_for('main.submit_rating', klusnummer=klus.klusnummer) }}">
+    <form method="POST" action="{{ url_for('main.rate_zoeker', klusnummer=klus.klusnummer) }}">
         {{ form.hidden_tag() }}
         
-        <!-- Communicatie -->
+        <!-- Vriendelijkheid -->
         <div class="criteria">
-            <label for="communicatie">Communicatie</label>
+            <label for="vriendelijkheid">Vriendelijkheid</label>
             <div class="star-rating">
                 {% for i in range(10, 0, -1) %}
-                <input type="radio" name="communicatie" value="{{ i }}" id="communicatie-{{ i }}" {% if form.communicatie.data == i %}checked{% endif %}>
-                <label for="communicatie-{{ i }}">&#9733;</label>
+                <input type="radio" name="vriendelijkheid" value="{{ i }}" id="vriendelijkheid-{{ i }}" {% if form.vriendelijkheid.data == i %}checked{% endif %}>
+                <label for="vriendelijkheid-{{ i }}">&#9733;</label>
                 {% endfor %}
             </div>
-            {{ form.communicatie_comment(class_="form-control comment", placeholder="Optioneel: voeg commentaar toe over Communicatie") }}
-        </div>
-
-        <!-- Betrouwbaarheid -->
-        <div class="criteria">
-            <label for="betrouwbaarheid">Betrouwbaarheid</label>
-            <div class="star-rating">
-                {% for i in range(10, 0, -1) %}
-                <input type="radio" name="betrouwbaarheid" value="{{ i }}" id="betrouwbaarheid-{{ i }}" {% if form.betrouwbaarheid.data == i %}checked{% endif %}>
-                <label for="betrouwbaarheid-{{ i }}">&#9733;</label>
-                {% endfor %}
-            </div>
-            {{ form.betrouwbaarheid_comment(class_="form-control comment", placeholder="Optioneel: voeg commentaar toe over Betrouwbaarheid") }}
+            {{ form.vriendelijkheid_comment(class_="form-control comment", placeholder="Optioneel: voeg commentaar toe over Vriendelijkheid") }}
         </div>
 
         <!-- Tijdigheid -->
@@ -132,6 +120,18 @@
                 {% endfor %}
             </div>
             {{ form.kwaliteit_comment(class_="form-control comment", placeholder="Optioneel: voeg commentaar toe over Kwaliteit") }}
+        </div>
+
+        <!-- Communicatie -->
+        <div class="criteria">
+            <label for="communicatie">Communicatie</label>
+            <div class="star-rating">
+                {% for i in range(10, 0, -1) %}
+                <input type="radio" name="communicatie" value="{{ i }}" id="communicatie-{{ i }}" {% if form.communicatie.data == i %}checked{% endif %}>
+                <label for="communicatie-{{ i }}">&#9733;</label>
+                {% endfor %}
+            </div>
+            {{ form.communicatie_comment(class_="form-control comment", placeholder="Optioneel: voeg commentaar toe over Communicatie") }}
         </div>
 
         <!-- Algemene Ervaring -->
