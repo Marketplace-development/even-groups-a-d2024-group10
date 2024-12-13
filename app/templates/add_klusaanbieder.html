@@ -3,31 +3,40 @@
 {% block title %}Klus Aanmaken - KLUSKOMPAS{% endblock %}
 
 {% block content %}
-<!-- Centraal geplaatste container met originele lay-out -->
-<div class="main-container" style="display: flex; justify-content: center; align-items: center; height: calc(100vh - 80px);">
-    <div class="form-container" style="width: 400px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); background: white;">
-        <h1 style="text-align: center; color: #10246B; margin-bottom: 20px;">Klus Aanmaken</h1>
+<div class="main-container" style="display: flex; justify-content: center; align-items: flex-start; min-height: 100vh;">
+    <div class="form-container" style="width: 400px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); background: white; overflow-y: auto;">
+        <!-- Titel blijft altijd bovenaan -->
+        <h1 style="text-align: center; color: white; margin-bottom: 20px; position: sticky; top: 0; background-color: #10246B; padding: 10px 0; z-index: 10; border-radius: 8px 8px 0 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">Klus Aanmaken</h1>
+        
         <form method="POST" action="{{ url_for('main.add_klusaanbieder') }}">
-            {{ form.hidden_tag() }} <!-- Voeg een CSRF-token toe -->
+            {{ form.hidden_tag() }}
 
             <!-- Titel -->
             <div class="form-group" style="margin-bottom: 15px;">
                 <label for="naam" style="font-size: 16px; font-weight: bold; color: #10246B;">Titel:</label>
                 {{ form.naam(class_="form-control", placeholder="Voer een titel in") }}
             </div>
-            
+
             <!-- Categorie -->
             <div class="form-group" style="margin-bottom: 15px;">
                 <label for="categorie" style="font-size: 16px; font-weight: bold; color: #10246B;">Categorie:</label>
                 {{ form.categorie(class_="form-control") }}
             </div>
-            
-            <!-- Plaats -->
+
+            <!-- Stad -->
             <div class="form-group" style="margin-bottom: 15px;">
-                <label for="locatie" style="font-size: 16px; font-weight: bold; color: #10246B;">Plaats:</label>
-                {{ form.locatie(class_="form-control", placeholder="Voer een plaats in") }}
+                <label for="stad" style="font-size: 16px; font-weight: bold; color: #10246B;">Stad:</label>
+                {{ form.stad(class_="form-control", placeholder="Voer een Stad in") }}
+                <ul id="stad-suggesties" style="list-style: none; padding: 0; margin-top: 5px; display: none; border: 1px solid #ccc; max-height: 200px; overflow-y: auto;"></ul>
             </div>
-            
+
+            <!-- Adres -->
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label for="adres" style="font-size: 16px; font-weight: bold; color: #10246B;">Adres:</label>
+                {{ form.adres(class_="form-control", placeholder="Voer een adres in") }}
+                <ul id="adres-suggesties" style="list-style: none; padding: 0; margin-top: 5px; display: none; border: 1px solid #ccc; max-height: 200px; overflow-y: auto;"></ul>
+            </div>
+
             <!-- Beschrijving -->
             <div class="form-group" style="margin-bottom: 15px;">
                 <label for="beschrijving" style="font-size: 16px; font-weight: bold; color: #10246B;">Beschrijving:</label>
@@ -77,6 +86,8 @@
 
     .form-container {
         margin-top: 50px;
+        max-height: 90vh;
+        overflow-y: auto;
     }
 
     .form-control {
@@ -90,5 +101,93 @@
         outline: none;
         border-color: #10246B;
     }
+
+    #stad-suggesties, #adres-suggesties {
+        list-style: none;
+        padding: 0;
+        margin-top: 5px;
+        display: none;
+        border: 1px solid #ccc;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    #stad-suggesties li, #adres-suggesties li {
+        padding: 8px;
+        cursor: pointer;
+        background-color: #fff;
+    }
+
+    #stad-suggesties li:hover, #adres-suggesties li:hover {
+        background-color: #f0f0f0;
+    }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const stadInput = document.getElementById('stad');
+        const adresInput = document.getElementById('adres');
+        const stadSuggesties = document.getElementById('stad-suggesties');
+        const adresSuggesties = document.getElementById('adres-suggesties');
+        let geselecteerdeStad = null;
+
+        stadInput.addEventListener('input', function() {
+            const query = stadInput.value.trim();
+            if (query.length < 3) {
+                stadSuggesties.style.display = 'none';
+                return;
+            }
+
+            fetch(`https://nominatim.openstreetmap.org/search?q=${query}&format=json&addressdetails=1&limit=5`)
+                .then(response => response.json())
+                .then(data => {
+                    stadSuggesties.innerHTML = '';
+                    stadSuggesties.style.display = 'block';
+                    data.forEach(location => {
+                        const li = document.createElement('li');
+                        li.textContent = location.display_name;
+                        li.addEventListener('click', function() {
+                            stadInput.value = location.display_name;
+                            geselecteerdeStad = location;
+                            stadSuggesties.style.display = 'none';
+                            adresInput.disabled = false;
+                        });
+                        stadSuggesties.appendChild(li);
+                    });
+                });
+        });
+
+        adresInput.addEventListener('input', function() {
+            if (!geselecteerdeStad) return;
+            const query = adresInput.value.trim();
+            if (query.length < 3) {
+                adresSuggesties.style.display = 'none';
+                return;
+            }
+
+            fetch(`https://nominatim.openstreetmap.org/search?q=${query},${geselecteerdeStad.display_name}&format=json&addressdetails=1&limit=5`)
+                .then(response => response.json())
+                .then(data => {
+                    adresSuggesties.innerHTML = '';
+                    adresSuggesties.style.display = 'block';
+                    data.forEach(location => {
+                        const li = document.createElement('li');
+                        li.textContent = `${location.address.road || ''} ${location.address.house_number || ''}`;
+                        li.addEventListener('click', function() {
+                            adresInput.value = `${location.address.road || ''} ${location.address.house_number || ''}`;
+                            adresSuggesties.style.display = 'none';
+                        });
+                        adresSuggesties.appendChild(li);
+                    });
+                });
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('#stad') && !event.target.closest('#adres')) {
+                stadSuggesties.style.display = 'none';
+                adresSuggesties.style.display = 'none';
+            }
+        });
+    });
+</script>
 {% endblock %}

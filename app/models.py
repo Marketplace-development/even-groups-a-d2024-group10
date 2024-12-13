@@ -108,7 +108,7 @@ class Klus(db.Model):
     naam = db.Column(db.String(100), nullable=False)
     beschrijving = db.Column(db.Text, nullable=False)
     categorie = db.Column(db.String(50), db.ForeignKey('categorie.categorie'), nullable=False)  # ForeignKey toegevoegd
-    locatie = db.Column(db.String(100), nullable=False)
+    locatie = db.Column(db.String(200), nullable=False)
     tijd = db.Column(db.Time, nullable=False)  # Tijd als TIME
     vergoeding = db.Column(db.Numeric(10, 2), nullable=False)  # Decimal voor geld
     datum = db.Column(db.Date, nullable=False)  # Datum als DATE

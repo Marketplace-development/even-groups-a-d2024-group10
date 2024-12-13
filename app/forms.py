@@ -38,14 +38,16 @@ class KlusaanbiederForm(FlaskForm):
         ('administratie', 'Administratie'),
         ('zorg', 'Zorg & Verzorging')
     ], validators=[DataRequired()])
-    locatie = StringField('Locatie', validators=[DataRequired(), Length(max=100)])
+    stad = StringField('Stad', validators=[DataRequired(), Length(max=100)])
+    adres = StringField('Adres', validators=[DataRequired(), Length(max=100)])
     uren = SelectField('Uur', choices=[(str(i), f'{i:02}') for i in range(0, 24)], coerce=int, validators=[DataRequired()])
     minuten = SelectField('Minuut', choices=[('00', '00'), ('15', '15'), ('30', '30'), ('45', '45')], validators=[DataRequired()])
     beschrijving = TextAreaField('Beschrijving', validators=[DataRequired()])
-    vergoeding = DecimalField('Vergoeding', places=2, validators=[DataRequired()])  # Decimal voor geld
-    datum = DateField('Datum', format='%Y-%m-%d', validators=[DataRequired()])  # Datum als DATE
+    vergoeding = DecimalField('Vergoeding', places=2, validators=[DataRequired()])
+    datum = DateField('Datum', format='%Y-%m-%d', validators=[DataRequired()])
     verwachte_duur = IntegerField('Verwachte duur (in uren)', validators=[DataRequired(), NumberRange(min=1)])
     submit = SubmitField('Toevoegen')
+
 
 class KluszoekerForm(FlaskForm):
     idnummer = StringField('ID Nummer', validators=[DataRequired()])

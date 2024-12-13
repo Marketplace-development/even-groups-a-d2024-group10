@@ -241,10 +241,15 @@ def add_klusaanbieder():
             # Combineer het uur en de minuut in een tijd in het formaat 'HH:MM'
             tijd = f"{tijd_uren:02}:{tijd_minuten:02}"
 
+            stad = form.stad.data
+            adres = form.adres.data
+            # Combineer stad en adres tot een locatie-string
+            locatie = f"{stad}, {adres}"
+
             # Maak een nieuwe Klus aan
             nieuwe_klus = Klus(
                 naam=form.naam.data,
-                locatie=form.locatie.data,
+                locatie=locatie, #De geombineerde locatie
                 tijd=tijd,  # De gecombineerde tijd
                 beschrijving=form.beschrijving.data,
                 vergoeding=form.vergoeding.data,
