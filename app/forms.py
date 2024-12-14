@@ -49,16 +49,29 @@ class KlusaanbiederForm(FlaskForm):
     verwachte_duur = IntegerField('Verwachte duur (in uren)', validators=[DataRequired(), NumberRange(min=1)])
     submit = SubmitField('Toevoegen')
 
+    # Validatie voor datum
     def validate_datum(form, field):
         if not field.data:
             raise ValidationError('Er is geen datum ingevoerd.')
-        try:
-            ingevoerde_datum = field.data
-            huidige_datum = datetime.now().date()
-            if ingevoerde_datum <= huidige_datum:
-                raise ValidationError('Gelieve een geldige datum in te voeren.')
-        except Exception as e:
-            raise ValidationError(f'Fout bij het verwerken van de datum: {e}')
+        ingevoerde_datum = field.data
+        huidige_datum = datetime.now().date()
+        if ingevoerde_datum <= huidige_datum:
+            raise ValidationError('Gelieve een datum in de toekomst in te voeren.')
+
+    # Validatie voor stad
+    def validate_stad(form, field):
+        from app.models import valideer_adres  # Zorg dat deze functie juist geïmporteerd is
+        stad = field.data
+        if not valideer_adres(stad):
+            raise ValidationError(f"De ingevoerde stad '{stad}' is ongeldig of bestaat niet.")
+
+    # Validatie voor adres (inclusief stad)
+    def validate_adres(form, field):
+        from app.models import valideer_adres  # Zorg dat deze functie juist geïmporteerd is
+        volledige_locatie = f"{form.stad.data}, {field.data}"
+        if not valideer_adres(volledige_locatie):
+            raise ValidationError("Het ingevoerde adres in combinatie met de stad is ongeldig of bestaat niet.")
+
 
 class KluszoekerForm(FlaskForm):
     idnummer = StringField('ID Nummer', validators=[DataRequired()])

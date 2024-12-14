@@ -1,13 +1,13 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, session, request, abort 
 from app import db
-from app.models import Persoon, Klusaanbieder, Kluszoeker, Categorie, Rating, klus_zoeker, Bericht
+from app.models import Persoon, Klusaanbieder, Kluszoeker, Categorie, Rating, klus_zoeker, Bericht, valideer_adres
 from app.forms import PersoonForm, KlusaanbiederForm, KluszoekerForm, RegistrationForm, LoginForm
 from app.forms import RatingFormForZoeker, RatingFormForAanbieder, RatingForm
 import uuid
 from app.models import Klus  # Voeg deze regel toe om de Klus-klasse te importeren
 from flask_login import login_required
 from datetime import datetime
-import requests
+import requests # type: ignore
 
 # Maak een blueprint
 main = Blueprint('main', __name__)
@@ -244,20 +244,6 @@ def get_suggestions(query, is_street=False):
 # Route voor het weergeven van suggesties en het verwerken van het formulier
 @main.route('/add_klusaanbieder', methods=['GET', 'POST'])
 def add_klusaanbieder():
-    stad_suggesties = []
-    adres_suggesties = []
-
-    if request.method == 'POST':
-        pass  # Hier kun je verdere formulierverwerking toevoegen
-
-    stad_query = request.args.get('stad', '')
-    if stad_query:
-        stad_suggesties = get_suggestions(stad_query)
-
-    adres_query = request.args.get('adres', '')
-    if adres_query:
-        adres_suggesties = get_suggestions(adres_query, is_street=True)
-
     # Controleer of de gebruiker is ingelogd
     if 'user_id' not in session:
         flash('Je moet ingelogd zijn om deze actie uit te voeren', 'danger')
@@ -276,7 +262,7 @@ def add_klusaanbieder():
     if form.validate_on_submit():
         try:
             # Haal de uur en minuut op uit het formulier
-            tijd_uren = int(form.uren.data)  # Velden moeten bestaan in het formulier
+            tijd_uren = int(form.uren.data)
             tijd_minuten = int(form.minuten.data)
 
             # Combineer het uur en de minuut in een tijd in het formaat 'HH:MM'
@@ -284,13 +270,17 @@ def add_klusaanbieder():
 
             stad = form.stad.data
             adres = form.adres.data
-            # Combineer stad en adres tot een locatie-string
-            locatie = f"{stad}, {adres}"
+
+            # Validatie: controleer of het ingevoerde adres bestaat
+            volledige_locatie = f"{stad}, {adres}"
+            if not valideer_adres(volledige_locatie):
+                flash("Het ingevoerde adres is ongeldig of bestaat niet.", 'danger')
+                return redirect(url_for('main.add_klusaanbieder'))
 
             # Maak een nieuwe Klus aan
             nieuwe_klus = Klus(
                 naam=form.naam.data,
-                locatie=locatie,  # De gecombineerde locatie
+                locatie=volledige_locatie,  # De gecombineerde locatie
                 tijd=tijd,  # De gecombineerde tijd
                 beschrijving=form.beschrijving.data,
                 vergoeding=form.vergoeding.data,
@@ -313,10 +303,8 @@ def add_klusaanbieder():
             flash(f'Formulierfout: {form.errors}', 'danger')
 
     # Toon het formulier
-    return render_template('add_klusaanbieder.html', 
-                           form=form, 
-                           stad_suggesties=stad_suggesties, 
-                           adres_suggesties=adres_suggesties)
+    return render_template('add_klusaanbieder.html', form=form)
+
 
 
 @main.route('/choose_role')

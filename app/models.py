@@ -3,6 +3,7 @@ from . import db  # Verwijzen naar extensiemodule
 import uuid
 from flask_login import current_user
 from sqlalchemy import CheckConstraint
+import requests # type: ignore
 
 
 # Functie om een ID-nummer te genereren
@@ -221,3 +222,23 @@ class Bericht(db.Model):
 
     def __repr__(self):
         return f'<Bericht {self.id} van {self.afzender_id} naar {self.ontvanger_id}>'
+
+def valideer_adres(adres):
+    # OpenCage Geocoder API endpoint
+    key = 'ac72d275a2624c1fb3b6d4fa964d89b7'
+    url = f'https://api.opencagedata.com/geocode/v1/json?q={adres}&key={key}'
+    
+    # Verstuur het verzoek naar de OpenCage API
+    response = requests.get(url)
+    
+    # Controleer of het verzoek succesvol was (statuscode 200)
+    if response.status_code == 200:
+        data = response.json()
+        
+        # Als er resultaten zijn, betekent dit dat het adres bestaat
+        if data['results']:
+            return True
+        else:
+            return False
+    else:
+        return False

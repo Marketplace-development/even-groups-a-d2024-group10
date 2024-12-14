@@ -5,7 +5,7 @@
 {% block content %}
 <div class="main-container">
     <div class="form-container">
-        <!-- Titel blijft vast bovenaan -->
+        <!-- Titel -->
         <h1>Klus Aanmaken</h1>
         
         <form method="POST" action="{{ url_for('main.add_klusaanbieder') }}">
@@ -15,33 +15,45 @@
             <div class="form-group">
                 <label for="naam">Titel:</label>
                 {{ form.naam(class_="form-control", placeholder="Voer een titel in") }}
+                {% if form.naam.errors %}
+                    <span class="text-danger">{{ form.naam.errors[0] }}</span>
+                {% endif %}
             </div>
 
             <!-- Categorie -->
             <div class="form-group">
                 <label for="categorie">Categorie:</label>
                 {{ form.categorie(class_="form-control") }}
+                {% if form.categorie.errors %}
+                    <span class="text-danger">{{ form.categorie.errors[0] }}</span>
+                {% endif %}
             </div>
 
             <!-- Stad -->
             <div class="form-group">
                 <label for="stad">Stad:</label>
-                {{ form.stad(class_="form-control", placeholder="Voer een postcode in") }}
-                <ul id="stad-suggesties"></ul>
+                {{ form.stad(class_="form-control", placeholder="Voer een stad in") }}
+                {% if form.stad.errors %}
+                    <span class="text-danger">{{ form.stad.errors[0] }}</span>
+                {% endif %}
             </div>
 
             <!-- Adres -->
             <div class="form-group">
                 <label for="adres">Adres:</label>
                 {{ form.adres(class_="form-control", placeholder="Voer een adres in") }}
-                <ul id="adres-suggesties"></ul>
+                {% if form.adres.errors %}
+                    <span class="text-danger">{{ form.adres.errors[0] }}</span>
+                {% endif %}
             </div>
-
 
             <!-- Beschrijving -->
             <div class="form-group">
                 <label for="beschrijving">Beschrijving:</label>
                 {{ form.beschrijving(class_="form-control", placeholder="Beschrijf de klus") }}
+                {% if form.beschrijving.errors %}
+                    <span class="text-danger">{{ form.beschrijving.errors[0] }}</span>
+                {% endif %}
             </div>
 
             <!-- Datum -->
@@ -60,29 +72,42 @@
                     {{ form.uren(class_="form-control", id="tijd-uren", style="width: 50%;") }}
                     {{ form.minuten(class_="form-control", id="tijd-minuten", style="width: 50%;") }}
                 </div>
+                {% if form.uren.errors or form.minuten.errors %}
+                    <span class="text-danger">
+                        {% if form.uren.errors %}{{ form.uren.errors[0] }}{% endif %}
+                        {% if form.minuten.errors %}{{ form.minuten.errors[0] }}{% endif %}
+                    </span>
+                {% endif %}
             </div>
 
             <!-- Geschatte duur -->
             <div class="form-group">
                 <label for="verwachte_duur">Geschatte duur:</label>
                 {{ form.verwachte_duur(class_="form-control", placeholder="Voer de geschatte duur in (in uren)") }}
+                {% if form.verwachte_duur.errors %}
+                    <span class="text-danger">{{ form.verwachte_duur.errors[0] }}</span>
+                {% endif %}
             </div>
 
             <!-- Vergoeding -->
             <div class="form-group">
                 <label for="vergoeding">Vergoeding:</label>
                 {{ form.vergoeding(class_="form-control", placeholder="Voer de vergoeding in (in euro)") }}
+                {% if form.vergoeding.errors %}
+                    <span class="text-danger">{{ form.vergoeding.errors[0] }}</span>
+                {% endif %}
             </div>
 
             <!-- Aanmaken knop -->
-            <button type="submit">Aanmaken</button>
+            <button type="submit" class="btn btn-primary">Aanmaken</button>
         </form>
     </div>
+
     <!-- Terug knop -->
     <div class="back">
         <div class="back-icon">
             <a href="{{ url_for('main.dashboard') }}">
-                <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug">
+                <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" style="width: 100px; height: auto;">
             </a>
         </div>
     </div>
@@ -90,203 +115,115 @@
 
 <!-- CSS -->
 <style>
-    /* Algemene stijlen */
     body, html {
         height: 100%;
         margin: 0;
-        overflow-y: auto; /* Zorg dat de gehele pagina scrollt */
         font-family: 'Inter', sans-serif;
         background-color: #f4f4f9;
     }
 
-    /* Hoofdcontainer */
     .main-container {
         display: flex;
         justify-content: center;
         align-items: flex-start;
         min-height: 100vh;
-        margin: 0;
+        margin: 20px;
     }
 
-    /* Formulier container */
     .form-container {
-        width: 400px;
-        margin-top: 20px;
+        width: 100%;
+        max-width: 500px;
+        padding: 20px;
         border: 1px solid #ddd;
         border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         background: white;
-        overflow: hidden; /* Zorg dat de box de inhoud netjes afsluit */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
-    /* Titel */
     h1 {
         text-align: center;
         color: white;
-        margin: 0;
         background-color: #10246B;
         padding: 20px 0;
-        position: sticky; /* Zorg dat de titel altijd zichtbaar blijft */
-        top: 0;
-        z-index: 10;
-        border-radius: 8px 8px 0 0;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        border-radius: 8px;
     }
 
-    /* Extra marge tussen titel en formulier */
-    form {
-        margin-top: 20px; /* Zorg voor een kleine ruimte tussen de titel en de eerste input */
-    }
-
-    /* Formuliervelden */
     .form-group {
         margin-bottom: 15px;
-        padding: 0 20px;
     }
 
     .form-group label {
-        font-size: 16px;
         font-weight: bold;
-        color: #10246B;
-        display: block;
         margin-bottom: 5px;
+        display: block;
+        color: #10246B;
     }
 
     .form-control {
         width: 100%;
         padding: 10px;
-        font-size: 16px;
         border-radius: 8px;
         border: 1px solid #B2B2B2;
+        font-size: 16px;
     }
 
     .form-control:focus {
-        outline: none;
         border-color: #10246B;
+        outline: none;
     }
 
-    /* Suggestielijsten */
-    #stad-suggesties, #adres-suggesties {
-        list-style: none;
-        padding: 0;
-        margin: 5px 0 0;
-        border: 1px solid #ccc;
-        max-height: 200px;
-        overflow-y: auto;
-        background: white;
+    .text-danger {
+        color: red;
+        font-size: 14px;
+        margin-top: 5px;
+        display: block;
     }
 
-    #stad-suggesties li, #adres-suggesties li {
-        padding: 8px;
-        cursor: pointer;
-    }
-
-    #stad-suggesties li:hover, #adres-suggesties li:hover {
-        background-color: #f0f0f0;
-    }
-
-    /* Knop */
     button {
         width: 100%;
-        padding: 12px;
-        font-size: 18px;
-        background: #10246B;
-        color: white;
+        padding: 10px;
+        font-size: 16px;
         border: none;
         border-radius: 8px;
+        background-color: #10246B;
+        color: white;
         cursor: pointer;
     }
 
     button:hover {
-        background: #0d1d54;
+        background-color: #0d1d54;
     }
 
     /* Terug knop */
     .back {
-        position: fixed; /* Zorgt ervoor dat de knop vast blijft staan */
-        bottom: 20px; /* Plaatst de knop 20px boven de onderkant van het scherm */
-        left: 20px; /* Plaatst de knop 20px vanaf de linkerkant van het scherm */
-        z-index: 100; /* Zorgt ervoor dat de knop altijd zichtbaar blijft */
+        position: fixed; /* Maak de knop vast op het scherm */
+        left: 20px; /* Plaats 20px vanaf de linkerzijde */
+        bottom: 20px; 
+        text-align: center;
+        z-index: 100; /* Zorg ervoor dat de knop altijd boven andere elementen komt */
+    }
+
+    .back-icon {
+        width: 120px; /* Oorspronkelijke grootte van de knop */
+        height: 120px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        overflow: hidden;
+        transition: transform 0.3s ease; /* Voor de vergrotingseffect bij hover */
     }
 
     .back-icon img {
-        width: 100px; /* Pas de grootte van de knop aan */
-        height: auto;
-        cursor: pointer; /* Laat zien dat de knop klikbaar is */
-        transition: transform 0.2s ease; /* Voeg een animatie toe bij hover */
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 
-    .back-icon img:hover {
-        transform: scale(1.1); /* Maak de knop groter bij hover */
+    .back-icon:hover {
+        transform: scale(1.1); /* Vergroot de knop bij hover */
     }
+
 </style>
-
-<!-- JavaScript -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const stadInput = document.getElementById('stad');
-        const adresInput = document.getElementById('adres');
-        const stadSuggesties = document.getElementById('stad-suggesties');
-        const adresSuggesties = document.getElementById('adres-suggesties');
-        let geselecteerdeStad = null;
-
-        stadInput.addEventListener('input', function() {
-            const query = stadInput.value.trim();
-            if (query.length < 3) {
-                stadSuggesties.style.display = 'none';
-                return;
-            }
-
-            fetch(`https://nominatim.openstreetmap.org/search?q=${query}&format=json&addressdetails=1&limit=5`)
-                .then(response => response.json())
-                .then(data => {
-                    stadSuggesties.innerHTML = '';
-                    stadSuggesties.style.display = 'block';
-                    data.forEach(location => {
-                        const li = document.createElement('li');
-                        li.textContent = location.display_name;
-                        li.addEventListener('click', function() {
-                            stadInput.value = location.display_name;
-                            geselecteerdeStad = location;
-                            stadSuggesties.style.display = 'none';
-                            adresInput.disabled = false;
-                        });
-                        stadSuggesties.appendChild(li);
-                    });
-                });
-        });
-
-        adresInput.addEventListener('input', function() {
-            if (!geselecteerdeStad) return;
-            const query = adresInput.value.trim();
-            if (query.length < 3) {
-                adresSuggesties.style.display = 'none';
-                return;
-            }
-
-            fetch(`https://nominatim.openstreetmap.org/search?q=${query},${geselecteerdeStad.display_name}&format=json&addressdetails=1&limit=5`)
-                .then(response => response.json())
-                .then(data => {
-                    adresSuggesties.innerHTML = '';
-                    adresSuggesties.style.display = 'block';
-                    data.forEach(location => {
-                        const li = document.createElement('li');
-                        li.textContent = `${location.address.road || ''} ${location.address.house_number || ''}`;
-                        li.addEventListener('click', function() {
-                            adresInput.value = `${location.address.road || ''} ${location.address.house_number || ''}`;
-                            adresSuggesties.style.display = 'none';
-                        });
-                        adresSuggesties.appendChild(li);
-                    });
-                });
-        });
-
-        document.addEventListener('click', function(event) {
-            if (!event.target.closest('#stad') && !event.target.closest('#adres')) {
-                stadSuggesties.style.display = 'none';
-                adresSuggesties.style.display = 'none';
-            }
-        });
-    });
-</script>
 {% endblock %}
