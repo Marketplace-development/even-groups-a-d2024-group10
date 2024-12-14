@@ -702,6 +702,11 @@ def rate_zoeker(klusnummer):
 
     print(f"DEBUG: Klus {klusnummer}, Aanbieder: {klus.idnummer}, Zoekers: {[zoeker.idnummer for zoeker in klus.klussen_zoekers]}")
 
+    # Controleer of er zoekers zijn voor de klus
+    if not klus.klussen_zoekers:
+        flash('Er zijn geen zoekers voor deze klus. Je kunt deze klus niet beoordelen.', 'warning')
+        return redirect(url_for('main.mijn_geschiedenis'))
+
     # Controleer of er al een beoordeling is voor de kluszoeker
     existing_rating = Rating.query.filter_by(
         klusnummer=klusnummer,
@@ -709,10 +714,13 @@ def rate_zoeker(klusnummer):
         klusaanbieder_id=session.get('user_id')
     ).filter(Rating.vriendelijkheid_zoeker.isnot(None)).first()
 
-    print(f"DEBUG: Existing rating for zoeker: {existing_rating}")
-
     if existing_rating:
-        flash('Je hebt deze kluszoeker al beoordeeld.', 'warning')
+        flash('Je hebt deze kluszoeker al beoordeeld. Je kunt niet meerdere keren een beoordeling geven.', 'warning')
+        return redirect(url_for('main.mijn_geschiedenis'))
+
+    # Controleer of de huidige gebruiker de aanbieder is
+    if session.get('user_id') != klus.idnummer:
+        flash('Je bent niet de aanbieder van deze klus en kunt de kluszoeker dus niet beoordelen.', 'warning')
         return redirect(url_for('main.mijn_geschiedenis'))
 
     form = RatingFormForZoeker()
@@ -736,7 +744,6 @@ def rate_zoeker(klusnummer):
         return redirect(url_for('main.mijn_geschiedenis'))
 
     return render_template('rate_zoeker.html', form=form, klus=klus)
-
 
 @main.route('/rate_aanbieder/<klusnummer>', methods=['GET', 'POST'])
 def rate_aanbieder(klusnummer):
@@ -848,3 +855,72 @@ def mijn_chats():
     klussen_info.sort(key=lambda x: x['berichten'][0].verzonden_op if x['berichten'] else datetime.min, reverse=True)
 
     return render_template('mijn_chats.html', klussen=klussen_info)
+
+
+
+
+@main.route('/ratings/<rol>/<idnummer>', methods=['GET'])
+def ratings(rol, idnummer):
+    # Controleer of de rol geldig is
+    if rol not in ['aanbieder', 'zoeker']:
+        flash('Ongeldige rol opgegeven.', 'error')
+        abort(404)
+
+    # Haal de persoon op
+    persoon = Persoon.query.filter_by(idnummer=idnummer).first()
+    if not persoon:
+        flash('Persoon niet gevonden.', 'error')
+        abort(404)
+
+    # Beoordelingen ophalen op basis van de rol, gesorteerd op de meest recente
+    if rol == 'aanbieder':
+        ratings = Rating.query.filter_by(klusaanbieder_id=idnummer).order_by(Rating.created_at.desc()).all()
+    elif rol == 'zoeker':
+        ratings = Rating.query.filter_by(kluszoeker_id=idnummer).order_by(Rating.created_at.desc()).all()
+
+    # Bereken gemiddelde scores en extra statistieken
+    gemiddelde_scores = {}
+    if ratings:
+        if rol == 'aanbieder':
+            gemiddelde_scores = {
+                'algemene_ervaring': round(sum(r.algemene_ervaring_aanbieder for r in ratings if r.algemene_ervaring_aanbieder) / len(ratings), 1),
+            }
+        elif rol == 'zoeker':
+            gemiddelde_scores = {
+                'algemene_ervaring': round(sum(r.algemene_ervaring_zoeker for r in ratings if r.algemene_ervaring_zoeker) / len(ratings), 1),
+            }
+
+    # Render de template met de gegevens
+    return render_template(
+        'bekijken_ratings.html',
+        persoon=persoon,
+        rol=rol,
+        ratings=ratings,
+        gemiddelde_scores=gemiddelde_scores
+    )
+
+
+
+@main.route('/rating/<int:rating_id>', methods=['GET'])
+def ratings_detail(rating_id):
+    # Zoek de beoordeling op in de database
+    rating = Rating.query.get(rating_id)
+    
+    # Controleer of de beoordeling bestaat
+    if not rating:
+        abort(404, description="Rating not found")
+    
+    # Bepaal de rol (aanbieder of zoeker) door te controleren welke id ingevuld is
+    if rating.klusaanbieder_id:
+        rol = 'aanbieder'  # Beoordeling door de klusaanbieder
+    elif rating.kluszoeker_id:
+        rol = 'zoeker'  # Beoordeling door de kluszoeker
+    else:
+        rol = 'onbekend'  # Als er geen geldig id is, kun je dit als fallback gebruiken
+    
+    # Render de detailpagina
+    return render_template(
+        'ratings_detail.html',
+        rating=rating,
+        rol=rol
+    )

@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Beoordelingsdetails{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Logo -->
+    <div class="logo">
+        <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo">
+    </div>
+
+    <!-- Titel van de pagina -->
+    <h1 class="text-center" style="font-size: 28px; color: #10246B;">Beoordelingsdetails</h1>
+
+    <!-- Detailinformatie -->
+    <div class="details-card">
+        <h2>Algemene Ervaring: {{ rating.algemene_ervaring_aanbieder if rol == 'aanbieder' else rating.algemene_ervaring_zoeker }}</h2>
+        <p><strong>Vriendelijkheid:</strong> {{ rating.vriendelijkheid_aanbieder if rol == 'aanbieder' else rating.vriendelijkheid_zoeker }}</p>
+        {% if rol == 'aanbieder' %}
+        <p><strong>Gastvrijheid:</strong> {{ rating.gastvrijheid }}</p>
+        <p><strong>Betrouwbaarheid:</strong> {{ rating.betrouwbaarheid }}</p>
+        {% else %}
+        <p><strong>Tijdigheid:</strong> {{ rating.tijdigheid }}</p>
+        <p><strong>Kwaliteit:</strong> {{ rating.kwaliteit }}</p>
+        {% endif %}
+        <p><strong>Communicatie:</strong> {{ rating.communicatie_aanbieder if rol == 'aanbieder' else rating.communicatie_zoeker }}</p>
+        
+        <!-- Alleen commentaar tonen als er een commentaar is -->
+        {% if rating.comment %}
+        <p><strong>Commentaar:</strong> {{ rating.comment }}</p>
+        {% else %}
+        <p><strong>Commentaar:</strong> Geen commentaar gegeven.</p>
+        {% endif %}
+
+        <p><strong>Datum:</strong> {{ rating.created_at.strftime('%d-%m-%Y') }}</p>
+    </div>
+
+    <!-- Terug knop -->
+    <div class="logout-icon">
+        <a href="{{ url_for('main.ratings', rol=rol, idnummer=rating.klusaanbieder_id if rol == 'aanbieder' else rating.kluszoeker_id) }}">
+            <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" style="width: 100px; height: auto;">
+        </a>
+    </div>
+</div>
+
+<style>
+    .details-card {
+        width: 90%;
+        max-width: 600px;
+        background-color: #f9f9f9;
+        color: #10246B;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+        margin: 20px auto;
+        text-align: left;
+    }
+
+    .details-card h2 {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 16px;
+        color: #10246B;
+    }
+
+    .details-card p {
+        font-size: 18px;
+        margin: 8px 0;
+    }
+
+    .logout-icon {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .logout-icon img {
+        width: 100px;
+        height: auto;
+    }
+</style>
+{% endblock %}

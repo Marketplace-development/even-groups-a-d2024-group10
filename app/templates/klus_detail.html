@@ -122,9 +122,11 @@
             <div>
                 <span class="label">Aanbieder:</span>
                 <span class="value">
-                    <a href="{{ url_for('main.dashboard', idnummer=klus.persoon_aanbieder.idnummer) }}" style="text-decoration: none; color: #10246B;">
+                    <a href="{{ url_for('main.ratings', rol='aanbieder', idnummer=klus.persoon_aanbieder.idnummer) }}" 
+                        style="text-decoration: none; color: #10246B;">
                         {{ klus.persoon_aanbieder.username }}
                     </a>
+
                 </span>
             </div>
         </div>
