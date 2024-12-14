@@ -3,55 +3,55 @@
 {% block title %}Klus Aanmaken - KLUSKOMPAS{% endblock %}
 
 {% block content %}
-<div class="main-container" style="display: flex; justify-content: center; align-items: flex-start; min-height: 100vh;">
-    <div class="form-container" style="width: 400px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); background: white; overflow-y: auto;">
-        <!-- Titel blijft altijd bovenaan -->
-        <h1 style="text-align: center; color: white; margin-bottom: 20px; position: sticky; top: 0; background-color: #10246B; padding: 10px 0; z-index: 10; border-radius: 8px 8px 0 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">Klus Aanmaken</h1>
+<div class="main-container">
+    <div class="form-container">
+        <!-- Titel blijft vast bovenaan -->
+        <h1>Klus Aanmaken</h1>
         
         <form method="POST" action="{{ url_for('main.add_klusaanbieder') }}">
             {{ form.hidden_tag() }}
 
             <!-- Titel -->
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label for="naam" style="font-size: 16px; font-weight: bold; color: #10246B;">Titel:</label>
+            <div class="form-group">
+                <label for="naam">Titel:</label>
                 {{ form.naam(class_="form-control", placeholder="Voer een titel in") }}
             </div>
 
             <!-- Categorie -->
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label for="categorie" style="font-size: 16px; font-weight: bold; color: #10246B;">Categorie:</label>
+            <div class="form-group">
+                <label for="categorie">Categorie:</label>
                 {{ form.categorie(class_="form-control") }}
             </div>
 
             <!-- Stad -->
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label for="stad" style="font-size: 16px; font-weight: bold; color: #10246B;">Stad:</label>
-                {{ form.stad(class_="form-control", placeholder="Voer een Stad in") }}
-                <ul id="stad-suggesties" style="list-style: none; padding: 0; margin-top: 5px; display: none; border: 1px solid #ccc; max-height: 200px; overflow-y: auto;"></ul>
+            <div class="form-group">
+                <label for="stad">Stad:</label>
+                {{ form.stad(class_="form-control", placeholder="Voer een postcode in") }}
+                <ul id="stad-suggesties"></ul>
             </div>
 
             <!-- Adres -->
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label for="adres" style="font-size: 16px; font-weight: bold; color: #10246B;">Adres:</label>
+            <div class="form-group">
+                <label for="adres">Adres:</label>
                 {{ form.adres(class_="form-control", placeholder="Voer een adres in") }}
-                <ul id="adres-suggesties" style="list-style: none; padding: 0; margin-top: 5px; display: none; border: 1px solid #ccc; max-height: 200px; overflow-y: auto;"></ul>
+                <ul id="adres-suggesties"></ul>
             </div>
 
             <!-- Beschrijving -->
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label for="beschrijving" style="font-size: 16px; font-weight: bold; color: #10246B;">Beschrijving:</label>
+            <div class="form-group">
+                <label for="beschrijving">Beschrijving:</label>
                 {{ form.beschrijving(class_="form-control", placeholder="Beschrijf de klus") }}
             </div>
 
             <!-- Datum -->
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label for="datum" style="font-size: 16px; font-weight: bold; color: #10246B;">Datum:</label>
+            <div class="form-group">
+                <label for="datum">Datum:</label>
                 {{ form.datum(class_="form-control", placeholder="Selecteer een datum") }}
             </div>
 
             <!-- Tijd -->
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label for="tijd" style="font-size: 16px; font-weight: bold; color: #10246B;">Tijd:</label>
+            <div class="form-group">
+                <label for="tijd">Tijd:</label>
                 <div style="display: flex; gap: 5px;">
                     {{ form.uren(class_="form-control", id="tijd-uren", style="width: 50%;") }}
                     {{ form.minuten(class_="form-control", id="tijd-minuten", style="width: 50%;") }}
@@ -59,38 +59,89 @@
             </div>
 
             <!-- Geschatte duur -->
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label for="verwachte_duur" style="font-size: 16px; font-weight: bold; color: #10246B;">Geschatte duur:</label>
+            <div class="form-group">
+                <label for="verwachte_duur">Geschatte duur:</label>
                 {{ form.verwachte_duur(class_="form-control", placeholder="Voer de geschatte duur in") }}
             </div>
 
             <!-- Vergoeding -->
-            <div class="form-group" style="margin-bottom: 20px;">
-                <label for="vergoeding" style="font-size: 16px; font-weight: bold; color: #10246B;">Vergoeding:</label>
+            <div class="form-group">
+                <label for="vergoeding">Vergoeding:</label>
                 {{ form.vergoeding(class_="form-control", placeholder="Voer de vergoeding in") }}
             </div>
 
             <!-- Aanmaken knop -->
-            <button type="submit" style="width: 100%; padding: 12px; font-size: 18px; background: #10246B; color: white; border: none; border-radius: 8px; cursor: pointer;">Aanmaken</button>
+            <button type="submit">Aanmaken</button>
         </form>
     </div>
 </div>
 
-<!-- Stijlen behouden -->
+<!-- CSS -->
 <style>
-    body {
-        font-family: 'Inter', sans-serif;
+    /* Algemene stijlen */
+    body, html {
+        height: 100%;
         margin: 0;
+        overflow-y: auto; /* Zorg dat de gehele pagina scrollt */
+        font-family: 'Inter', sans-serif;
         background-color: #f4f4f9;
     }
 
+    /* Hoofdcontainer */
+    .main-container {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+        margin: 0;
+    }
+
+    /* Formulier container */
     .form-container {
-        margin-top: 50px;
-        max-height: 90vh;
-        overflow-y: auto;
+        width: 400px;
+        margin-top: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background: white;
+        overflow: hidden; /* Zorg dat de box de inhoud netjes afsluit */
+    }
+
+    /* Titel */
+    h1 {
+        text-align: center;
+        color: white;
+        margin: 0;
+        background-color: #10246B;
+        padding: 20px 0;
+        position: sticky; /* Zorg dat de titel altijd zichtbaar blijft */
+        top: 0;
+        z-index: 10;
+        border-radius: 8px 8px 0 0;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Extra marge tussen titel en formulier */
+    form {
+        margin-top: 20px; /* Zorg voor een kleine ruimte tussen de titel en de eerste input */
+    }
+
+    /* Formuliervelden */
+    .form-group {
+        margin-bottom: 15px;
+        padding: 0 20px;
+    }
+
+    .form-group label {
+        font-size: 16px;
+        font-weight: bold;
+        color: #10246B;
+        display: block;
+        margin-bottom: 5px;
     }
 
     .form-control {
+        width: 100%;
         padding: 10px;
         font-size: 16px;
         border-radius: 8px;
@@ -102,27 +153,44 @@
         border-color: #10246B;
     }
 
+    /* Suggestielijsten */
     #stad-suggesties, #adres-suggesties {
         list-style: none;
         padding: 0;
-        margin-top: 5px;
-        display: none;
+        margin: 5px 0 0;
         border: 1px solid #ccc;
         max-height: 200px;
         overflow-y: auto;
+        background: white;
     }
 
     #stad-suggesties li, #adres-suggesties li {
         padding: 8px;
         cursor: pointer;
-        background-color: #fff;
     }
 
     #stad-suggesties li:hover, #adres-suggesties li:hover {
         background-color: #f0f0f0;
     }
+
+    /* Knop */
+    button {
+        width: 100%;
+        padding: 12px;
+        font-size: 18px;
+        background: #10246B;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: #0d1d54;
+    }
 </style>
 
+<!-- JavaScript -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const stadInput = document.getElementById('stad');
