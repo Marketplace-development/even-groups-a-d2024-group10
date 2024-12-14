@@ -15,17 +15,17 @@
                 {% if klus.type == 'aangeboden' %}
                     <div class="klus-card">
                         <h4>{{ klus.naam }} ({{ klus.status }})</h4>
-                        <p><strong>Klusnaam:</strong> {{ klus.naam }}</p>
-                        <p><strong>Naam:</strong> {{ klus.other_person_name }}</p>  <!-- De naam van de andere persoon -->
+                        <p class="text-black"><strong>Klusnaam:</strong> {{ klus.naam }}</p>
+                        <p class="text-black"><strong>Naam:</strong> {{ klus.other_person_name }}</p>  <!-- De naam van de andere persoon -->
 
                         <!-- Toon berichten alleen als er berichten zijn -->
                         {% if klus.berichten %}
                             <div class="chat-preview">
-                                <p><strong>Aantal berichten:</strong> {{ klus.berichten|length }}</p>
-                                <p><strong>Laatste bericht:</strong> {{ klus.berichten[0].inhoud[:50] }}...</p>
+                                <p class="text-black"><strong>Aantal berichten:</strong> {{ klus.berichten|length }}</p>
+                                <p class="text-black"><strong>Laatste bericht:</strong> {{ klus.berichten[0].inhoud[:50] }}...</p>
                             </div>
                         {% else %}
-                            <p>Er zijn geen berichten in deze chat.</p>
+                            <p class="text-black">Er zijn geen berichten in deze chat.</p>
                         {% endif %}
 
                         <a href="{{ url_for('chat.chat_page', klusnummer=klus.klusnummer) }}" class="btn btn-primary btn-sm">Bekijk Chat</a>
@@ -41,17 +41,17 @@
                 {% if klus.type == 'gezocht' %}
                     <div class="klus-card">
                         <h4>{{ klus.naam }} ({{ klus.status }})</h4>
-                        <p><strong>Klusnaam:</strong> {{ klus.naam }}</p>
-                        <p><strong>Naam: </strong> {{ klus.other_person_name }}</p>  <!-- De naam van de andere persoon -->
+                        <p class="text-black"><strong>Klusnaam:</strong> {{ klus.naam }}</p>
+                        <p class="text-black"><strong>Naam: </strong> {{ klus.other_person_name }}</p>  <!-- De naam van de andere persoon -->
 
                         <!-- Toon berichten alleen als er berichten zijn -->
                         {% if klus.berichten %}
                             <div class="chat-preview">
-                                <p><strong>Aantal berichten:</strong> {{ klus.berichten|length }}</p>
-                                <p><strong>Laatste bericht:</strong> {{ klus.berichten[0].inhoud[:50] }}...</p>
+                                <p class="text-black"><strong>Aantal berichten:</strong> {{ klus.berichten|length }}</p>
+                                <p class="text-black"><strong>Laatste bericht:</strong> {{ klus.berichten[0].inhoud[:50] }}...</p>
                             </div>
                         {% else %}
-                            <p>Er zijn geen berichten in deze chat.</p>
+                            <p class="text-black">Er zijn geen berichten in deze chat.</p>
                         {% endif %}
 
                         <a href="{{ url_for('chat.chat_page', klusnummer=klus.klusnummer) }}" class="btn btn-primary btn-sm">Bekijk Chat</a>
@@ -59,6 +59,15 @@
                 {% endif %}
             {% endfor %}
         </div>
+    </div>
+</div>
+
+<!-- Terugknop -->
+<div class="back">
+    <div class="back-icon">
+        <a href="{{ url_for('main.dashboard') }}">
+            <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" style="width: 100px; height: auto;">
+        </a>
     </div>
 </div>
 
@@ -80,7 +89,7 @@
 
     .klus-card {
         background: #ffffff;
-        border: 1px solid #ddd;
+        border: 1px solid #0000;
         padding: 20px;
         margin-bottom: 20px;
         border-radius: 8px;
@@ -94,7 +103,7 @@
     .chat-preview {
         background-color: #f9f9f9;
         padding: 10px;
-        border: 1px solid #ddd;
+        border: 1px solid #000;
         margin-bottom: 15px;
         border-radius: 8px;
     }
@@ -110,5 +119,40 @@
     .btn:hover {
         background-color: #0056b3;
     }
+
+    .text-black {
+        color: #000000; /* Zwart voor tekst zoals Klusnaam, Naam, Aantal berichten, Laatste bericht, etc. */
+    }
+
+    /* Terugknop stijl */
+    .back {
+        position: fixed;
+        left: 20px;
+        bottom: 20px;
+        text-align: center;
+        z-index: 1000;
+    }
+
+    .back-icon {
+        width: 120px;
+        height: 120px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+
+    .back-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .back-icon:hover {
+        transform: scale(1.1);
+    }
 </style>
+
 {% endblock %}
