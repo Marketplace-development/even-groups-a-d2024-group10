@@ -19,13 +19,19 @@
             <!-- Titel van de klus -->
             <h2>{{ klus.naam if klus.naam else "Geen titel beschikbaar" }}</h2>
 
+            <!-- Datum van de klus -->
+            <p><strong>Datum:</strong> {{ klus.datum.strftime('%d-%m-%Y') if klus.datum else "Niet opgegeven" }}</p>
+
+            <!-- Locatie van de klus -->
+            <p><strong>Locatie:</strong> {{ klus.locatie if klus.locatie else "Niet opgegeven" }}</p>
+
             <!-- Link naar details -->
             <a href="{{ url_for('main.klus_detail', klusnummer=klus.klusnummer) }}">meer informatie →</a>
         </div>
         {% endfor %}
     </div>
 
-    <!-- Logout optie -->
+    <!-- Terug naar Dashboard optie -->
     <div class="logout">
         <!-- Afbeelding als terug-icoon -->
         <div class="logout-icon">
@@ -71,6 +77,12 @@
         box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
         margin: 16px auto;
         text-align: center;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .klus-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
     }
 
     .klus-card h2 {
@@ -79,6 +91,11 @@
         color: white;
         margin-bottom: 16px;
         text-transform: uppercase;
+    }
+
+    .klus-card p {
+        font-size: 16px;
+        margin: 5px 0;
     }
 
     .klus-card a {
