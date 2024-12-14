@@ -83,27 +83,34 @@
         background: #0e1f4a;
     }
 
+    /* Terug knop en logout knop */
     .logout {
-        position: absolute;
-        left: 41px;
-        bottom: 20px;
+        position: fixed; /* Maak de knop vast op het scherm */
+        left: 20px; /* Plaats 20px vanaf de linkerzijde */
+        bottom: 20px; /* Plaats 20px vanaf de onderkant */
         text-align: center;
+        z-index: 100; /* Zorg ervoor dat de knop altijd boven andere elementen komt */
     }
 
     .logout-icon {
-        width: 200px;
-        height: 200px;
+        width: 120px; /* Oorspronkelijke grootte van de knop */
+        height: 120px;
         display: flex;
         justify-content: center;
         align-items: center;
         border-radius: 50%;
         overflow: hidden;
+        transition: transform 0.3s ease; /* Voor de vergrotingseffect bij hover */
     }
 
     .logout-icon img {
         width: 100%;
         height: 100%;
         object-fit: cover;
+    }
+
+    .logout-icon:hover {
+        transform: scale(1.1); /* Vergroot de knop bij hover */
     }
 
     /* Nieuwe stijl voor de profielknop rechtsboven */
