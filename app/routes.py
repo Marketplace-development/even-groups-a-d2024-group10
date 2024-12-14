@@ -262,7 +262,7 @@ def add_klusaanbieder():
             db.session.commit()
 
             flash('Klus succesvol toegevoegd!', 'success')
-            return redirect(url_for('main.klussen'))  # Redirect naar de klussenoverzicht
+            return redirect(url_for('main.mijn_aangeboden_klussen'))  # Redirect naar de klussenoverzicht
         except Exception as e:
             db.session.rollback()
             flash(f'Er is een fout opgetreden bij het opslaan: {e}', 'danger')
