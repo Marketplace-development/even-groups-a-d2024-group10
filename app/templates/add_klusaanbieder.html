@@ -47,6 +47,9 @@
             <div class="form-group">
                 <label for="datum">Datum:</label>
                 {{ form.datum(class_="form-control", placeholder="Selecteer een datum") }}
+                {% if form.datum.errors %}
+                    <span class="text-danger">{{ form.datum.errors[0] }}</span>
+                {% endif %}
             </div>
 
             <!-- Tijd -->

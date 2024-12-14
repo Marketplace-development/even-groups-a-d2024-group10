@@ -1,8 +1,9 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, DecimalField, DateField, TextAreaField, SelectField, TimeField
-from wtforms.validators import DataRequired, Email, Length, NumberRange, InputRequired, Optional
+from wtforms.validators import DataRequired, Email, Length, NumberRange, InputRequired, Optional, ValidationError
 import random
 import string
+from datetime import datetime
 
 
 # Functie om een 10-cijferig ID-nummer te genereren
@@ -48,6 +49,16 @@ class KlusaanbiederForm(FlaskForm):
     verwachte_duur = IntegerField('Verwachte duur (in uren)', validators=[DataRequired(), NumberRange(min=1)])
     submit = SubmitField('Toevoegen')
 
+    def validate_datum(form, field):
+        if not field.data:
+            raise ValidationError('Er is geen datum ingevoerd.')
+        try:
+            ingevoerde_datum = field.data
+            huidige_datum = datetime.now().date()
+            if ingevoerde_datum <= huidige_datum:
+                raise ValidationError('Gelieve een geldige datum in te voeren.')
+        except Exception as e:
+            raise ValidationError(f'Fout bij het verwerken van de datum: {e}')
 
 class KluszoekerForm(FlaskForm):
     idnummer = StringField('ID Nummer', validators=[DataRequired()])
