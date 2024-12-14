@@ -11,7 +11,6 @@
 
     <!-- Tabel met klussen -->
     <div class="klussen-table mt-5">
-        <h2>Mijn Klussen</h2>
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -62,14 +61,14 @@
             </tbody>
         </table>
     </div>
+</div>
 
-    <!-- Terug knop -->
-    <div class="back">
-        <div class="back-icon">
-            <a href="{{ url_for('main.mijn_klussen_selectie') }}">
-                <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" style="width: 100px; height: auto;">
-            </a>
-        </div>
+<!-- Terug knop -->
+<div class="back">
+    <div class="back-icon">
+        <a href="{{ url_for('main.mijn_klussen_selectie') }}">
+            <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" style="width: 100px; height: auto;">
+        </a>
     </div>
 </div>
 
@@ -87,19 +86,20 @@
         min-height: 100vh;
         background: white;
         border: 1px solid white;
-        padding-top: 50px;
+        padding-top: 20px;
+        padding-bottom: 50px; /* Zorg ervoor dat de inhoud niet te dicht bij de onderkant komt */
     }
 
     .logo {
-        position: absolute;
-        left: 50%;
-        top: 10px;
-        transform: translateX(-50%);
+        margin-top: 30px auto; 
+        margin-bottom: 30px;
+        text-align: center;
+        display: block;
     }
 
     .klussen-table {
         width: 100%;
-        margin-top: 30px;
+        margin-top: 100px; /* Zorg ervoor dat de tabel niet te dicht bij het logo staat */
         text-align: center;
     }
 
@@ -125,26 +125,32 @@
     }
 
     .back {
-        position: absolute;
-        left: 41px;
+        position: fixed;
+        left: 20px;
         bottom: 20px;
         text-align: center;
+        z-index: 1000; /* Zorgt ervoor dat de knop altijd bovenaan blijft */
     }
 
     .back-icon {
-        width: 200px;
-        height: 200px;
+        width: 120px;
+        height: 120px;
         display: flex;
         justify-content: center;
         align-items: center;
         border-radius: 50%;
         overflow: hidden;
+        transition: transform 0.3s ease;
     }
 
     .back-icon img {
         width: 100%;
         height: 100%;
         object-fit: cover;
+    }
+
+    .back-icon:hover {
+        transform: scale(1.1); /* Vergroot de knop bij hover */
     }
 </style>
 {% endblock %}

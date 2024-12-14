@@ -29,8 +29,8 @@
 </div>
 
 <!-- Terug optie -->
-<div class="logout">
-    <div class="terug-icon">
+<div class="back">
+    <div class="back-icon">
         <a href="{{ url_for('main.dashboard') }}">
             <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" style="width: 100px; height: auto;">
         </a>
@@ -39,21 +39,37 @@
 
 <!-- CSS -->
 <style>
-    .logout {
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    .back {
         position: fixed;
         left: 20px;
         bottom: 20px;
-        z-index: 1000; /* Zorgt ervoor dat de knop altijd bovenaan blijft */
+        text-align: center;
+        z-index: 1000;
     }
 
-    .terug-icon img {
-        width: 100px;
-        height: auto;
-        cursor: pointer;
+    .back-icon {
+        width: 120px;
+        height: 120px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        overflow: hidden;
+        transition: transform 0.3s ease;
     }
 
-    .terug-icon img:hover {
-        opacity: 0.8;
+    .back-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .back-icon:hover {
+        transform: scale(1.1); /* Vergroot de knop bij hover */
     }
 </style>
 {% endblock %}
