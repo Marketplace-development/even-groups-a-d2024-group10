@@ -7,6 +7,7 @@ import uuid
 from app.models import Klus  # Voeg deze regel toe om de Klus-klasse te importeren
 from flask_login import login_required
 from datetime import datetime
+import requests
 
 # Maak een blueprint
 main = Blueprint('main', __name__)
@@ -215,23 +216,63 @@ def profiel_verwijderen():
     return redirect(url_for('main.home'))
 
 
+# Helper functie voor het ophalen van suggesties
+def get_suggestions(query, is_street=False):
+    url = "https://nominatim.openstreetmap.org/search"
+    params = {
+        'q': query,
+        'format': 'json',
+        'addressdetails': 1,
+        'limit': 5
+    }
+    if is_street:
+        params['addressdetails'] = 1
+
+    response = requests.get(url, params=params)
+    data = response.json()
+
+    suggestions = []
+    for location in data:
+        if is_street:
+            suggestion = f"{location.get('address', {}).get('road', '')} {location.get('address', {}).get('house_number', '')}"
+        else:
+            suggestion = location.get('display_name', '')
+        suggestions.append(suggestion)
+
+    return suggestions
+
+# Route voor het weergeven van suggesties en het verwerken van het formulier
 @main.route('/add_klusaanbieder', methods=['GET', 'POST'])
 def add_klusaanbieder():
+    stad_suggesties = []
+    adres_suggesties = []
+
+    if request.method == 'POST':
+        pass  # Hier kun je verdere formulierverwerking toevoegen
+
+    stad_query = request.args.get('stad', '')
+    if stad_query:
+        stad_suggesties = get_suggestions(stad_query)
+
+    adres_query = request.args.get('adres', '')
+    if adres_query:
+        adres_suggesties = get_suggestions(adres_query, is_street=True)
+
     # Controleer of de gebruiker is ingelogd
     if 'user_id' not in session:
         flash('Je moet ingelogd zijn om deze actie uit te voeren', 'danger')
         return redirect(url_for('main.login'))
-    
+
     # Haal de ingelogde persoon op
     persoon = Persoon.query.get(session['user_id'])
-    
+
     if not persoon:
         flash('Persoon niet gevonden', 'danger')
         return redirect(url_for('main.dashboard'))
 
     # Het formulier wordt aangemaakt
     form = KlusaanbiederForm()
-    
+
     if form.validate_on_submit():
         try:
             # Haal de uur en minuut op uit het formulier
@@ -249,7 +290,7 @@ def add_klusaanbieder():
             # Maak een nieuwe Klus aan
             nieuwe_klus = Klus(
                 naam=form.naam.data,
-                locatie=locatie, #De geombineerde locatie
+                locatie=locatie,  # De gecombineerde locatie
                 tijd=tijd,  # De gecombineerde tijd
                 beschrijving=form.beschrijving.data,
                 vergoeding=form.vergoeding.data,
@@ -258,7 +299,7 @@ def add_klusaanbieder():
                 verwachte_duur=form.verwachte_duur.data,
                 idnummer=persoon.idnummer
             )
-            db.session.add(nieuwe_klus) 
+            db.session.add(nieuwe_klus)
             db.session.commit()
 
             flash('Klus succesvol toegevoegd!', 'success')
@@ -272,7 +313,11 @@ def add_klusaanbieder():
             flash(f'Formulierfout: {form.errors}', 'danger')
 
     # Toon het formulier
-    return render_template('add_klusaanbieder.html', form=form)
+    return render_template('add_klusaanbieder.html', 
+                           form=form, 
+                           stad_suggesties=stad_suggesties, 
+                           adres_suggesties=adres_suggesties)
+
 
 @main.route('/choose_role')
 def choose_role():
