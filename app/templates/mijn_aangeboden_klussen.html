@@ -30,22 +30,31 @@
                     <td>{{ klus.status or "beschikbaar" }}</td>
                     <td>
                         <!-- Chatten-knop, zorg ervoor dat klusnummer correct wordt doorgegeven -->
+                        {% if klus.status == 'geaccepteerd' %}
                         {% if klus.id %}
                         <a href="{{ url_for('chat.chat_page', klusnummer=klus.id) }}" class="btn btn-primary btn-sm">Chatten</a>
                         {% else %}
                         <span class="text-danger">Klusnummer ontbreekt</span>
                         {% endif %}
-            
+                        {% endif %}
+
                         <!-- Formulier voor markeren als voltooid -->
+                        {% if klus.status == 'geaccepteerd' %}
                         <form action="{{ url_for('main.markeer_klus_voltooid', klusnummer=klus.id) }}" method="POST" style="display: inline-block;">
                             <input type="hidden" name="klus_id" value="{{ klus.id }}">
                             <button type="submit" class="btn btn-success btn-sm">Markeer als Voltooid</button>
                         </form>
-            
-                        <!-- Formulier voor verwijderen -->
+                        {% endif %}
+
+                        <!-- Formulier voor verwijderen (alleen zichtbaar als de klus niet geaccepteerd is) -->
                         <form action="{{ url_for('main.delete_klus', klusnummer=klus.id) }}" method="POST" style="display: inline-block;">
                             <button type="submit" class="btn btn-danger btn-sm">Verwijder Klus</button>
                         </form>
+
+                        <!-- Nieuwe knop voor ratings (alleen zichtbaar als de klus geaccepteerd is) -->
+                        {% if klus.status == 'geaccepteerd' %}
+                        <a href="{{ url_for('main.ratings', rol='aanbieder', idnummer=klus.klusaanbieder_id) }}" class="btn btn-info btn-sm">Bekijk Beoordelingen</a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endif %}

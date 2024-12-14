@@ -13,6 +13,14 @@
     <h1 class="text-center" style="font-size: 28px; color: #10246B;">Beoordelingen voor {{ persoon.username }}</h1>
     <h3 class="text-center">Rol: {{ 'Klusaanbieder' if rol == 'aanbieder' else 'Kluszoeker' }}</h3>
 
+    <!-- Gemiddelde scores weergeven -->
+    <div class="average-scores text-center">
+        {% if gemiddelde_scores %}
+            <h4>Gemiddelde Scores:</h4>
+            <p>Algemene Ervaring: {{ gemiddelde_scores['algemene_ervaring'] }}</p>
+        {% endif %}
+    </div>
+
     <!-- Scrollbaar overzicht -->
     <div class="scrollable-container">
         {% if ratings %}
@@ -60,6 +68,15 @@
         max-width: 100%;
         height: auto;
         width: 300px;
+    }
+
+    .average-scores {
+        margin-top: 20px;
+    }
+
+    .average-scores p {
+        font-size: 18px;
+        font-weight: bold;
     }
 
     .scrollable-container {

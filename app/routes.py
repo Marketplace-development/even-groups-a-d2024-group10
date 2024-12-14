@@ -900,7 +900,6 @@ def ratings(rol, idnummer):
     )
 
 
-
 @main.route('/rating/<int:rating_id>', methods=['GET'])
 def ratings_detail(rating_id):
     # Zoek de beoordeling op in de database
