@@ -74,6 +74,14 @@
             <button type="submit">Aanmaken</button>
         </form>
     </div>
+    <!-- Terug knop -->
+    <div class="back">
+        <div class="back-icon">
+            <a href="{{ url_for('main.dashboard') }}">
+                <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug">
+            </a>
+        </div>
+    </div>
 </div>
 
 <!-- CSS -->
@@ -187,6 +195,25 @@
 
     button:hover {
         background: #0d1d54;
+    }
+
+    /* Terug knop */
+    .back {
+        position: fixed; /* Zorgt ervoor dat de knop vast blijft staan */
+        bottom: 20px; /* Plaatst de knop 20px boven de onderkant van het scherm */
+        left: 20px; /* Plaatst de knop 20px vanaf de linkerkant van het scherm */
+        z-index: 100; /* Zorgt ervoor dat de knop altijd zichtbaar blijft */
+    }
+
+    .back-icon img {
+        width: 60px; /* Pas de grootte van de knop aan */
+        height: auto;
+        cursor: pointer; /* Laat zien dat de knop klikbaar is */
+        transition: transform 0.2s ease; /* Voeg een animatie toe bij hover */
+    }
+
+    .back-icon img:hover {
+        transform: scale(1.1); /* Maak de knop groter bij hover */
     }
 </style>
 
