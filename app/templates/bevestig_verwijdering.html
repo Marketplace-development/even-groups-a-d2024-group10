@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profiel Verwijderen - KLUSKOMPAS</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f4f7fa;
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+        .confirmation-container {
+            max-width: 1000px;
+            margin: 50px auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        .confirmation-header h2 {
+            font-size: 28px;
+            color: #10246B;
+        }
+        .confirmation-header p {
+            font-size: 16px;
+            color: #555;
+        }
+        .btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        .btn-danger {
+            background-color: #e74c3c;
+            border: none;
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container confirmation-container">
+    <div class="row">
+        <!-- Confirmation Section -->
+        <div class="col-md-12 confirmation-header">
+            <h2>Profiel Verwijderen</h2>
+            <p>Weet je zeker dat je je profiel wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.</p>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-md-12 d-flex justify-content-between">
+            <!-- Back Button -->
+            <a href="{{ url_for('main.profile') }}" class="btn btn-secondary">Terug naar Profiel</a>
+            <!-- Confirmation Buttons -->
+            <form action="{{ url_for('main.bevestig_verwijdering') }}" method="POST">
+                <button type="submit" class="btn btn-danger">Bevestig Verwijdering</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

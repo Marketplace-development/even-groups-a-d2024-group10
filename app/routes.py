@@ -174,46 +174,29 @@ def profiel_bewerken():
     return render_template('profiel_bewerken.html', user=user)
 
 
-@main.route('/profiel_verwijderen', methods=['POST'])
-def profiel_verwijderen():
+@main.route('/bevestig_verwijdering', methods=['GET', 'POST'])
+def bevestig_verwijdering():
     user_id = session.get('user_id')
     if not user_id:
-        flash('Je moet ingelogd zijn om je profiel te verwijderen.', 'danger')
-        return redirect(url_for('main.login'))
+        flash('Je moet ingelogd zijn om deze pagina te bekijken.', 'danger')
+        return redirect(url_for('main.login'))  # Als gebruiker niet ingelogd is, stuur naar login
 
-    # Zoek de gebruiker op
-    user = Persoon.query.filter_by(idnummer=user_id).first()
+    if request.method == 'POST':  # Bevestiging van verwijderen
+        persoon = Persoon.query.get(user_id)
+        if persoon:
+            db.session.delete(persoon)
+            db.session.commit()
+            flash('Je profiel is succesvol verwijderd.', 'success')
+            session.clear()  # Log gebruiker uit
+            return redirect(url_for('main.login'))  # Naar de loginpagina na verwijderen
 
-    if not user:
-        flash('Profiel niet gevonden.', 'danger')
-        return redirect(url_for('main.profile'))
+        else:
+            flash('Er is een fout opgetreden bij het verwijderen van je profiel.', 'danger')
+            return redirect(url_for('main.profiel'))  # Als er iets misgaat, terug naar profielpagina
 
-    # Verwijder gekoppelde berichten van de gebruiker (berichten die de gebruiker heeft verstuurd)
-    Bericht.query.filter_by(afzender_id=user_id).delete()
-    Bericht.query.filter_by(ontvanger_id=user_id).delete()
+    return render_template('bevestig_verwijdering.html')
 
-    # Verwijder gekoppelde ratings
-    Rating.query.filter_by(klusaanbieder_id=user_id).delete()
-    Rating.query.filter_by(kluszoeker_id=user_id).delete()
 
-    # Update gekoppelde categorie_statistiek records
-    CategorieStatistiek.query.filter_by(idnummer=user_id).update({
-        "idnummer": "0000000000"  # Of een andere standaardwaarde
-    })
-
-    # Update gekoppelde klus records
-    Klus.query.filter_by(idnummer=user_id).update({
-        "idnummer": "0000000000"  # Of een andere standaardwaarde
-    })
-
-    # Verwijder de gebruiker
-    db.session.delete(user)
-    db.session.commit()
-
-    # Clear de sessie
-    session.clear()  # Log de gebruiker uit
-    flash('Je profiel en gekoppelde gegevens zijn succesvol verwijderd.', 'success')
-    return redirect(url_for('main.home'))
 
 
 # Helper functie voor het ophalen van suggesties

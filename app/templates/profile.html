@@ -68,8 +68,8 @@
         <div class="col-md-12 d-flex justify-content-between">
             <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">Terug naar Dashboard</a>
             <a href="{{ url_for('main.profiel_bewerken') }}" class="btn btn-primary">Profiel Bewerken</a>
-            <form action="{{ url_for('main.profiel_verwijderen') }}" method="POST" class="d-inline">
-                <button type="submit" class="btn btn-danger">Profiel Verwijderen</button>
+            <form action="{{ url_for('main.bevestig_verwijdering') }}" method="GET">
+                <button type="submit" class="btn btn-danger">Verwijder profiel</button>
             </form>
         </div>
     </div>
