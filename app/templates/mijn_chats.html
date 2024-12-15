@@ -14,7 +14,7 @@
             {% for klus in klussen %}
                 {% if klus.type == 'aangeboden' %}
                     <div class="klus-card">
-                        <h4>{{ klus.naam }} ({{ klus.status }})</h4>
+                        <h4 class="klus-naam-status">{{ klus.naam }} ({{ klus.status }})</h4>
                         <p class="text-black"><strong class="text-blue">Klusnaam:</strong> {{ klus.naam }}</p>
                         <p class="text-black"><strong class="text-blue">Naam:</strong> {{ klus.other_person_name }}</p>  <!-- De naam van de andere persoon -->
 
@@ -40,7 +40,7 @@
             {% for klus in klussen %}
                 {% if klus.type == 'gezocht' %}
                     <div class="klus-card">
-                        <h4>{{ klus.naam }} ({{ klus.status }})</h4>
+                        <h4 class="klus-naam-status">{{ klus.naam }} ({{ klus.status }})</h4>
                         <p class="text-black"><strong class="text-blue">Klusnaam:</strong> {{ klus.naam }}</p>
                         <p class="text-black"><strong class="text-blue">Naam: </strong> {{ klus.other_person_name }}</p>  <!-- De naam van de andere persoon -->
 
@@ -99,6 +99,12 @@
     h3 {
         color: #10246B;
     }
+
+    .klus-naam-status {  /* CSS voor h4 in zwart */
+        color: #000000 !important;
+        font-weight: bold;
+    }
+
 
     .chat-preview {
         background-color: #f9f9f9;
