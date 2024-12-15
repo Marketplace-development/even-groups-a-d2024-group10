@@ -15,14 +15,14 @@
                 {% if klus.type == 'aangeboden' %}
                     <div class="klus-card">
                         <h4>{{ klus.naam }} ({{ klus.status }})</h4>
-                        <p class="text-black"><strong>Klusnaam:</strong> {{ klus.naam }}</p>
-                        <p class="text-black"><strong>Naam:</strong> {{ klus.other_person_name }}</p>  <!-- De naam van de andere persoon -->
+                        <p class="text-black"><strong class="text-blue">Klusnaam:</strong> {{ klus.naam }}</p>
+                        <p class="text-black"><strong class="text-blue">Naam:</strong> {{ klus.other_person_name }}</p>  <!-- De naam van de andere persoon -->
 
                         <!-- Toon berichten alleen als er berichten zijn -->
                         {% if klus.berichten %}
                             <div class="chat-preview">
-                                <p class="text-black"><strong>Aantal berichten:</strong> {{ klus.berichten|length }}</p>
-                                <p class="text-black"><strong>Laatste bericht:</strong> {{ klus.berichten[0].inhoud[:50] }}...</p>
+                                <p class="text-black"><strong class="text-blue">Aantal berichten:</strong> {{ klus.berichten|length }}</p>
+                                <p class="text-black"><strong class="text-blue">Laatste bericht:</strong> {{ klus.berichten[0].inhoud[:50] }}...</p>
                             </div>
                         {% else %}
                             <p class="text-black">Er zijn geen berichten in deze chat.</p>
@@ -41,14 +41,14 @@
                 {% if klus.type == 'gezocht' %}
                     <div class="klus-card">
                         <h4>{{ klus.naam }} ({{ klus.status }})</h4>
-                        <p class="text-black"><strong>Klusnaam:</strong> {{ klus.naam }}</p>
-                        <p class="text-black"><strong>Naam: </strong> {{ klus.other_person_name }}</p>  <!-- De naam van de andere persoon -->
+                        <p class="text-black"><strong class="text-blue">Klusnaam:</strong> {{ klus.naam }}</p>
+                        <p class="text-black"><strong class="text-blue">Naam: </strong> {{ klus.other_person_name }}</p>  <!-- De naam van de andere persoon -->
 
                         <!-- Toon berichten alleen als er berichten zijn -->
                         {% if klus.berichten %}
                             <div class="chat-preview">
-                                <p class="text-black"><strong>Aantal berichten:</strong> {{ klus.berichten|length }}</p>
-                                <p class="text-black"><strong>Laatste bericht:</strong> {{ klus.berichten[0].inhoud[:50] }}...</p>
+                                <p class="text-black"><strong class="text-blue">Aantal berichten:</strong> {{ klus.berichten|length }}</p>
+                                <p class="text-black"><strong class="text-blue">Laatste bericht:</strong> {{ klus.berichten[0].inhoud[:50] }}...</p>
                             </div>
                         {% else %}
                             <p class="text-black">Er zijn geen berichten in deze chat.</p>
@@ -110,21 +110,24 @@
 
     .btn {
         padding: 10px 20px;
-        background-color: #007bff;
+        background-color: #10246B;
         color: white;
         border: none;
         border-radius: 5px;
     }
 
     .btn:hover {
-        background-color: #0056b3;
+        background-color: #10246B;
     }
 
     .text-black {
-        color: #000000; /* Zwart voor tekst zoals Klusnaam, Naam, Aantal berichten, Laatste bericht, etc. */
+        color: #000000;
     }
 
-    /* Terugknop stijl */
+    .text-blue {
+        color: #10246B !important;
+    }
+
     .back {
         position: fixed;
         left: 20px;
