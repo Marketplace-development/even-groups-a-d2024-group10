@@ -242,3 +242,17 @@ def valideer_adres(adres):
             return False
     else:
         return False
+
+class Notificatie(db.Model):
+    __tablename__ = 'notificatie'
+
+    id = db.Column(db.Integer, primary_key=True)
+    gebruiker_id = db.Column(db.String(10), db.ForeignKey('persoon.idnummer'), nullable=False)
+    bericht = db.Column(db.String(255), nullable=False)
+    gelezen = db.Column(db.Boolean, default=False)
+    aangemaakt_op = db.Column(db.DateTime, default=datetime.utcnow)
+
+    gebruiker = db.relationship('Persoon', backref='notificaties')
+
+    def __repr__(self):
+        return f'<Notificatie {self.id} - {self.bericht}>'

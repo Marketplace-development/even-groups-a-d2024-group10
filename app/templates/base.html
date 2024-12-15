@@ -93,7 +93,39 @@
                         <a class="nav-link" href="{{ url_for('main.mijn_geschiedenis') }}">Mijn Geschiedenis</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.mijn_chats') }}">Mijn Chats</a>  <!-- Nieuwe knop "Mijn Chats" toegevoegd -->
+                        <a class="nav-link" href="{{ url_for('main.mijn_chats') }}">Mijn Chats</a>
+                    </li>
+                    <!-- Meldingen knop -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="notificatieMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Meldingen
+                            {% if aantal_ongelezen_meldingen > 0 %}
+                            <span class="badge bg-danger">{{ aantal_ongelezen_meldingen }}</span>
+                            {% endif %}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificatieMenu">
+                            {% for notificatie in notificaties %}
+                            <li>
+                                <form method="POST" action="{{ url_for('main.markeer_melding_gelezen', id=notificatie.id) }}">
+                                    <button type="submit" class="dropdown-item {% if not notificatie.gelezen %}fw-bold{% endif %}">
+                                        {{ notificatie.bericht }}
+                                    </button>
+                                </form>
+                            </li>
+                            {% endfor %}
+                            {% if notificaties|length == 0 %}
+                            <li>
+                                <span class="dropdown-item text-muted">Geen meldingen</span>
+                            </li>
+                            {% endif %}
+                            <!-- Scheiding en link naar "Alle meldingen" -->
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-center" href="{{ url_for('main.alle_meldingen') }}">
+                                    Bekijk alle meldingen
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('main.logout') }}">Uitloggen</a>

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Alle Meldingen</h2>
+    <ul class="list-group">
+        {% for melding in meldingen %}
+        <li class="list-group-item {% if not melding.gelezen %}fw-bold{% endif %}">
+            {{ melding.bericht }} 
+            <small class="text-muted float-end">{{ melding.aangemaakt_op.strftime('%d-%m-%Y %H:%M') }}</small>
+        </li>
+        {% else %}
+        <li class="list-group-item text-muted">Je hebt nog geen meldingen.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
