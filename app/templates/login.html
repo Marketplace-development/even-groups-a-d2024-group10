@@ -1,14 +1,16 @@
-{% extends 'base.html' %}
-
 {% block content %}
-    <div>
+    <div style="background-color: #f4f4f9; min-height: 100vh; padding-top: 50px;">
+        <!-- Achtergrondkleur van de volledige pagina: 'background-color: #f9f9f9;' -->
+        
         <!-- Logo en decoratie -->
-        <div style="left: 50%; top: 30px; position: absolute; transform: translateX(-50%);">
-            <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" style="width: 300px; height: auto;">
+        <div style="left: 50%; top: 30px; position: absolute; transform: translateX(-50%); margin-bottom: 80px;">
+            <!-- Logo vergroot met een grotere breedte -->
+            <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" style="width: 400px; height: auto;">
         </div>
 
         <!-- Login form container -->
-        <div style="width: 366px; height: auto; margin: 100px auto; padding: 20px; border: 1px solid #ddd; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius: 8px;">
+        <div style="width: 366px; height: auto; margin: 100 auto; padding: 20px; border: 1px solid #ddd; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius: 8px; background-color: #f4f4f9;">
+            <!-- Achtergrondkleur van het kader: wit '#fff' -->
             <h1 style="text-align: center; color: #10246B;">Inloggen</h1>
 
             <!-- Flash alleen foutmeldingen -->
