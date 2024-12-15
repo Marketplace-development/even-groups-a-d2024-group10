@@ -190,39 +190,56 @@ def bevestig_verwijdering():
         return redirect(url_for('main.login'))
 
     if request.method == 'POST':
-        user = Persoon.query.filter_by(idnummer=user_id).first()
+        try:
+            user = Persoon.query.filter_by(idnummer=user_id).first()
 
-        if not user:
-            flash('Profiel niet gevonden.', 'danger')
+            if not user:
+                flash('Profiel niet gevonden.', 'danger')
+                return redirect(url_for('main.profile'))
+
+            # **1. Verwijder gekoppelde berichten**
+            print(f"DEBUG: Verwijderen berichten voor gebruiker {user_id}")
+            Bericht.query.filter_by(afzender_id=user_id).delete()
+            Bericht.query.filter_by(ontvanger_id=user_id).delete()
+
+            # **2. Verwijder gekoppelde ratings**
+            print(f"DEBUG: Verwijderen ratings voor gebruiker {user_id}")
+            Rating.query.filter_by(klusaanbieder_id=user_id).delete()
+            Rating.query.filter_by(kluszoeker_id=user_id).delete()
+
+            # **3. Update gekoppelde categorie_statistiek en klus records**
+            print(f"DEBUG: Bijwerken categorie_statistiek en klus voor gebruiker {user_id}")
+            CategorieStatistiek.query.filter_by(idnummer=user_id).update({
+                "idnummer": "0000000000"
+            })
+            Klus.query.filter_by(idnummer=user_id).update({
+                "idnummer": "0000000000"
+            })
+
+            # **4. Update notificaties**
+            print(f"DEBUG: Bijwerken notificaties voor gebruiker {user_id}")
+            Notificatie.query.filter_by(gebruiker_id=user_id).update({
+                "gebruiker_id": "0000000000"
+            })
+
+            # **5. Verwijder het profiel**
+            print(f"DEBUG: Verwijderen gebruiker {user_id}")
+            db.session.delete(user)
+            db.session.commit()
+
+            # **6. Clear de sessie en uitloggen**
+            print("DEBUG: Profiel verwijderd en gebruiker uitgelogd.")
+            session.clear()
+            flash('Je profiel en gekoppelde gegevens zijn succesvol verwijderd.', 'success')
+            return redirect(url_for('main.home'))
+
+        except Exception as e:
+            db.session.rollback()
+            print(f"ERROR: Fout bij het verwijderen van het profiel: {e}")
+            flash('Er is een fout opgetreden bij het verwijderen van je profiel. Probeer het opnieuw.', 'danger')
             return redirect(url_for('main.profile'))
 
-        # Verwijder gekoppelde berichten van de gebruiker
-        Bericht.query.filter_by(afzender_id=user_id).delete()
-        Bericht.query.filter_by(ontvanger_id=user_id).delete()
-
-        # Verwijder gekoppelde ratings
-        Rating.query.filter_by(klusaanbieder_id=user_id).delete()
-        Rating.query.filter_by(kluszoeker_id=user_id).delete()
-
-        # Update gekoppelde categorie_statistiek en klus records
-        CategorieStatistiek.query.filter_by(idnummer=user_id).update({
-            "idnummer": "0000000000"
-        })
-        Klus.query.filter_by(idnummer=user_id).update({
-            "idnummer": "0000000000"
-        })
-
-        # Verwijder de gebruiker
-        db.session.delete(user)
-        db.session.commit()
-
-        # Clear de sessie (uitloggen)
-        session.clear()
-        flash('Je profiel en gekoppelde gegevens zijn succesvol verwijderd.', 'success')
-        return redirect(url_for('main.home'))
-
     return render_template('bevestig_verwijdering.html')
-
 
 
 # Helper functie voor het ophalen van suggesties
