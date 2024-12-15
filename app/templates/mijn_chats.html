@@ -4,33 +4,28 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="text-center mb-4" style="color: #10246B;">Mijn Chats</h2>
+    <h2 class="text-center mb-4" style="color: #10246B; font-weight: bold;">Mijn Chats</h2>
 
     <div class="row">
         <!-- Aangeboden Klussen -->
         <div class="col-md-6">
-            <h3 class="text-center mb-3" style="color: #10246B;">Aangeboden Klussen</h3>
+            <h3 class="text-center mb-3" style="color: #333;">Aangeboden Klussen</h3>
             {% for klus in klussen %}
                 {% if klus.type == 'aangeboden' %}
-                    <div class="klus-card">
-                        <h4 class="klus-naam-status">{{ klus.naam }} ({{ klus.status }})</h4>
-                        <p class="text-black"><strong class="text-blue">Klusnaam:</strong> {{ klus.naam }}</p>
-                        <p class="text-black"><strong class="text-blue">Naam:</strong> {{ klus.other_person_name }}</p>  <!-- De naam van de andere persoon -->
-
-                            {% if klus.berichten %}
-                                <p><strong>Aantal berichten:</strong> {{ klus.berichten|length }}</p>
-                                <p class="text-muted"><strong>Laatste bericht:</strong> 
-                                    <span class="chat-preview">
-                                        {{ klus.berichten[0].inhoud[:50] }}
-                                    </span>...
-                                </p>
-                            {% else %}
-                                <p class="text-muted">Er zijn nog geen berichten.</p>
-                            {% endif %}
-
-                            <a href="{{ url_for('chat.chat_page', klusnummer=klus.klusnummer) }}" 
-                               class="btn btn-primary mt-2">Bekijk Chat</a>
-                        </div>
+                    <div class="klus-card mb-4 p-3 border rounded bg-white shadow-sm">
+                        <h5 class="text-dark font-weight-bold">
+                            {{ klus.naam }} <span class="badge bg-secondary">{{ klus.status }}</span>
+                        </h5>
+                        <p><strong>Klusnaam:</strong> {{ klus.naam }}</p>
+                        <p><strong>Naam:</strong> {{ klus.other_person_name }}</p>
+                        {% if klus.berichten %}
+                            <p><strong>Aantal berichten:</strong> {{ klus.berichten|length }}</p>
+                            <p class="text-muted"><strong>Laatste bericht:</strong> {{ klus.berichten[0].inhoud[:50] }}...</p>
+                        {% else %}
+                            <p class="text-muted">Er zijn nog geen berichten.</p>
+                        {% endif %}
+                        <a href="{{ url_for('chat.chat_page', klusnummer=klus.klusnummer) }}" 
+                           class="btn btn-primary btn-sm mt-2">Bekijk Chat</a>
                     </div>
                 {% endif %}
             {% endfor %}
@@ -38,28 +33,23 @@
 
         <!-- Gezochte Klussen -->
         <div class="col-md-6">
-            <h3 class="text-center mb-3" style="color: #10246B;">Gezochte Klussen</h3>
+            <h3 class="text-center mb-3" style="color: #333;">Gezochte Klussen</h3>
             {% for klus in klussen %}
                 {% if klus.type == 'gezocht' %}
-                    <div class="klus-card">
-                        <h4 class="klus-naam-status">{{ klus.naam }} ({{ klus.status }})</h4>
-                        <p class="text-black"><strong class="text-blue">Klusnaam:</strong> {{ klus.naam }}</p>
-                        <p class="text-black"><strong class="text-blue">Naam: </strong> {{ klus.other_person_name }}</p>  <!-- De naam van de andere persoon -->
-
-                            {% if klus.berichten %}
-                                <p><strong>Aantal berichten:</strong> {{ klus.berichten|length }}</p>
-                                <p class="text-muted"><strong>Laatste bericht:</strong> 
-                                    <span class="chat-preview">
-                                        {{ klus.berichten[0].inhoud[:50] }}
-                                    </span>...
-                                </p>
-                            {% else %}
-                                <p class="text-muted">Er zijn nog geen berichten.</p>
-                            {% endif %}
-
-                            <a href="{{ url_for('chat.chat_page', klusnummer=klus.klusnummer) }}" 
-                               class="btn btn-primary mt-2">Bekijk Chat</a>
-                        </div>
+                    <div class="klus-card mb-4 p-3 border rounded bg-white shadow-sm">
+                        <h5 class="text-dark font-weight-bold">
+                            {{ klus.naam }} <span class="badge bg-secondary">{{ klus.status }}</span>
+                        </h5>
+                        <p><strong>Klusnaam:</strong> {{ klus.naam }}</p>
+                        <p><strong>Naam:</strong> {{ klus.other_person_name }}</p>
+                        {% if klus.berichten %}
+                            <p><strong>Aantal berichten:</strong> {{ klus.berichten|length }}</p>
+                            <p class="text-muted"><strong>Laatste bericht:</strong> {{ klus.berichten[0].inhoud[:50] }}...</p>
+                        {% else %}
+                            <p class="text-muted">Er zijn nog geen berichten.</p>
+                        {% endif %}
+                        <a href="{{ url_for('chat.chat_page', klusnummer=klus.klusnummer) }}" 
+                           class="btn btn-primary btn-sm mt-2">Bekijk Chat</a>
                     </div>
                 {% endif %}
             {% endfor %}
@@ -75,49 +65,82 @@
 </div>
 
 <style>
-    .card {
-        border: none;
-        border-radius: 8px;
+    /* Algemene instellingen */
+    body {
+        background-color: #f8f9fa; /* Lichtgrijze achtergrond */
+        color: #333;
+    }
+
+    h2, h3 {
+        font-weight: bold;
+        color: #10246B; /* Donkerblauw voor titels */
+    }
+
+    .klus-card {
         background: #ffffff;
-        transition: transform 0.2s ease;
+        border: 1px solid #ddd;
+        transition: box-shadow 0.2s ease-in-out;
     }
 
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    .klus-card:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
+    /* Tekststijlen */
+    .klus-card p {
+        margin: 0.25rem 0;
+    }
+
+    .klus-card p strong {
+        color: #333; /* Donkergrijs */
+    }
+
+    .text-muted {
+        color: #6c757d; /* Lichtere grijze tekst */
+    }
+
+    /* Badges */
+    .badge {
+        font-size: 0.9em;
+        background-color: #6c757d; /* Grijs voor status */
+        color: #fff;
+    }
+
+    /* Knoppen */
     .btn-primary {
         background-color: #10246B;
-        border: none;
+        border-color: #10246B;
+        color: #fff;
     }
 
     .btn-primary:hover {
         background-color: #0e1f4a;
+        border-color: #0e1f4a;
     }
 
-    h3, h4 {
-        color: #10246B;
-    }
-
-    .klus-naam-status {  /* CSS voor h4 in zwart */
-        color: #000000 !important;
-        font-weight: bold;
-    }
-
-
-    .chat-preview {
-        display: inline-block;
-        max-width: 100%;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
+    /* Terugknop */
     .back {
         position: fixed;
         bottom: 20px;
         left: 20px;
     }
+
+    .back img {
+        width: 50px;
+        transition: transform 0.2s ease;
+    }
+
+    .back img:hover {
+        transform: scale(1.1);
+    }
+    .klus-card p strong {
+        color: #333; /* Donkergrijs voor duidelijke leesbaarheid */
+        font-weight: 600; /* Iets dikker lettertype */
+    }
+    
+    .klus-card p {
+        color: #444; /* Iets donkerdere tekstkleur voor gewone tekst */
+    }
+    
 </style>
 {% endblock %}

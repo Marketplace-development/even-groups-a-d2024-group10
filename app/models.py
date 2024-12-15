@@ -37,43 +37,68 @@ class Persoon(db.Model):
     kluszoekers = db.relationship('Kluszoeker', backref='persoon_zoeker', lazy='joined')
     
 
-    def gemiddelde_score_zoeker(self):
-        ratings = Rating.query.filter(Rating.kluszoeker_id == self.idnummer).all()
-        if not ratings:
-            return 0.0  # Geen beoordelingen
+    def gemiddelde_score_aanbieder(self):
+        # Haal unieke beoordelingen op waar klusaanbieder velden niet NULL zijn
+        ratings = Rating.query.filter(
+            Rating.klusaanbieder_id == self.idnummer,
+            Rating.vriendelijkheid_aanbieder.isnot(None),
+            Rating.gastvrijheid.isnot(None),
+            Rating.betrouwbaarheid.isnot(None),
+            Rating.communicatie_aanbieder.isnot(None),
+            Rating.algemene_ervaring_aanbieder.isnot(None)
+        ).all()
 
-    # Bereken het gemiddelde voor elke beoordeling en het algemene gemiddelde
-        scores = []
+        if not ratings:
+            return 0.0  # Geen beoordelingen ontvangen
+
+        # Bereken gemiddelde score
+        totaal_score = 0
+        aantal_ratings = 0
+
         for r in ratings:
-            totaal = sum([
+            score = sum([
+                r.vriendelijkheid_aanbieder,
+                r.gastvrijheid,
+                r.betrouwbaarheid,
+                r.communicatie_aanbieder,
+                r.algemene_ervaring_aanbieder
+            ]) / 5  # Gemiddelde van 5 criteria
+            totaal_score += score
+            aantal_ratings += 1
+
+        return round(totaal_score / aantal_ratings, 1)
+
+
+
+    def gemiddelde_score_zoeker(self):
+        ratings = (
+            Rating.query
+            .filter_by(kluszoeker_id=self.idnummer)
+            .filter(Rating.vriendelijkheid_zoeker.isnot(None))  # Beoordelingen voor kluszoeker
+            .all()
+        )
+        if not ratings:
+            return 0.0  # Geen beoordelingen ontvangen
+
+        totaal_score = 0
+        aantal_ratings = 0
+
+        for r in ratings:
+            score = sum([
                 r.vriendelijkheid_zoeker or 0,
                 r.tijdigheid or 0,
                 r.kwaliteit or 0,
                 r.communicatie_zoeker or 0,
                 r.algemene_ervaring_zoeker or 0
-            ])
-            scores.append(totaal / 5)  # Gemiddelde per beoordelingscriterium
-        return round(sum(scores) / len(scores), 2) if scores else 0
+            ]) / 5
+            totaal_score += score
+            aantal_ratings += 1
 
-    def gemiddelde_score_aanbieder(self):
-        ratings = Rating.query.filter(Rating.klusaanbieder_id == self.idnummer).all()
-        if not ratings:
-            return 0.0  # Geen beoordelingen
-
-        scores = []
-        for r in ratings:
-            totaal = sum([
-                r.vriendelijkheid_aanbieder or 0,
-                r.gastvrijheid or 0,
-                r.betrouwbaarheid or 0,
-                r.communicatie_aanbieder or 0,
-                r.algemene_ervaring_aanbieder or 0
-            ])
-            scores.append(totaal / 5)  # Gemiddelde per beoordelingscriterium
-        return round(sum(scores) / len(scores), 2) if scores else 0
+        return round(totaal_score / aantal_ratings, 1)
 
 
 
+    
 # Klusaanbieder Model
 class Klusaanbieder(db.Model):
     _tablename_ = 'klusaanbieder'
@@ -120,17 +145,19 @@ class Klus(db.Model):
     voltooid_op = db.Column(db.DateTime, nullable=True)
 
     persoon_aanbieder = db.relationship('Persoon', backref=db.backref('klussen', lazy=True))
-    
+
+
     # Relatie met klussenzoekers (via de tussen tabel)
     klussen_zoekers = db.relationship(
         'Persoon', 
         secondary=klus_zoeker, 
         backref=db.backref('geinteresseerd_in_klussen', lazy='dynamic')
     )
-
+    
     # Relatie naar Categorie (via ForeignKey 'categorie')
     categorie_ref = db.relationship('Categorie', backref='klussen', lazy=True)
 
+    
     def is_gewaardeerd_door_aanbieder(self):
         return any(r.vriendelijkheid_zoeker is not None for r in self.ratings)
 
@@ -176,7 +203,7 @@ class Rating(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     # Relaties
-    klus = db.relationship('Klus', backref=db.backref('ratings', lazy=True))
+    klus = db.relationship('Klus', backref='ratings')  # Backref hier definiëren
     kluszoeker = db.relationship('Persoon', foreign_keys=[kluszoeker_id], backref='zoeker_ratings')
     klusaanbieder = db.relationship('Persoon', foreign_keys=[klusaanbieder_id], backref='aanbieder_ratings')
 
@@ -194,14 +221,6 @@ class CategorieStatistiek(db.Model):
 
     persoon = db.relationship('Persoon', backref='categorie_statistieken', lazy=True)
     categorie_ref = db.relationship('Categorie', backref='gebruikers_statistieken', lazy=True)
-
-
-
-
-
-
-
-
 
 
 

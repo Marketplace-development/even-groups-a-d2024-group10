@@ -15,6 +15,8 @@ def maak_melding(gebruiker_id, bericht):
     db.session.add(notificatie)
     db.session.commit()
 
+def get_aantal_ongelezen_meldingen(user_id):
+    return Bericht.query.filter_by(ontvanger_id=user_id, gelezen=False).count()
 
 
 # Maak een blueprint
@@ -559,29 +561,6 @@ def leave_klus(klusnummer):
 
 
 
-@main.route('/delete_klus/<uuid:klusnummer>', methods=['POST'])
-def delete_klus(klusnummer):
-    # Haal de klus op
-    klus = Klus.query.filter_by(klusnummer=str(klusnummer)).first()
-
-    if not klus:
-        flash('Klus niet gevonden.', 'danger')
-        return redirect(url_for('main.mijn_aangeboden_klussen'))
-
-    # Controleer of de ingelogde gebruiker de aanbieder is
-    user_id = session.get('user_id')
-    if klus.idnummer != user_id:
-        flash('Je hebt geen toestemming om deze klus te verwijderen.', 'danger')
-        return redirect(url_for('main.mijn_aangeboden_klussen'))
-
-    # Verwijder de klus
-    db.session.delete(klus)
-    db.session.commit()
-
-    flash(f'De klus "{klus.naam}" is succesvol verwijderd.', 'success')
-    return redirect(url_for('main.mijn_aangeboden_klussen'))@main.route('/delete_klus/<uuid:klusnummer>', methods=['POST'])
-
-
 def delete_klus(klusnummer):
     klus = Klus.query.filter_by(klusnummer=str(klusnummer)).first()
     if not klus:
@@ -760,107 +739,100 @@ def rate_zoeker(klusnummer):
         flash('Klus niet gevonden.', 'danger')
         return redirect(url_for('main.mijn_geschiedenis'))
 
-    print(f"DEBUG: Klus {klusnummer}, Aanbieder: {klus.idnummer}, Zoekers: {[zoeker.idnummer for zoeker in klus.klussen_zoekers]}")
-
-    # Controleer of er zoekers zijn voor de klus
-    if not klus.klussen_zoekers:
-        flash('Er zijn geen zoekers voor deze klus. Je kunt deze klus niet beoordelen.', 'warning')
-        return redirect(url_for('main.mijn_geschiedenis'))
-
-    # Controleer of er al een beoordeling is voor de kluszoeker
+    # Zoek bestaande beoordeling
     existing_rating = Rating.query.filter_by(
         klusnummer=klusnummer,
-        kluszoeker_id=klus.klussen_zoekers[0].idnummer,
-        klusaanbieder_id=session.get('user_id')
-    ).filter(Rating.vriendelijkheid_zoeker.isnot(None)).first()
-
-    if existing_rating:
-        flash('Je hebt deze kluszoeker al beoordeeld. Je kunt niet meerdere keren een beoordeling geven.', 'warning')
-        return redirect(url_for('main.mijn_geschiedenis'))
-
-    # Controleer of de huidige gebruiker de aanbieder is
-    if session.get('user_id') != klus.idnummer:
-        flash('Je bent niet de aanbieder van deze klus en kunt de kluszoeker dus niet beoordelen.', 'warning')
-        return redirect(url_for('main.mijn_geschiedenis'))
+        kluszoeker_id=klus.klussen_zoekers[0].idnummer
+    ).first()
 
     form = RatingFormForZoeker()
-    # Voeg de beoordeling toe
     if form.validate_on_submit():
-        new_rating = Rating(
-            klusnummer=klusnummer,
-            kluszoeker_id=klus.klussen_zoekers[0].idnummer,
-            klusaanbieder_id=session.get('user_id'),
-            vriendelijkheid_zoeker=form.vriendelijkheid.data,
-            tijdigheid=form.tijdigheid.data,
-            kwaliteit=form.kwaliteit.data,
-            communicatie_zoeker=form.communicatie.data,
-            algemene_ervaring_zoeker=form.algemene_ervaring.data,
-            created_at=datetime.utcnow(),
-        )
-        db.session.add(new_rating)
+        if existing_rating:
+            # Update bestaande beoordeling
+            existing_rating.vriendelijkheid_zoeker = form.vriendelijkheid.data
+            existing_rating.tijdigheid = form.tijdigheid.data
+            existing_rating.kwaliteit = form.kwaliteit.data
+            existing_rating.communicatie_zoeker = form.communicatie.data
+            existing_rating.algemene_ervaring_zoeker = form.algemene_ervaring.data
+        else:
+            # Maak een nieuwe beoordeling
+            new_rating = Rating(
+                klusnummer=klusnummer,
+                kluszoeker_id=klus.klussen_zoekers[0].idnummer,
+                klusaanbieder_id=session.get('user_id'),
+                vriendelijkheid_zoeker=form.vriendelijkheid.data,
+                tijdigheid=form.tijdigheid.data,
+                kwaliteit=form.kwaliteit.data,
+                communicatie_zoeker=form.communicatie.data,
+                algemene_ervaring_zoeker=form.algemene_ervaring.data
+            )
+            db.session.add(new_rating)
+
         db.session.commit()
-
-        # **Notificatie sturen naar de kluszoeker**
-        maak_melding(
-            gebruiker_id=klus.klussen_zoekers[0].idnummer,
-            bericht=f"Je bent beoordeeld door de klusaanbieder voor de klus '{klus.naam}'."
-        )
-
-        print(f"DEBUG: Nieuwe beoordeling toegevoegd: {new_rating}")
-        flash('Beoordeling voor de kluszoeker succesvol toegevoegd!', 'success')
+        flash('Beoordeling succesvol toegevoegd!', 'success')
         return redirect(url_for('main.mijn_geschiedenis'))
 
     return render_template('rate_zoeker.html', form=form, klus=klus)
 
+
 @main.route('/rate_aanbieder/<klusnummer>', methods=['GET', 'POST'])
 def rate_aanbieder(klusnummer):
+    # Haal de klus op
     klus = Klus.query.filter_by(klusnummer=klusnummer).first()
     if not klus:
         flash('Klus niet gevonden.', 'danger')
         return redirect(url_for('main.mijn_geschiedenis'))
 
-    # Controleer of de gebruiker een van de kluszoekers is
+    # Controleer of de huidige gebruiker een kluszoeker is
     if not any(zoeker.idnummer == session.get('user_id') for zoeker in klus.klussen_zoekers):
         flash('Je bent niet bevoegd om deze beoordeling te maken.', 'danger')
         return redirect(url_for('main.mijn_geschiedenis'))
 
-    # Controleer of er al een beoordeling is voor de klusaanbieder
+    # Zoek bestaande beoordeling
     existing_rating = Rating.query.filter_by(
         klusnummer=klusnummer,
         kluszoeker_id=session.get('user_id'),
         klusaanbieder_id=klus.idnummer
-    ).filter(Rating.vriendelijkheid_aanbieder.isnot(None)).first()
-
-    if existing_rating:
-        flash('Je hebt deze klusaanbieder al beoordeeld.', 'warning')
-        return redirect(url_for('main.mijn_geschiedenis'))
+    ).first()
 
     form = RatingFormForAanbieder()
     if form.validate_on_submit():
-        new_rating = Rating(
-            klusnummer=klusnummer,
-            klusaanbieder_id=klus.idnummer,
-            kluszoeker_id=session.get('user_id'),
-            vriendelijkheid_aanbieder=form.vriendelijkheid.data,
-            gastvrijheid=form.gastvrijheid.data,
-            betrouwbaarheid=form.betrouwbaarheid.data,
-            communicatie_aanbieder=form.communicatie.data,
-            algemene_ervaring_aanbieder=form.algemene_ervaring.data,
-            created_at=datetime.utcnow(),
-        )
-        db.session.add(new_rating)
+        if existing_rating:
+            # Update bestaande beoordeling
+            existing_rating.vriendelijkheid_aanbieder = form.vriendelijkheid.data
+            existing_rating.gastvrijheid = form.gastvrijheid.data
+            existing_rating.betrouwbaarheid = form.betrouwbaarheid.data
+            existing_rating.communicatie_aanbieder = form.communicatie.data
+            existing_rating.algemene_ervaring_aanbieder = form.algemene_ervaring.data
+            flash('Beoordeling succesvol bijgewerkt!', 'success')
+        else:
+            # Voeg nieuwe beoordeling toe als er geen bestaat
+            new_rating = Rating(
+                klusnummer=klusnummer,
+                klusaanbieder_id=klus.idnummer,
+                kluszoeker_id=session.get('user_id'),
+                vriendelijkheid_aanbieder=form.vriendelijkheid.data,
+                gastvrijheid=form.gastvrijheid.data,
+                betrouwbaarheid=form.betrouwbaarheid.data,
+                communicatie_aanbieder=form.communicatie.data,
+                algemene_ervaring_aanbieder=form.algemene_ervaring.data,
+                created_at=datetime.utcnow()
+            )
+            db.session.add(new_rating)
+            flash('Beoordeling succesvol toegevoegd!', 'success')
+
         db.session.commit()
 
-        # **Notificatie sturen naar de klusaanbieder**
+        # Melding sturen
         maak_melding(
             gebruiker_id=klus.idnummer,
             bericht=f"Je bent beoordeeld door de kluszoeker voor de klus '{klus.naam}'."
         )
 
-        flash('Beoordeling voor de klusaanbieder succesvol toegevoegd!', 'success')
         return redirect(url_for('main.mijn_geschiedenis'))
 
     return render_template('rate_aanbieder.html', form=form, klus=klus)
+
 
 
 
@@ -1051,7 +1023,7 @@ def markeer_melding_gelezen(id):
 
 @main.app_context_processor
 def inject_notificaties():
-    if 'user_id' in session:
+    if 'user_id' in session and session['user_id']:
         # Laatste 5 meldingen ophalen
         laatste_vijf_meldingen = Notificatie.query.filter_by(
             gebruiker_id=session['user_id']
@@ -1066,7 +1038,10 @@ def inject_notificaties():
             'notificaties': laatste_vijf_meldingen,  # Alleen laatste 5
             'aantal_ongelezen_meldingen': aantal_ongelezen
         }
-    return {}
+    return {
+        'notificaties': [],
+        'aantal_ongelezen_meldingen': 0
+    }
 
 
 @main.route('/klus/<klusnummer>/beoordeel_aanbieder', methods=['POST'])
