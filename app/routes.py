@@ -339,6 +339,7 @@ def klus_detail(klusnummer):
 
 from app.models import CategorieStatistiek, Klus, Persoon
 @main.route('/klussen')
+@main.route('/klussen')
 def klussen():
     # Controleer of de gebruiker is ingelogd
     if 'user_id' not in session:
@@ -371,7 +372,12 @@ def klussen():
 
     gesorteerde_klussen = sorted(beschikbare_klussen, key=sorteer_klussen)
 
+    # Voeg een melding toe als er geen klussen beschikbaar zijn
+    if not gesorteerde_klussen:
+        flash('Er zijn geen aangeboden klussen beschikbaar.', 'info')
+
     return render_template('klussen_overzicht.html', klussen=gesorteerde_klussen)
+
 
 
 @main.route('/klus/<klusnummer>/bekijken', methods=['GET'])
