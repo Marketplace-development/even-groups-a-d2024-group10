@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Mijn Klussen - KLUSKOMPAS{% endblock %}
+{% block title %}Mijn Aangeboden klussen - KLUSKOMPAS{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -17,51 +17,60 @@
                     <th>Klusnaam</th>
                     <th>Datum</th>
                     <th>Status</th>
+                    <th>Kluszoeker</th>
                     <th>Acties</th>
                 </tr>
             </thead>
             <tbody>
                 {% for klus in klussen %}
-                {% if klus.status != 'voltooid' %}
                 <tr>
                     <td>{{ klus.naam }}</td>
                     <td>{{ klus.datum }}</td>
                     <td>{{ klus.status or "beschikbaar" }}</td>
                     <td>
-                        <!-- Chatten-knop, zorg ervoor dat klusnummer correct wordt doorgegeven -->
-                        {% if klus.status == 'geaccepteerd' %}
-                        {% if klus.id %}
-                        <a href="{{ url_for('chat.chat_page', klusnummer=klus.id) }}" class="btn btn-primary btn-sm">Chatten</a>
+                        {% if klus.klussen_zoekers %}
+                            <ul>
+                                {% for zoeker in klus.klussen_zoekers %}
+                                    <li>{{ zoeker.voornaam }} {{ zoeker.achternaam }}</li>
+                                {% endfor %}
+                            </ul>
                         {% else %}
-                        <span class="text-danger">Klusnummer ontbreekt</span>
+                            <span class="text-muted">Geen kluszoeker gekoppeld</span>
                         {% endif %}
+                    </td>
+                    <td>
+                        <!-- Chatten-knop -->
+                        {% if klus.status == 'geaccepteerd' %}
+                        <a href="{{ url_for('chat.chat_page', klusnummer=klus.klusnummer) }}" class="btn btn-primary btn-sm">Chatten</a>
                         {% endif %}
 
                         <!-- Formulier voor markeren als voltooid -->
                         {% if klus.status == 'geaccepteerd' %}
-                        <form action="{{ url_for('main.markeer_klus_voltooid', klusnummer=klus.id) }}" method="POST" style="display: inline-block;">
-                            <input type="hidden" name="klus_id" value="{{ klus.id }}">
-                            <button type="submit" class="btn btn-success btn-sm">Markeer als Voltooid</button>
+                        <form action="{{ url_for('main.markeer_klus_voltooid', klusnummer=klus.klusnummer) }}" method="POST" style="display: inline-block;">
+                            <button type="submit" class="btn btn-success btn-sm">Markeer als voltooid</button>
                         </form>
                         {% endif %}
 
-                        <!-- Formulier voor verwijderen (alleen zichtbaar als de klus niet geaccepteerd is) -->
-                        <form action="{{ url_for('main.delete_klus', klusnummer=klus.id) }}" method="POST" style="display: inline-block;">
+                        <!-- Formulier voor verwijderen -->
+                        <form action="{{ url_for('main.delete_klus', klusnummer=klus.klusnummer) }}" method="POST" style="display: inline-block;">
                             <button type="submit" class="btn btn-danger btn-sm">Verwijder Klus</button>
                         </form>
 
-                        <!-- Nieuwe knop voor ratings (alleen zichtbaar als de klus geaccepteerd is) -->
-                        {% if klus.status == 'geaccepteerd' %}
-                        <a href="{{ url_for('main.ratings', rol='aanbieder', idnummer=klus.klusaanbieder_id) }}" class="btn btn-info btn-sm">Bekijk Beoordelingen</a>
+                        <!-- Knop voor beoordelingen bekijken -->
+                        {% if klus.status == 'geaccepteerd' and klus.klussen_zoekers %}
+                            <a href="{{ url_for('main.beoordelingen_kluszoeker', klusnummer=klus.klusnummer) }}" 
+                               class="btn btn-info btn-sm">
+                                Bekijk Beoordelingen
+                            </a>
                         {% endif %}
                     </td>
                 </tr>
-                {% endif %}
                 {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
+
 
 <!-- Terug knop -->
 <div class="back">
@@ -87,7 +96,7 @@
         background: white;
         border: 1px solid white;
         padding-top: 20px;
-        padding-bottom: 50px; /* Zorg ervoor dat de inhoud niet te dicht bij de onderkant komt */
+        padding-bottom: 50px;
     }
 
     .logo {
@@ -99,7 +108,7 @@
 
     .klussen-table {
         width: 100%;
-        margin-top: 100px; /* Zorg ervoor dat de tabel niet te dicht bij het logo staat */
+        margin-top: 100px;
         text-align: center;
     }
 
@@ -129,7 +138,7 @@
         left: 20px;
         bottom: 20px;
         text-align: center;
-        z-index: 1000; /* Zorgt ervoor dat de knop altijd bovenaan blijft */
+        z-index: 1000;
     }
 
     .back-icon {
@@ -150,7 +159,7 @@
     }
 
     .back-icon:hover {
-        transform: scale(1.1); /* Vergroot de knop bij hover */
+        transform: scale(1.1);
     }
 </style>
 {% endblock %}

@@ -2,15 +2,27 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2>Alle Meldingen</h2>
+    <h2>Alle meldingen</h2>
     <ul class="list-group">
         {% for melding in meldingen %}
-        <li class="list-group-item {% if not melding.gelezen %}fw-bold{% endif %}">
-            {{ melding.bericht }} 
-            <small class="text-muted float-end">{{ melding.aangemaakt_op.strftime('%d-%m-%Y %H:%M') }}</small>
+        <li class="list-group-item d-flex justify-content-between align-items-center 
+                   {% if not melding.gelezen %}fw-bold{% endif %}">
+            <div class="d-flex justify-content-start align-items-center">
+                <span>
+                    {{ melding.bericht }}
+                </span>
+            </div>
+            <div class="d-flex align-items-center">
+                <small class="text-muted me-3">{{ melding.aangemaakt_op.strftime('%d-%m-%Y %H:%M') }}</small>
+                {% if not melding.gelezen %}
+                <form action="{{ url_for('main.markeer_melding_gelezen', id=melding.id) }}" method="POST" class="mb-0">
+                    <button type="submit" class="btn btn-sm btn-outline-success">Markeer als gelezen</button>
+                </form>
+                {% endif %}
+            </div>
         </li>
         {% else %}
-        <li class="list-group-item text-muted">Je hebt nog geen meldingen.</li>
+        <li class="list-group-item text-muted text-center">Je hebt nog geen meldingen.</li>
         {% endfor %}
     </ul>
 </div>

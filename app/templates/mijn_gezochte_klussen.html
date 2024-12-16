@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
-{% block title %}Mijn Gezochte Klussen - KLUSKOMPAS{% endblock %}
+{% block title %}Mijn gezochte klussen - KLUSKOMPAS{% endblock %}
 
 {% block content %}
 <div class="container">
     <!-- Titel -->
     <div class="header text-center mb-4">
-        <h2>Mijn Gezochte Klussen</h2>
+        <h2>Mijn gezochte klussen</h2>
     </div>
 
     <!-- Klussenlijst -->
@@ -23,15 +23,15 @@
                     <p><strong>Datum:</strong> {{ klus.datum }}</p>
                     <p><strong>Vergoeding:</strong> €{{ klus.vergoeding }}</p>
                     <p><strong>Categorie:</strong> {{ klus.categorie_ref.naam if klus.categorie_ref else 'Onbekend' }}</p>
-                    <p><strong>Verwachte Duur:</strong> {{ klus.verwachte_duur }} uur</p>
+                    <p><strong>Verwachte duur:</strong> {{ klus.verwachte_duur }} uur</p>
                     <p><strong>Beschrijving:</strong> {{ klus.beschrijving }}</p>
 
                     <!-- Status van de klus -->
                     <p><strong>Status:</strong> 
                         {% if klus.status == 'completed' %}
-                            <span class="status-completed">Klus Voltooid</span>
+                            <span class="status-completed">Klus voltooid</span>
                         {% elif klus.status == 'geaccepteerd' %}
-                            <span class="status-accepted">Klus Geaccepteerd</span>
+                            <span class="status-accepted">Klus geaccepteerd</span>
                         {% endif %}
                     </p>
 

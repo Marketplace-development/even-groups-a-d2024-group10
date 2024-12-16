@@ -16,8 +16,8 @@
     <!-- Gemiddelde scores weergeven -->
     <div class="average-scores text-center">
         {% if gemiddelde_scores %}
-            <h4>Gemiddelde Scores:</h4>
-            <p>Algemene Ervaring: {{ gemiddelde_scores['algemene_ervaring'] }}</p>
+            <h4>Gemiddelde scores:</h4>
+            <p>Algemene ervaring: {{ gemiddelde_scores['algemene_ervaring'] }}</p>
         {% endif %}
     </div>
 
@@ -26,7 +26,7 @@
         {% if ratings %}
             {% for rating in ratings %}
             <div class="rating-card">
-                <h2>Algemene Ervaring: {{ rating.algemene_ervaring_aanbieder if rol == 'aanbieder' else rating.algemene_ervaring_zoeker }}</h2>
+                <h2>Algemene ervaring: {{ rating.algemene_ervaring_aanbieder if rol == 'aanbieder' else rating.algemene_ervaring_zoeker }}</h2>
                 <p>Ingediend door: {{ rating.kluszoeker.naam if rol == 'aanbieder' else rating.klusaanbieder.naam }}</p>
                 <p>Datum: {{ rating.created_at.strftime('%d-%m-%Y') }}</p>
                 <a href="{{ url_for('main.ratings_detail', rating_id=rating.id) }}" class="btn btn-light">Bekijk details →</a>

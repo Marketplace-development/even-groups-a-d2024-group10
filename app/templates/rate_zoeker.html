@@ -136,7 +136,7 @@
 
         <!-- Algemene Ervaring -->
         <div class="criteria">
-            <label for="algemene_ervaring">Algemene Ervaring</label>
+            <label for="algemene_ervaring">Algemene ervaring</label>
             <div class="star-rating">
                 {% for i in range(10, 0, -1) %}
                 <input type="radio" name="algemene_ervaring" value="{{ i }}" id="algemene_ervaring-{{ i }}" {% if form.algemene_ervaring.data == i %}checked{% endif %}>
