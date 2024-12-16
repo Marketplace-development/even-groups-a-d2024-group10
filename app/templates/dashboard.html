@@ -21,7 +21,12 @@
         <a href="{{ url_for('main.mijn_klussen_selectie') }}" class="button">Mijn klussen</a>
 
         <!-- Nieuwe knop voor "Mijn Chats" -->
-        <a href="{{ url_for('main.mijn_chats') }}" class="button">Mijn chats</a>
+        <a href="{{ url_for('chat.mijn_chats') }}" class="button">
+            Mijn Chats
+            {% if ongelezen_chats_count > 0 %}
+                <span class="badge">{{ ongelezen_chats_count }}</span>
+            {% endif %}
+        </a>
     </div>
 
     <!-- Logout optie -->
@@ -128,6 +133,18 @@
     .profile-button:hover {
         background: #0e1f4a;
     }
+
+    .badge {
+        background-color: red; /* Rood voor de notificatie */
+        color: white;
+        font-size: 14px;
+        padding: 5px 10px;
+        border-radius: 50%;
+        position: absolute;
+        bottom: 60px;
+        right: 10px;
+    }
+
 </style>
 {% endblock %}
 

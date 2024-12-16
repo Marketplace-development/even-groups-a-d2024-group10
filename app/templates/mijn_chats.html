@@ -12,17 +12,20 @@
             <h3 class="text-center mb-3" style="color: #333;">Aangeboden klussen</h3>
             {% for klus in klussen %}
                 {% if klus.type == 'aangeboden' %}
-                    <div class="klus-card mb-4 p-3 border rounded bg-white shadow-sm">
-                        <h5 class="text-dark font-weight-bold">
+                    <div class="klus-card mb-4 p-3 border rounded bg-white shadow-sm {% if klus.ongelezen_berichten > 0 %}ongelezen{% endif %}">
+                        <h5 class="text-dark font-weight-bold" style="color: #1A1A1A;"> <!-- Donkerder kleur voor klusnaam -->
                             {{ klus.naam }} <span class="badge bg-secondary">{{ klus.status }}</span>
                         </h5>
-                        <p><strong>Klusnaam:</strong> {{ klus.naam }}</p>
-                        <p><strong>Naam:</strong> {{ klus.other_person_name }}</p>
+                        <p><strong>Klusnaam:</strong> <span style="color: #1A1A1A;">{{ klus.naam }}</span></p> <!-- Donkerder kleur voor klusnaam -->
+                        <p><strong>Naam:</strong> <span style="color: #1A1A1A;">{{ klus.other_person_name }}</span></p> <!-- Donkerder kleur voor andere persoonnaam -->
                         {% if klus.berichten %}
                             <p><strong>Aantal berichten:</strong> {{ klus.berichten|length }}</p>
                             <p class="text-muted"><strong>Laatste bericht:</strong> {{ klus.berichten[0].inhoud[:50] }}...</p>
                         {% else %}
                             <p class="text-muted">Er zijn nog geen berichten.</p>
+                        {% endif %}
+                        {% if klus.ongelezen_berichten > 0 %}
+                            <p class="text-danger font-weight-bold">Er zijn {{ klus.ongelezen_berichten }} ongelezen bericht(en)!</p>
                         {% endif %}
                         <a href="{{ url_for('chat.chat_page', klusnummer=klus.klusnummer) }}" 
                            class="btn btn-primary btn-sm mt-2">Bekijk chat</a>
@@ -36,17 +39,20 @@
             <h3 class="text-center mb-3" style="color: #333;">Gezochte klussen</h3>
             {% for klus in klussen %}
                 {% if klus.type == 'gezocht' %}
-                    <div class="klus-card mb-4 p-3 border rounded bg-white shadow-sm">
-                        <h5 class="text-dark font-weight-bold">
+                <div class="klus-card mb-4 p-3 border rounded bg-white shadow-sm {% if klus.ongelezen_berichten > 0 %}ongelezen{% endif %}">
+                        <h5 class="text-dark font-weight-bold" style="color: #1A1A1A;"> <!-- Donkerder kleur voor klusnaam -->
                             {{ klus.naam }} <span class="badge bg-secondary">{{ klus.status }}</span>
                         </h5>
-                        <p><strong>Klusnaam:</strong> {{ klus.naam }}</p>
-                        <p><strong>Naam:</strong> {{ klus.other_person_name }}</p>
+                        <p><strong>Klusnaam:</strong> <span style="color: #1A1A1A;">{{ klus.naam }}</span></p> <!-- Donkerder kleur voor klusnaam -->
+                        <p><strong>Naam:</strong> <span style="color: #1A1A1A;">{{ klus.other_person_name }}</span></p> <!-- Donkerder kleur voor andere persoonnaam -->
                         {% if klus.berichten %}
                             <p><strong>Aantal berichten:</strong> {{ klus.berichten|length }}</p>
                             <p class="text-muted"><strong>Laatste bericht:</strong> {{ klus.berichten[0].inhoud[:50] }}...</p>
                         {% else %}
                             <p class="text-muted">Er zijn nog geen berichten.</p>
+                        {% endif %}
+                        {% if klus.ongelezen_berichten > 0 %}
+                            <p class="text-danger font-weight-bold">Er zijn {{ klus.ongelezen_berichten }} ongelezen bericht(en)!</p>
                         {% endif %}
                         <a href="{{ url_for('chat.chat_page', klusnummer=klus.klusnummer) }}" 
                            class="btn btn-primary btn-sm mt-2">Bekijk dhat</a>
@@ -133,14 +139,15 @@
     .back img:hover {
         transform: scale(1.1);
     }
-    .klus-card p strong {
-        color: #333; /* Donkergrijs voor duidelijke leesbaarheid */
-        font-weight: 600; /* Iets dikker lettertype */
+
+    /* Ongelezen berichten stijl */
+    .ongelezen {
+        border: 2px solid red; /* Rood kader voor ongelezen berichten */
     }
-    
-    .klus-card p {
-        color: #444; /* Iets donkerdere tekstkleur voor gewone tekst */
+
+    .klus-card.ongelezen {
+        border: 2px solid red !important; /* Rood kader voor ongelezen berichten */
     }
-    
+
 </style>
 {% endblock %}
