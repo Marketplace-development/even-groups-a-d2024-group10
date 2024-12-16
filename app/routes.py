@@ -560,7 +560,7 @@ def leave_klus(klusnummer):
     return redirect(url_for('main.mijn_gezochte_klussen'))
 
 
-
+@main.route('/delete_klus/<klusnummer>', methods=['POST'])
 def delete_klus(klusnummer):
     klus = Klus.query.filter_by(klusnummer=str(klusnummer)).first()
     if not klus:
