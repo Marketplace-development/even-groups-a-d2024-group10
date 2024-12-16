@@ -233,6 +233,7 @@ class Bericht(db.Model):
     klusnummer = db.Column(db.String(36), db.ForeignKey('klus.klusnummer'), nullable=True)
     inhoud = db.Column(db.Text, nullable=False)
     verzonden_op = db.Column(db.TIMESTAMP, nullable=False, default=datetime.utcnow)
+    gelezen = db.Column(db.Boolean, default=False)
 
     # Relaties
     afzender = db.relationship('Persoon', foreign_keys=[afzender_id], backref='verzonden_berichten')
