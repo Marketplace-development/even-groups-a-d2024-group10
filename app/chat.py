@@ -155,3 +155,35 @@ def mijn_chats():
     klussen_info.sort(key=lambda x: x['berichten'][0].verzonden_op if x['berichten'] else datetime.min, reverse=True)
 
     return render_template('mijn_chats.html', klussen=klussen_info)
+
+
+# app/chat.py
+def get_ongelezen_chats_count(user):
+    # Haal alle klussen op waar de gebruiker aan deelneemt
+    klussen_info = []
+
+    # Aangeboden klussen ophalen
+    aangeboden_klussen = Klus.query.filter(
+        Klus.idnummer == user.idnummer,
+        Klus.status.in_(['geaccepteerd', 'voltooid']),
+    ).all()
+
+    # Gezochte klussen ophalen
+    gezochte_klussen = Klus.query.filter(
+        Klus.klussen_zoekers.any(Persoon.idnummer == user.idnummer),
+        Klus.status.in_(['geaccepteerd', 'voltooid']),
+    ).all()
+
+    # Combineer beide lijsten
+    klussen = aangeboden_klussen + gezochte_klussen
+
+    ongelezen_count = 0
+    for klus in klussen:
+        # Zoek de berichten voor de klus
+        berichten = Bericht.query.filter_by(klusnummer=klus.klusnummer).all()
+        
+        # Tel het aantal ongelezen berichten voor deze gebruiker
+        ongelezen_berichten = [bericht for bericht in berichten if bericht.ontvanger_id == user.idnummer and not bericht.gelezen]
+        ongelezen_count += len(ongelezen_berichten)
+
+    return ongelezen_count

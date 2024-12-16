@@ -8,6 +8,8 @@ from app.models import Klus  # Voeg deze regel toe om de Klus-klasse te importer
 from flask_login import login_required
 from datetime import datetime
 import requests # type: ignore
+from app.chat import get_ongelezen_chats_count
+
 
 
 def maak_melding(gebruiker_id, bericht):
@@ -123,10 +125,13 @@ def dashboard():
     # Haal de geaccepteerde en aangeboden klussen op
     geaccepteerde_klussen = Klus.query.filter_by(idnummer=user.idnummer, status='geaccepteerd').all()
     aangeboden_klussen = Klus.query.filter_by(idnummer=user.idnummer).all()
+    ongelezen_chats_count = get_ongelezen_chats_count(user)
 
-
-    return render_template('dashboard.html', user=user, geaccepteerde_klussen=geaccepteerde_klussen, aangeboden_klussen=aangeboden_klussen)
-
+    return render_template('dashboard.html', 
+                           user=user, 
+                           geaccepteerde_klussen=geaccepteerde_klussen, 
+                           aangeboden_klussen=aangeboden_klussen, 
+                           ongelezen_chats_count=ongelezen_chats_count)
 
 # Route voor het profiel (weergeven van gebruikersgegevens)
 @main.route('/profile')
