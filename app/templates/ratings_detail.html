@@ -14,7 +14,7 @@
 
     <!-- Detailinformatie -->
     <div class="details-card">
-        <h2>Algemene Ervaring: {{ rating.algemene_ervaring_aanbieder if rol == 'aanbieder' else rating.algemene_ervaring_zoeker }}</h2>
+        <h2>Algemene ervaring: {{ rating.algemene_ervaring_aanbieder if rol == 'aanbieder' else rating.algemene_ervaring_zoeker }}</h2>
         <p><strong>Vriendelijkheid:</strong> {{ rating.vriendelijkheid_aanbieder if rol == 'aanbieder' else rating.vriendelijkheid_zoeker }}</p>
         {% if rol == 'aanbieder' %}
         <p><strong>Gastvrijheid:</strong> {{ rating.gastvrijheid }}</p>

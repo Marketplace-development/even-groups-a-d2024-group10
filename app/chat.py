@@ -1,12 +1,17 @@
 # app/chat.py
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from app.models import Klus, Persoon, Bericht
+from app.models import Klus, Persoon, Bericht, Notificatie
 from app import db
 from flask import Blueprint, jsonify, request, session
 from app.models import Klus, Bericht, db
 from datetime import datetime
 chat = Blueprint('chat', __name__, url_prefix='/chat')
     
+def maak_melding(gebruiker_id, bericht):
+    notificatie = Notificatie(gebruiker_id=gebruiker_id, bericht=bericht)
+    db.session.add(notificatie)
+    db.session.commit()
+
 @chat.route('/<klusnummer>', methods=['GET', 'POST'])
 def chat_page(klusnummer):
     user_id = session.get('user_id')

@@ -12,19 +12,6 @@
     <!-- Titel van de pagina -->
     <h1 class="text-center" style="font-size: 28px; color: #10246B;">Alle Klussen</h1>
 
-    <!-- Flash-meldingen -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="alerts">
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} text-center">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}
-
     <!-- Lijst met klussen -->
     <div>
         {% for klus in klussen %}

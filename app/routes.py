@@ -476,6 +476,8 @@ def mijn_klussen():
 def mijn_klussen_selectie():
     return render_template('mijn_klussen_selectie.html')
 
+from sqlalchemy.orm import joinedload
+
 
 @main.route('/mijn_aangeboden_klussen', methods=['GET', 'POST'])
 def mijn_aangeboden_klussen():
@@ -484,35 +486,16 @@ def mijn_aangeboden_klussen():
         flash('Je moet ingelogd zijn om deze pagina te bekijken.', 'danger')
         return redirect(url_for('main.login'))
 
-    # Query voor klussen aangeboden door de ingelogde gebruiker
-    klussen = Klus.query.filter(Klus.idnummer == user_id).order_by(Klus.datum.desc()).all()
+    # Query voor klussen aangeboden door de ingelogde gebruiker, joinedload voor zoekers
+    klussen = Klus.query.filter(Klus.idnummer == user_id).options(
+        joinedload(Klus.klussen_zoekers)
+    ).order_by(Klus.datum.desc()).all()
 
-    # Verwerk de klussen voor de weergave
-    klussen_info = []
+    # Print debug om te zien of klussen_zoekers geladen zijn
     for klus in klussen:
-        klussen_info.append({
-            'id': klus.klusnummer,  # Gebruik 'klusnummer' als unieke ID
-            'naam': klus.naam,
-            'datum': klus.datum.strftime('%d-%m-%Y') if klus.datum else 'Onbekend',  # Controleer op None
-            'status': klus.status,  # Gebruik de werkelijke status
-        })
-    print(klussen_info)
+        print(f"Klusnummer: {klus.klusnummer}, Zoekers: {[zoeker.idnummer for zoeker in klus.klussen_zoekers]}")
 
-    # Als het formulier wordt verzonden (POST), update de voltooiingsstatus
-    if request.method == 'POST':
-        klus_id = request.form.get('klus_id')  # Haal de klus ID op uit het formulier
-        klus = Klus.query.get_or_404(klus_id)
-        if klus.idnummer != user_id:
-            flash('Je kunt deze klus niet bijwerken.', 'danger')
-            return redirect(url_for('main.mijn_aangeboden_klussen'))
-
-        # Update de status naar 'voltooid' (of andere gewenste status)
-        klus.status = 'voltooid'
-        db.session.commit()
-        flash('Klus is gemarkeerd als voltooid!', 'success')
-        return redirect(url_for('main.mijn_aangeboden_klussen'))
-
-    return render_template('mijn_aangeboden_klussen.html', klussen=klussen_info)
+    return render_template('mijn_aangeboden_klussen.html', klussen=klussen)
 
 
 @main.route('/mijn_gezochte_klussen')
@@ -601,7 +584,6 @@ def accepteer_klus(klusnummer):
 
     # Zoek de klus op basis van klusnummer
     klus = Klus.query.filter_by(klusnummer=klusnummer).first()
-
     if not klus:
         flash('Deze klus bestaat niet.', 'danger')
         return redirect(url_for('main.klussen'))
@@ -626,38 +608,23 @@ def accepteer_klus(klusnummer):
         # Voeg de gebruiker toe aan de klus_zoeker relatie
         if gebruiker not in klus.klussen_zoekers:
             klus.klussen_zoekers.append(gebruiker)
-
-        # Werk de statistieken voor de categorie bij
-        categorie_statistiek = CategorieStatistiek.query.filter_by(
-            idnummer=user_id,
-            categorie=klus.categorie
-        ).first()
-
-        if categorie_statistiek:
-            categorie_statistiek.aantal_accepteerd += 1
+            db.session.commit()
+            print(f"Kluszoeker {gebruiker.idnummer} toegevoegd aan klus {klus.klusnummer}")
         else:
-            nieuwe_statistiek = CategorieStatistiek(
-                idnummer=user_id,
-                categorie=klus.categorie,
-                aantal_accepteerd=1
-            )
-            db.session.add(nieuwe_statistiek)
+            print(f"Kluszoeker {gebruiker.idnummer} was al gekoppeld aan klus {klus.klusnummer}")
 
-        # Maak een melding voor de klusaanbieder
-        maak_melding(
-            gebruiker_id=klus.idnummer,  # Aanbieder van de klus
-            bericht=f"Je klus '{klus.naam}' is geaccepteerd door {gebruiker.voornaam} {gebruiker.achternaam}."
-        )
-
-        # Sla de wijzigingen op
         db.session.commit()
+        print("Commit succesvol uitgevoerd!")  # Debug: Commit-status
 
         flash('Je hebt de klus geaccepteerd!', 'success')
-        return redirect(url_for('main.mijn_gezochte_klussen'))
+        return redirect(url_for('main.mijn_gezochte_klussen'))  # Geldige return
+
     except Exception as e:
-        db.session.rollback()  # Rollback bij een fout
+        db.session.rollback()
         flash(f'Er is een fout opgetreden: {e}', 'danger')
+        print(f"Fout bij commit: {e}")  # Debugging
         return redirect(url_for('main.klussen'))
+
 
 
 
@@ -931,7 +898,7 @@ def markeer_melding_gelezen(id):
         db.session.rollback()
         print(f"Fout bij het markeren als gelezen: {e}")
         flash("Er ging iets mis bij het markeren van de melding.", "danger")
-    return redirect(url_for('main.dashboard'))
+    return redirect(url_for('main.alle_meldingen'))
 
 
 @main.app_context_processor
@@ -1039,3 +1006,46 @@ def alle_meldingen():
     ).order_by(Notificatie.aangemaakt_op.desc()).all()
 
     return render_template('alle_meldingen.html', meldingen=alle_meldingen)
+
+
+from flask import render_template, request, session, redirect, url_for, flash
+from app.models import Rating, Persoon, db
+from sqlalchemy import func
+
+@main.route('/beoordelingen/<string:klusnummer>', methods=['GET'])
+def beoordelingen_kluszoeker(klusnummer):
+    # Haal de klus op aan de hand van klusnummer
+    klus = Klus.query.filter_by(klusnummer=klusnummer).first()
+    
+    if not klus:
+        flash("De gevraagde klus bestaat niet.", "danger")
+        return redirect(url_for('main.home'))
+
+    # Haal de eerste kluszoeker op
+    kluszoeker = klus.klussen_zoekers[0] if klus.klussen_zoekers else None
+    
+    if not kluszoeker:
+        flash("Er zijn geen kluszoekers gekoppeld aan deze klus.", "warning")
+        return redirect(url_for('main.home'))
+
+    # Haal alle beoordelingen voor deze kluszoeker
+    ratings = Rating.query.filter_by(kluszoeker_id=kluszoeker.idnummer).all()
+
+    # Bereken gemiddelde scores
+    from sqlalchemy import func
+    samenvatting = db.session.query(
+        func.avg(Rating.vriendelijkheid_zoeker).label('vriendelijkheid'),
+        func.avg(Rating.tijdigheid).label('tijdigheid'),
+        func.avg(Rating.kwaliteit).label('kwaliteit'),
+        func.avg(Rating.communicatie_zoeker).label('communicatie'),
+        func.avg(Rating.algemene_ervaring_zoeker).label('algemene_ervaring')
+    ).filter_by(kluszoeker_id=kluszoeker.idnummer).first()
+
+    return render_template(
+        'beoordelingen_kluszoeker.html',
+        klus=klus,
+        kluszoeker=kluszoeker,
+        ratings=ratings,
+        samenvatting=samenvatting
+    )
+

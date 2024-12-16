@@ -7,7 +7,7 @@
     <div class="row">
         <!-- Profielinformatie -->
         <div class="col-md-6 profile-info">
-            <h2>Profiel van {{ user.voornaam }} {{ user.achternaam }}</h2>
+            <h2 class="text-primary font-weight-bold">Profiel van {{ user.voornaam }} {{ user.achternaam }}</h2>
             <p>Welkom op je persoonlijke profielpagina</p>
             <p><strong>Leeftijd:</strong> {{ user.leeftijd }}</p>
             <p><strong>Email:</strong> {{ user.email }}</p>
@@ -15,49 +15,59 @@
             <p><strong>Adres:</strong> {{ user.adres }}</p>
         </div>
 
-        <!-- Gemiddelde beoordelingen -->
+        <!-- Beoordelingen -->
         <div class="col-md-6">
             <!-- Gemiddelde beoordeling als Kluszoeker -->
-            <div class="rating-section">
-                <h4>Gemiddelde beoordeling als Kluszoeker:</h4>
+            <div class="rating-section mb-4">
+                <h4 class="text-secondary">Gemiddelde beoordeling als kluszoeker:</h4>
                 <div class="star-rating">
                     {% set gemiddelde_score_zoeker = user.gemiddelde_score_zoeker() %}
-                    {% if gemiddelde_score_zoeker == 0 %}
-                        <p>Geen beoordelingen ontvangen.</p> <!-- Bericht als er geen beoordelingen zijn -->
-                    {% else %}
-                        {% for i in range(1, 11) %}
-                            {% if gemiddelde_score_zoeker >= i %}
-                                <span class="star full"></span>
-                            {% elif gemiddelde_score_zoeker + 0.5 >= i %}
-                                <span class="star half"></span>
-                            {% else %}
-                                <span class="star empty"></span>
-                            {% endif %}
-                        {% endfor %}
-                        <p>{{ gemiddelde_score_zoeker }}/10</p>
+                    {% set full_stars = gemiddelde_score_zoeker|int %}
+                    {% set half_star = 1 if gemiddelde_score_zoeker - full_stars >= 0.5 else 0 %}
+                    {% set empty_stars = 10 - full_stars - half_star %}
+                    
+                    <!-- Volle sterren -->
+                    {% for _ in range(full_stars) %}
+                        <span class="star filled">&#9733;</span>
+                    {% endfor %}
+
+                    <!-- Halve ster -->
+                    {% if half_star %}
+                        <span class="star half">&#9733;</span>
                     {% endif %}
+
+                    <!-- Lege sterren -->
+                    {% for _ in range(empty_stars) %}
+                        <span class="star">&#9733;</span>
+                    {% endfor %}
+                    <p class="text-primary font-weight-bold">{{ "%.1f"|format(gemiddelde_score_zoeker) }}/10</p>
                 </div>
             </div>
 
             <!-- Gemiddelde beoordeling als Klusaanbieder -->
-            <div class="rating-section mt-4">
-                <h4>Gemiddelde beoordeling als Klusaanbieder:</h4>
+            <div class="rating-section">
+                <h4 class="text-secondary">Gemiddelde beoordeling als klusaanbieder:</h4>
                 <div class="star-rating">
                     {% set gemiddelde_score_aanbieder = user.gemiddelde_score_aanbieder() %}
-                    {% if gemiddelde_score_aanbieder == 0 %}
-                        <p>Geen beoordelingen ontvangen.</p> <!-- Bericht als er geen beoordelingen zijn -->
-                    {% else %}
-                        {% for i in range(1, 11) %}
-                            {% if gemiddelde_score_aanbieder >= i %}
-                                <span class="star full"></span>
-                            {% elif gemiddelde_score_aanbieder + 0.5 >= i %}
-                                <span class="star half"></span>
-                            {% else %}
-                                <span class="star empty"></span>
-                            {% endif %}
-                        {% endfor %}
-                        <p>{{ gemiddelde_score_aanbieder }}/10</p>
+                    {% set full_stars = gemiddelde_score_aanbieder|int %}
+                    {% set half_star = 1 if gemiddelde_score_aanbieder - full_stars >= 0.5 else 0 %}
+                    {% set empty_stars = 10 - full_stars - half_star %}
+                    
+                    <!-- Volle sterren -->
+                    {% for _ in range(full_stars) %}
+                        <span class="star filled">&#9733;</span>
+                    {% endfor %}
+
+                    <!-- Halve ster -->
+                    {% if half_star %}
+                        <span class="star half">&#9733;</span>
                     {% endif %}
+
+                    <!-- Lege sterren -->
+                    {% for _ in range(empty_stars) %}
+                        <span class="star">&#9733;</span>
+                    {% endfor %}
+                    <p class="text-primary font-weight-bold">{{ "%.1f"|format(gemiddelde_score_aanbieder) }}/10</p>
                 </div>
             </div>
         </div>
@@ -66,8 +76,8 @@
     <!-- Navigatieknoppen -->
     <div class="row mt-5">
         <div class="col-md-12 d-flex justify-content-between">
-            <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">Terug naar Dashboard</a>
-            <a href="{{ url_for('main.profiel_bewerken') }}" class="btn btn-primary">Profiel Bewerken</a>
+            <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">Terug naar dashboard</a>
+            <a href="{{ url_for('main.profiel_bewerken') }}" class="btn btn-primary">Profiel bewerken</a>
             <form action="{{ url_for('main.bevestig_verwijdering') }}" method="GET">
                 <button type="submit" class="btn btn-danger">Verwijder profiel</button>
             </form>
@@ -104,29 +114,27 @@
     .rating-section {
         margin-top: 20px;
     }
-    .rating-section h4 {
-        color: #10246B;
-        font-size: 20px;
-    }
     .star-rating {
-        display: flex;
-        align-items: center;
+        display: inline-block;
+        line-height: 1;
     }
     .star {
-        width: 20px;
-        height: 20px;
-        display: inline-block;
-        margin-right: 2px;
-        background-size: cover;
+        font-size: 25px;
+        color: #ccc;
     }
-    .star.full {
-        background-image: url('/static/images/star-full.png');
+    .star.filled {
+        color: #f5c518; /* Volle sterren */
     }
     .star.half {
-        background-image: url('/static/images/star-half.png');
+        position: relative;
+        color: #ccc;
     }
-    .star.empty {
-        background-image: url('/static/images/star-empty.png');
+    .star.half::before {
+        content: "\2605";
+        position: absolute;
+        width: 50%;
+        overflow: hidden;
+        color: #f5c518; /* Halve ster kleur */
     }
     .btn {
         padding: 10px 20px;

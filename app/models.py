@@ -133,21 +133,26 @@ class Klus(db.Model):
     klusnummer = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     naam = db.Column(db.String(100), nullable=False)
     beschrijving = db.Column(db.Text, nullable=False)
-    categorie = db.Column(db.String(50), db.ForeignKey('categorie.categorie'), nullable=False)  # ForeignKey toegevoegd
+    categorie = db.Column(db.String(50), db.ForeignKey('categorie.categorie'), nullable=False)
     locatie = db.Column(db.String(200), nullable=False)
-    tijd = db.Column(db.Time, nullable=False)  # Tijd als TIME
-    vergoeding = db.Column(db.Numeric(10, 2), nullable=False)  # Decimal voor geld
-    datum = db.Column(db.Date, nullable=False)  # Datum als DATE
-    verwachte_duur = db.Column(db.Integer, nullable=False)  # Integer voor uren
+    tijd = db.Column(db.Time, nullable=False)
+    vergoeding = db.Column(db.Numeric(10, 2), nullable=False)
+    datum = db.Column(db.Date, nullable=False)
+    verwachte_duur = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.TIMESTAMP, default=datetime.utcnow, nullable=False)
-    status = db.Column(db.String(20), default='beschikbaar', nullable=False)  # Status
+    status = db.Column(db.String(20), default='beschikbaar', nullable=False)
     idnummer = db.Column(db.String(10), db.ForeignKey('persoon.idnummer'), nullable=False)
     voltooid_op = db.Column(db.DateTime, nullable=True)
+    
 
-    persoon_aanbieder = db.relationship('Persoon', backref=db.backref('klussen', lazy=True))
+    # Relatie naar de aanbieder (via idnummer)
+    persoon_aanbieder = db.relationship(
+        'Persoon', 
+        foreign_keys=[idnummer],
+        backref=db.backref('klussen', lazy=True)
+    )
 
 
-    # Relatie met klussenzoekers (via de tussen tabel)
     klussen_zoekers = db.relationship(
         'Persoon', 
         secondary=klus_zoeker, 

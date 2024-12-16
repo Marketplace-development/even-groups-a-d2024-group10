@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Mijn Chats - KLUSKOMPAS{% endblock %}
+{% block title %}Mijn chats - KLUSKOMPAS{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
@@ -9,7 +9,7 @@
     <div class="row">
         <!-- Aangeboden Klussen -->
         <div class="col-md-6">
-            <h3 class="text-center mb-3" style="color: #333;">Aangeboden Klussen</h3>
+            <h3 class="text-center mb-3" style="color: #333;">Aangeboden klussen</h3>
             {% for klus in klussen %}
                 {% if klus.type == 'aangeboden' %}
                     <div class="klus-card mb-4 p-3 border rounded bg-white shadow-sm {% if klus.ongelezen_berichten > 0 %}ongelezen{% endif %}">
@@ -28,7 +28,7 @@
                             <p class="text-danger font-weight-bold">Er zijn {{ klus.ongelezen_berichten }} ongelezen bericht(en)!</p>
                         {% endif %}
                         <a href="{{ url_for('chat.chat_page', klusnummer=klus.klusnummer) }}" 
-                           class="btn btn-primary btn-sm mt-2">Bekijk Chat</a>
+                           class="btn btn-primary btn-sm mt-2">Bekijk chat</a>
                     </div>
                 {% endif %}
             {% endfor %}
@@ -36,7 +36,7 @@
 
         <!-- Gezochte Klussen -->
         <div class="col-md-6">
-            <h3 class="text-center mb-3" style="color: #333;">Gezochte Klussen</h3>
+            <h3 class="text-center mb-3" style="color: #333;">Gezochte klussen</h3>
             {% for klus in klussen %}
                 {% if klus.type == 'gezocht' %}
                 <div class="klus-card mb-4 p-3 border rounded bg-white shadow-sm {% if klus.ongelezen_berichten > 0 %}ongelezen{% endif %}">
@@ -55,7 +55,7 @@
                             <p class="text-danger font-weight-bold">Er zijn {{ klus.ongelezen_berichten }} ongelezen bericht(en)!</p>
                         {% endif %}
                         <a href="{{ url_for('chat.chat_page', klusnummer=klus.klusnummer) }}" 
-                           class="btn btn-primary btn-sm mt-2">Bekijk Chat</a>
+                           class="btn btn-primary btn-sm mt-2">Bekijk dhat</a>
                     </div>
                 {% endif %}
             {% endfor %}
