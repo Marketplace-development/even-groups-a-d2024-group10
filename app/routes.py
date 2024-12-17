@@ -372,10 +372,47 @@ def klus_detail(klusnummer):
 
 
 from app.models import CategorieStatistiek, Klus, Persoon
+@main.route('/klussen')
+def klussen():
+    # Controleer of de gebruiker is ingelogd
+    if 'user_id' not in session:
+        flash('Je moet ingelogd zijn om klussen te bekijken.', 'danger')
+        return redirect(url_for('main.login'))
 
+    user_id = session['user_id']
+    
+    # Haal de persoon op van de ingelogde gebruiker
+    user = Persoon.query.get(user_id)
 
+    # Haal de categorieën op waar de gebruiker de meeste klussen in heeft geaccepteerd
+    categorie_voorkeuren = (
+        db.session.query(CategorieStatistiek.categorie)
+        .filter_by(idnummer=user_id)
+        .order_by(CategorieStatistiek.aantal_accepteerd.desc())
+        .all()
+    )
 
+    # Zet de categorieën in een volgorde van meest naar minst voorkomend
+    voorkeuren_volgorde = [voorkeur[0] for voorkeur in categorie_voorkeuren]
 
+    # Haal alle beschikbare klussen op, maar sluit de klussen uit die door de ingelogde gebruiker zelf zijn aangeboden
+    beschikbare_klussen = Klus.query.filter(Klus.status == 'beschikbaar', Klus.persoon_aanbieder != user).all()
+
+    # Sorteer de klussen op basis van de voorkeursvolgorde
+    def sorteer_klussen(klus):
+        try:
+            return voorkeuren_volgorde.index(klus.categorie)
+        except ValueError:
+            # Als de categorie niet in de voorkeursvolgorde zit, zet hem achteraan
+            return len(voorkeuren_volgorde)
+
+    gesorteerde_klussen = sorted(beschikbare_klussen, key=sorteer_klussen)
+
+    # Voeg een melding toe als er geen klussen beschikbaar zijn
+    if not gesorteerde_klussen:
+        flash('Er zijn geen aangeboden klussen beschikbaar.', 'info')
+
+    return render_template('klussen_overzicht.html', klussen=gesorteerde_klussen)
 
 @main.route('/klus/<klusnummer>/bekijken', methods=['GET'])
 @login_required
