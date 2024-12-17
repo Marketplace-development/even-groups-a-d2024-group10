@@ -22,7 +22,7 @@
 
         <!-- Nieuwe knop voor "Mijn Chats" -->
         <a href="{{ url_for('chat.mijn_chats') }}" class="button">
-            Mijn Chats
+            Mijn chats
             {% if ongelezen_chats_count > 0 %}
                 <span class="badge">{{ ongelezen_chats_count }}</span>
             {% endif %}

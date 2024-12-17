@@ -3,8 +3,8 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f0f8ff;
-    color: #333;
+    background-color: #f9f9f9; /* Lichtgrijze achtergrond */
+    color: #333; /* Donkergrijze tekst */
 }
 
 .container {
@@ -12,141 +12,91 @@ body {
     margin: 0 auto;
     padding: 20px;
     text-align: center;
-    width: 100%;
-    max-width: 800px; /* Dit zorgt ervoor dat de container niet breder wordt dan 800px */
 }
 
 h1 {
     font-size: 2.5rem;
-    color: #003366;
+    color: #10246B; /* Donkerblauw voor titels */
     margin-bottom: 20px;
 }
 
-/* Stijlen voor knoppen */
-.btn, input[type="submit"] {
+/* Knoppen */
+.btn {
     padding: 12px 20px;
-    background-color: #1e90ff;
-    color: white;
-    font-size: 1.2rem;
+    background-color: #10246B; /* Donkerblauw */
+    color: #FFFFFF; /* Witte tekst */
+    font-size: 1rem;
     border: none;
     border-radius: 5px;
-    cursor: pointer;
     text-decoration: none;
-    width: 100%;
-    max-width: 250px; /* Max breedte voor de knoppen */
-    transition: background-color 0.3s;
-}
-
-.btn:hover, input[type="submit"]:hover {
-    background-color: #4682b4;
-}
-
-/* Extra stijl voor de knop "Geaccepteerde Klussen" */
-.btn-success {
-    background-color: #28a745;
-    color: white;
-}
-
-.btn-success:hover {
-    background-color: #218838;
-}
-
-/* Dashboard card-styling */
-.card {
-    margin-top: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.card-header {
-    background-color: #f4f4f4;
-    padding: 10px;
-    font-size: 1.5rem;
-    border-bottom: 1px solid #ddd;
-}
-
-.card-body {
-    padding: 15px;
-    font-size: 1.1rem;
-}
-
-.d-grid {
-    gap: 10px;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Star rating styling */
-.star-rating {
-    display: flex;
-    align-items: center;
-}
-.star {
-    width: 20px;
-    height: 20px;
     display: inline-block;
-    margin-right: 2px;
-    background-size: cover;
-}
-.star.full {
-    background-image: url('/static/images/star-full.png');
-}
-.star.half {
-    background-image: url('/static/images/star-half.png');
-}
-.star.empty {
-    background-image: url('/static/images/star-empty.png');
+    width: 100%;
+    max-width: 200px;
+    transition: background-color 0.3s ease;
 }
 
-/* Stijlen voor kluskaart */
+.btn:hover {
+    background-color: #0e1f4a; /* Iets donkerder blauw bij hover */
+}
+
+/* Kluskaart */
 .klus-card {
+    background-color: #FFFFFF; /* Witte achtergrond */
+    color: #333; /* Donkergrijze tekst */
+    border: 1px solid #ddd; /* Lichtgrijze rand */
+    border-radius: 8px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    margin: 16px auto;
+    padding: 20px;
+    text-align: left;
     width: 90%;
     max-width: 400px;
-    background-color: #10246B;
-    color: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    margin: 16px auto;
-    text-align: center;
-    transition: transform 0.3s, box-shadow 0.3s;
+    transition: box-shadow 0.3s ease;
 }
 
 .klus-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 .klus-card h2 {
-    font-size: 24px;
-    font-weight: bold;
-    color: white;
-    margin-bottom: 16px;
-    text-transform: uppercase;
+    font-size: 1.5rem;
+    color: #10246B; /* Donkerblauw */
+    margin-bottom: 10px;
 }
 
 .klus-card p {
-    font-size: 16px;
+    font-size: 1rem;
     margin: 5px 0;
-    color: #f0f8ff; /* Helderder kleur voor leesbaarheid */
+    color: #555; /* Grijs */
 }
 
-.klus-card a {
-    font-size: 18px;
-    font-weight: bold;
-    color: white;
-    text-decoration: none;
-    display: inline-block;
-    margin-top: 10px;
+.klus-card .badge {
+    background-color: #6c757d; /* Grijs */
+    color: #FFFFFF; /* Wit */
+    font-size: 0.9rem;
+    padding: 5px 10px;
+    border-radius: 5px;
 }
 
-.klus-card a:hover {
-    text-decoration: underline;
-}
-
-/* Specifieke stijlen voor datum en locatie */
+/* Laatste bericht */
 .klus-card p strong {
-    color: #FFD700; /* Gouden kleur om belangrijke informatie te benadrukken */
+    color: #333; /* Donkergrijs */
 }
 
+/* Sectietitels */
+.section-title {
+    font-size: 1.8rem;
+    color: #10246B; /* Donkerblauw */
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* Specifieke stijl voor 'Bekijk Chat' knop */
+.btn-dark {
+    background-color: #555; /* Donkergrijs */
+    color: white;
+}
+
+.btn-dark:hover {
+    background-color: #333; /* Nog donkerder grijs */
+}

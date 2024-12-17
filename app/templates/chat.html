@@ -4,10 +4,12 @@
 
 {% block content %}
 <div class="container">
-    <h2>Chat voor klus: {{ klus.naam }}</h2>
+    <!-- Toon met wie je chat -->
+    <h2>Chat met: {{ ontvanger.voornaam }} {{ ontvanger.achternaam }}</h2>
+    <h4 style="color: #555; text-align: center;">Klus: {{ klus.naam }}</h4>
 
     <!-- Berichtenlijst -->
-    <div class="chat-box">
+    <div class="chat-box" id="chat-box">
         {% for bericht in berichten %}
             <div class="chat-message {{ 'sent' if bericht.afzender_id == session['user_id'] else 'received' }}">
                 <div class="message-content">
@@ -21,102 +23,104 @@
     <!-- Bericht verzenden -->
     <form method="POST" action="{{ url_for('chat.chat_page', klusnummer=klus.klusnummer) }}">
         <div class="input-group">
-            <textarea name="inhoud" placeholder="Type een bericht..." required></textarea>
-            <button type="submit" class="btn btn-primary">Verzenden</button>
+            <textarea name="inhoud" placeholder="Typ hier je bericht..." required></textarea>
+            <button type="submit" class="btn btn-primary">
+                <i class="fa fa-paper-plane"></i> Verzenden
+            </button>
         </div>
     </form>
 </div>
 
 <!-- Terug optie -->
 <div class="back">
-    <div class="back-icon">
-        <a href="{{ url_for('chat.mijn_chats') }}">
-            <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" style="width: 100px; height: auto;">
-        </a>
-    </div>
+    <a href="{{ url_for('chat.mijn_chats') }}">
+        <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" style="width: 80px; height: auto;">
+    </a>
 </div>
 
+<!-- JavaScript voor automatisch scrollen -->
+<script>
+    // Scroll automatisch naar het laatste bericht
+    document.addEventListener("DOMContentLoaded", function() {
+        var chatBox = document.getElementById("chat-box");
+        chatBox.scrollTop = chatBox.scrollHeight;
+    });
+</script>
+
+<!-- CSS-styling -->
 <style>
     .container {
         max-width: 800px;
-        margin: 0 auto;
-        padding-top: 50px;
+        margin: 30px auto;
         background-color: #fff;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
-    h2 {
+    h2, h4 {
         text-align: center;
         color: #10246B;
-        font-size: 24px;
-        margin-bottom: 20px;
     }
 
     .chat-box {
         max-height: 400px;
         overflow-y: auto;
-        background-color: #f9f9f9;
         padding: 15px;
+        background-color: #f9f9f9;
         border: 1px solid #ddd;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        background-color: #fafafa;
+        border-radius: 10px;
     }
 
     .chat-message {
+        display: flex;
         margin-bottom: 10px;
     }
 
     .sent {
-        text-align: right;
+        justify-content: flex-end;
     }
 
     .received {
-        text-align: left;
+        justify-content: flex-start;
     }
 
     .message-content {
-        display: inline-block;
-        max-width: 70%;
+        max-width: 60%;
         padding: 10px;
         border-radius: 8px;
-        background-color: #e3e3e3;
-        margin: 5px;
         font-size: 14px;
+        color: #333;
+        background-color: #e6e6e6;
     }
 
     .sent .message-content {
         background-color: #007bff;
-        color: white;
-        margin-left: auto;
-    }
-
-    .received .message-content {
-        background-color: #e4e4e4;
-        color: #333;
+        color: #fff;
+        text-align: right;
     }
 
     .message-time {
         display: block;
         font-size: 12px;
-        color: #999;
+        color: #000000;
         margin-top: 5px;
+        text-align: right;
     }
 
     .input-group {
         display: flex;
-        align-items: center;
+        margin-top: 10px;
     }
 
     textarea {
-        width: 85%;
+        flex-grow: 1;
         padding: 10px;
         border-radius: 5px;
         border: 1px solid #ccc;
         resize: none;
-        height: 60px;
+        height: 50px;
+        font-size: 14px;
     }
 
     button {
@@ -126,43 +130,21 @@
         border: none;
         border-radius: 5px;
         margin-left: 10px;
+        cursor: pointer;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
     }
 
     button:hover {
         background-color: #0056b3;
     }
 
-    button:focus {
-        outline: none;
-    }
-
     .back {
         position: fixed;
         left: 20px;
         bottom: 20px;
-        text-align: center;
-        z-index: 1000;
-    }
-
-    .back-icon {
-        width: 120px;
-        height: 120px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: 50%;
-        overflow: hidden;
-        transition: transform 0.3s ease;
-    }
-
-    .back-icon img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .back-icon:hover {
-        transform: scale(1.1);
     }
 </style>
 {% endblock %}
