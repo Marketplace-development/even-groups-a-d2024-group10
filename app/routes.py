@@ -440,17 +440,6 @@ def klus_geaccepteerd(klusnummer):
         return redirect(url_for('main.klussen'))  # Terug naar de overzichtspagina als de klus niet gevonden wordt
 
 
-@main.route('/aangeboden_klussen')
-def aangeboden_klussen():
-    if 'user_id' not in session:
-        flash('Je moet ingelogd zijn om deze pagina te bekijken.', 'danger')
-        return redirect(url_for('main.login'))
-    
-    user = Persoon.query.get(session['user_id'])
-    klussen = Klus.query.filter_by(idnummer=user.idnummer).all()
-    return render_template('klussen_overzicht.html', klussen=klussen)
-
-
 @main.route('/klus/<klusnummer>/bevestiging', methods=['GET'])
 def bevestiging_klus(klusnummer):
     klus = Klus.query.filter_by(klusnummer=klusnummer).first()
