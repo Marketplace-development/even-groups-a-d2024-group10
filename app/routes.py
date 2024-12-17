@@ -373,7 +373,6 @@ def klus_detail(klusnummer):
 
 from app.models import CategorieStatistiek, Klus, Persoon
 @main.route('/klussen')
-@main.route('/klussen')
 def klussen():
     # Controleer of de gebruiker is ingelogd
     if 'user_id' not in session:
@@ -381,6 +380,9 @@ def klussen():
         return redirect(url_for('main.login'))
 
     user_id = session['user_id']
+    
+    # Haal de persoon op van de ingelogde gebruiker
+    user = Persoon.query.get(user_id)
 
     # Haal de categorieën op waar de gebruiker de meeste klussen in heeft geaccepteerd
     categorie_voorkeuren = (
@@ -393,8 +395,8 @@ def klussen():
     # Zet de categorieën in een volgorde van meest naar minst voorkomend
     voorkeuren_volgorde = [voorkeur[0] for voorkeur in categorie_voorkeuren]
 
-    # Haal alle beschikbare klussen op
-    beschikbare_klussen = Klus.query.filter_by(status='beschikbaar').all()
+    # Haal alle beschikbare klussen op, maar sluit de klussen uit die door de ingelogde gebruiker zelf zijn aangeboden
+    beschikbare_klussen = Klus.query.filter(Klus.status == 'beschikbaar', Klus.persoon_aanbieder != user).all()
 
     # Sorteer de klussen op basis van de voorkeursvolgorde
     def sorteer_klussen(klus):
@@ -411,6 +413,7 @@ def klussen():
         flash('Er zijn geen aangeboden klussen beschikbaar.', 'info')
 
     return render_template('klussen_overzicht.html', klussen=gesorteerde_klussen)
+
 
 
 
