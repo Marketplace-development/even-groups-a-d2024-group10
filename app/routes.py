@@ -181,6 +181,7 @@ def profile():
 
 
 
+
 @main.route('/logout')
 def logout():
     session.clear()  # Wis de sessie om de gebruiker uit te loggen
@@ -202,35 +203,35 @@ def profiel_bewerken():
     if not user:
         raise NotFound("Gebruiker niet gevonden.")
     
-    # Verwerken van de POST-aanvraag om profielinformatie bij te werken
     if request.method == 'POST':
-        # Verkrijg de geboortedatum uit het formulier en zet deze om naar een datumobject
+        # Verkrijg gegevens uit het formulier
         geboortedatum = datetime.strptime(request.form['geboortedatum'], '%Y-%m-%d').date()
 
-        # Bereken de leeftijd van de gebruiker
+        # Leeftijd berekenen
         today = date.today()
         leeftijd = today.year - geboortedatum.year - ((today.month, today.day) < (geboortedatum.month, geboortedatum.day))
 
-        # Controleer of de gebruiker jonger is dan 16 jaar
         if leeftijd < 16:
             flash('Je moet ouder zijn dan 16 jaar.', 'danger')
-            return redirect(url_for('main.profiel_bewerken'))  # Redirect naar dezelfde pagina om de foutmelding te tonen
+            return redirect(url_for('main.profiel_bewerken'))
 
         # Update de gegevens van de gebruiker
         user.voornaam = request.form['voornaam']
         user.achternaam = request.form['achternaam']
-        user.geboortedatum = geboortedatum  # Geboortedatum wordt bijgewerkt
+        user.geboortedatum = geboortedatum
         user.email = request.form['email']
         user.telefoonnummer = request.form['telefoonnummer']
         user.adres = request.form['adres']
+        user.geslacht = request.form['geslacht']
+        user.username = request.form['username']
         
-        # Sla de wijzigingen op in de database
         db.session.commit()
-        
         flash('Profiel succesvol bijgewerkt!', 'success')
-        return redirect(url_for('main.profile'))  # Redirect naar de profielpagina
+        return redirect(url_for('main.profile'))
 
     return render_template('profiel_bewerken.html', user=user)
+
+
 
 
 

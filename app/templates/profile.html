@@ -4,169 +4,214 @@
 
 {% block content %}
 <div class="container profile-container">
-    <div class="row">
-        <!-- Profielinformatie -->
-        <div class="col-md-6 profile-info">
-            <h2 class="text-primary font-weight-bold">Profiel van {{ user.voornaam }} {{ user.achternaam }}</h2>
-            <p>Welkom op je persoonlijke profielpagina</p>
-            <p><strong>Geboortedatum:</strong> {{ user.geboortedatum }}</p>
-            <p><strong>Email:</strong> {{ user.email }}</p>
-            <p><strong>Telefoonnummer:</strong> {{ user.telefoonnummer }}</p>
-            <p><strong>Adres:</strong> {{ user.adres }}</p>
+    <h1 class="text-center profile-title">Profiel van {{ user.voornaam }} {{ user.achternaam }}</h1>
+    <p class="text-center profile-subtitle">Welkom op je persoonlijke profielpagina</p>
+    
+    <!-- Profielgegevens en Beoordelingen -->
+    <div class="profile-content">
+        <!-- Profielgegevens -->
+        <div class="profile-details">
+            <h3 class="section-title">Profielgegevens</h3>
+            <ul class="detail-list">
+                <li><strong>Gebruikersnaam:</strong> {{ user.username }}</li>
+                <li><strong>Geboortedatum:</strong> {{ user.geboortedatum }}</li>
+                <li><strong>Email:</strong> {{ user.email }}</li>
+                <li><strong>Telefoonnummer:</strong> {{ user.telefoonnummer }}</li>
+                <li><strong>Adres:</strong> {{ user.adres }}</li>
+                <li><strong>Geslacht:</strong> {{ user.geslacht }}</li>
+            </ul>
         </div>
 
         <!-- Beoordelingen -->
-        <div class="col-md-6">
-            <!-- Gemiddelde beoordeling als Kluszoeker -->
-            <div class="rating-section mb-4">
-                <h4 class="text-secondary">Gemiddelde beoordeling als kluszoeker:</h4>
-                <div class="star-rating">
-                    {% set gemiddelde_score_zoeker = user.gemiddelde_score_zoeker() %}
-                    {% set full_stars = gemiddelde_score_zoeker|int %}
-                    {% set half_star = 1 if gemiddelde_score_zoeker - full_stars >= 0.5 else 0 %}
-                    {% set empty_stars = 10 - full_stars - half_star %}
-                    
-                    <!-- Volle sterren -->
-                    {% for _ in range(full_stars) %}
-                        <span class="star filled">&#9733;</span>
-                    {% endfor %}
-
-                    <!-- Halve ster -->
-                    {% if half_star %}
-                        <span class="star half">&#9733;</span>
-                    {% endif %}
-
-                    <!-- Lege sterren -->
-                    {% for _ in range(empty_stars) %}
-                        <span class="star">&#9733;</span>
-                    {% endfor %}
-                    <p class="text-primary font-weight-bold">{{ "%.1f"|format(gemiddelde_score_zoeker) }}/10</p>
-                </div>
-            </div>
-
-            <!-- Gemiddelde beoordeling als Klusaanbieder -->
+        <div class="profile-ratings">
             <div class="rating-section">
-                <h4 class="text-secondary">Gemiddelde beoordeling als klusaanbieder:</h4>
-                <div class="star-rating">
-                    {% set gemiddelde_score_aanbieder = user.gemiddelde_score_aanbieder() %}
-                    {% set full_stars = gemiddelde_score_aanbieder|int %}
-                    {% set half_star = 1 if gemiddelde_score_aanbieder - full_stars >= 0.5 else 0 %}
-                    {% set empty_stars = 10 - full_stars - half_star %}
-                    
-                    <!-- Volle sterren -->
-                    {% for _ in range(full_stars) %}
-                        <span class="star filled">&#9733;</span>
-                    {% endfor %}
-
-                    <!-- Halve ster -->
-                    {% if half_star %}
-                        <span class="star half">&#9733;</span>
-                    {% endif %}
-
-                    <!-- Lege sterren -->
-                    {% for _ in range(empty_stars) %}
-                        <span class="star">&#9733;</span>
-                    {% endfor %}
-                    <p class="text-primary font-weight-bold">{{ "%.1f"|format(gemiddelde_score_aanbieder) }}/10</p>
-                </div>
+                <h4>Beoordeling als kluszoeker</h4>
+                {% set gemiddelde_score_zoeker = user.gemiddelde_score_zoeker() %}
+                {% if gemiddelde_score_zoeker %}
+                    <div class="stars">
+                        {% for _ in range(gemiddelde_score_zoeker|int) %}
+                            <span class="rating-star">&#9733;</span>
+                        {% endfor %}
+                        {% for _ in range(10 - gemiddelde_score_zoeker|int) %}
+                            <span class="rating-star empty">&#9733;</span>
+                        {% endfor %}
+                    </div>
+                    <p class="score">{{ "%.1f"|format(gemiddelde_score_zoeker) }}/10</p>
+                {% else %}
+                    <p class="no-rating">Nog geen beoordelingen</p>
+                {% endif %}
+            </div>
+            
+            <div class="rating-section">
+                <h4>Beoordeling als klusaanbieder</h4>
+                {% set gemiddelde_score_aanbieder = user.gemiddelde_score_aanbieder() %}
+                {% if gemiddelde_score_aanbieder %}
+                    <div class="stars">
+                        {% for _ in range(gemiddelde_score_aanbieder|int) %}
+                            <span class="rating-star">&#9733;</span>
+                        {% endfor %}
+                        {% for _ in range(10 - gemiddelde_score_aanbieder|int) %}
+                            <span class="rating-star empty">&#9733;</span>
+                        {% endfor %}
+                    </div>
+                    <p class="score">{{ "%.1f"|format(gemiddelde_score_aanbieder) }}/10</p>
+                {% else %}
+                    <p class="no-rating">Nog geen beoordelingen</p>
+                {% endif %}
             </div>
         </div>
     </div>
 
     <!-- Navigatieknoppen -->
-    <div class="row mt-5">
-        <div class="col-md-12 d-flex justify-content-between">
-            <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">Terug naar dashboard</a>
-            <a href="{{ url_for('main.profiel_bewerken') }}" class="btn btn-primary">Profiel bewerken</a>
-            <form action="{{ url_for('main.bevestig_verwijdering') }}" method="GET">
-                <button type="submit" class="btn btn-danger">Verwijder profiel</button>
-            </form>
-        </div>
+    <div class="profile-actions">
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">Terug naar dashboard</a>
+        <a href="{{ url_for('main.profiel_bewerken') }}" class="btn btn-primary">Profiel bewerken</a>
+        <a href="{{ url_for('main.bevestig_verwijdering') }}" class="btn btn-danger">Verwijder profiel</a>
     </div>
 </div>
 
+<!-- CSS -->
 <style>
     body {
         background-color: #f4f7fa;
-        font-family: Arial, sans-serif;
+        font-family: 'Arial', sans-serif;
         color: #333;
     }
+
     .profile-container {
-        max-width: 1000px;
+        max-width: 1100px;
         margin: 50px auto;
-        background-color: #ffffff;
-        border-radius: 10px;
+        background: #ffffff;
+        border-radius: 12px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         padding: 30px;
     }
-    .profile-info h2 {
-        font-size: 28px;
+
+    .profile-title {
         color: #10246B;
+        font-size: 32px;
+        font-weight: bold;
     }
-    .profile-info p {
-        font-size: 16px;
-        margin: 10px 0;
+
+    .profile-subtitle {
         color: #555;
+        font-size: 16px;
+        margin-bottom: 20px;
     }
-    .profile-info strong {
+
+    .profile-content {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .profile-details {
+        flex: 1;
+        margin-right: 20px;
+    }
+
+    .section-title {
+        color: #10246B;
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+
+    .detail-list {
+        list-style: none;
+        padding-left: 0;
+    }
+
+    .detail-list li {
+        margin: 5px 0;
+        font-size: 16px;
+        color: #555;
+        display: flex;
+    }
+
+    .detail-list li strong {
+        width: 150px; /* Pas de breedte aan indien nodig */
         color: #10246B;
     }
+
+    .profile-ratings {
+        flex: 1;
+        text-align: center;
+    }
+
     .rating-section {
-        margin-top: 20px;
+        margin-bottom: 20px;
     }
-    .star-rating {
-        display: inline-block;
-        line-height: 1;
+
+    .rating-section h4 {
+        color: #10246B;
+        font-size: 18px;
+        margin-bottom: 10px;
     }
-    .star {
-        font-size: 25px;
-        color: #ccc;
+
+    .stars {
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
-    .star.filled {
-        color: #f5c518; /* Volle sterren */
+
+    .rating-star {
+        font-size: 22px;
+        color: #f5c518;
+        margin: 0 2px;
     }
-    .star.half {
-        position: relative;
-        color: #ccc;
+
+    .rating-star.empty {
+        color: #ddd;
     }
-    .star.half::before {
-        content: "\2605";
-        position: absolute;
-        width: 50%;
-        overflow: hidden;
-        color: #f5c518; /* Halve ster kleur */
-    }
-    .btn {
-        padding: 10px 20px;
+
+    .score {
+        margin-top: 5px;
         font-size: 16px;
         font-weight: bold;
-        text-align: center;
+        color: #10246B;
+    }
+
+    .no-rating {
+        font-size: 16px;
+        color: #555;
+        font-style: italic;
+    }
+
+    .profile-actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border: none;
         border-radius: 8px;
         text-decoration: none;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
     }
+
     .btn-secondary {
         background-color: #6c757d;
         color: white;
-        border: none;
     }
-    .btn-secondary:hover {
-        background-color: #5a6268;
-    }
+
     .btn-primary {
         background-color: #10246B;
         color: white;
-        border: none;
     }
-    .btn-primary:hover {
-        background-color: #0e1f4a;
-    }
+
     .btn-danger {
         background-color: #e74c3c;
-        border: none;
         color: white;
     }
-    .btn-danger:hover {
-        background-color: #c0392b;
+
+    .btn:hover {
+        opacity: 0.9;
     }
 </style>
 {% endblock %}
+
