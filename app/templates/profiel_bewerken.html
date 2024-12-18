@@ -6,6 +6,18 @@
 <div class="main-container" style="display: flex; justify-content: center; align-items: center; height: calc(100vh - 80px);">
     <div class="form-container" style="width: 500px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); background: white;">
         <h2 style="text-align: center; color: #10246B; margin-bottom: 20px;">Profiel Bewerken</h2>
+        
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="alert-container">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}" role="alert">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
         <form method="POST">
             <!-- Voornaam -->
             <div class="form-group" style="margin-bottom: 15px;">
@@ -78,6 +90,27 @@
 
     .btn-secondary:hover {
         background-color: #5a6268;
+    }
+
+    .alert-container {
+        margin-bottom: 20px;
+    }
+
+    .alert {
+        font-size: 14px;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
     }
 </style>
 {% endblock %}
