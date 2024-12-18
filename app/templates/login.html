@@ -1,55 +1,165 @@
+{% extends 'base.html' %}
+
+{% block title %}Inloggen - KLUSKOMPAS{% endblock %}
+
 {% block content %}
-    <div style="background-color: #f4f4f9; min-height: 100vh; padding-top: 50px;">
-        <!-- Achtergrondkleur van de volledige pagina: 'background-color: #f9f9f9;' -->
-        
-        <!-- Logo en decoratie -->
-        <div style="left: 50%; top: 30px; position: absolute; transform: translateX(-50%); margin-bottom: 80px;">
-            <!-- Logo vergroot met een grotere breedte -->
-            <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" style="width: 400px; height: auto;">
-        </div>
-
-        <!-- Login form container -->
-        <div style="width: 366px; height: auto; margin: 100 auto; padding: 20px; border: 1px solid #ddd; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius: 8px; background-color: #f4f4f9;">
-            <!-- Achtergrondkleur van het kader: wit '#fff' -->
-            <h1 style="text-align: center; color: #10246B;">Inloggen</h1>
-
-            <!-- Flash alleen foutmeldingen -->
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        {% if category == 'danger' %} <!-- Toon alleen 'danger' meldingen -->
-                            <div class="alert alert-danger" role="alert" style="text-align: center; margin-bottom: 20px;">
-                                {{ message }}
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-
-            <!-- Login formulier -->
-            <form method="POST">
-                {{ form.hidden_tag() }}
-                
-                <div style="margin-bottom: 20px;">
-                    <label for="username" style="font-size: 18px; color: #10246B;">Gebruikersnaam</label>
-                    {{ form.username(class="form-control", style="width: 100%; padding: 10px; border: 1px solid #10246B; border-radius: 8px; font-size: 16px;") }}
-                    {% if form.username.errors %}
-                        <ul class="errors" style="color: red; padding: 0; margin-top: 5px;">
-                            {% for error in form.username.errors %}
-                                <li>{{ error }}</li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
-                </div>
-                
-                <div style="margin-bottom: 20px;">
-                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; background-color: #10246B; color: white; font-size: 18px; border: none; border-radius: 8px; cursor: pointer;">
-                        Inloggen
-                    </button>
-                </div>
-            </form>
-
-            <p style="text-align: center; color: #10246B; font-size: 16px;">Heb je nog geen account? <a href="{{ url_for('main.register') }}" style="color: #10246B; text-decoration: underline;">Registreer hier</a></p>
-        </div>
+<div class="main-container">
+    <!-- Logo -->
+    <div class="logo-container">
+        <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" class="logo">
     </div>
+
+    <!-- Login formulier -->
+    <div class="form-container">
+        <h1 class="form-title">Inloggen</h1>
+
+        <!-- Flash foutmeldingen -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% if category == 'danger' %}
+                        <div class="alert alert-danger">{{ message }}</div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            {{ form.hidden_tag() }}
+
+            <!-- Gebruikersnaam veld -->
+            <div class="form-group">
+                <label for="username">Gebruikersnaam:</label>
+                {{ form.username(class="form-control", placeholder="Voer je gebruikersnaam in") }}
+                {% if form.username.errors %}
+                    <span class="text-danger">{{ form.username.errors[0] }}</span>
+                {% endif %}
+            </div>
+
+            <!-- Login knop -->
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Inloggen</button>
+            </div>
+        </form>
+
+        <!-- Registreer link -->
+        <p class="text-center">
+            Heb je nog geen account? 
+            <a href="{{ url_for('main.register') }}" class="register-link">Registreer hier</a>
+        </p>
+    </div>
+</div>
+
+<!-- CSS -->
+<style>
+    body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: 'Inter', sans-serif;
+        background-color: #f4f4f9;
+    }
+
+    .main-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    .logo-container {
+        margin-bottom: 30px;
+    }
+
+    .logo {
+        width: 300px;
+        height: auto;
+    }
+
+    .form-container {
+        width: 100%;
+        max-width: 400px;
+        padding: 20px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-title {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #10246B;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #10246B;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #B2B2B2;
+        border-radius: 8px;
+        font-size: 16px;
+    }
+
+    .form-control:focus {
+        border-color: #10246B;
+        outline: none;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background-color: #10246B;
+        color: #fff;
+    }
+
+    .btn-primary:hover {
+        background-color: #0d1d54;
+    }
+
+    .text-danger {
+        color: red;
+        font-size: 14px;
+        margin-top: 5px;
+        display: block;
+    }
+
+    .text-center {
+        text-align: center;
+        color: #10246B;
+    }
+
+    .register-link {
+        color: #10246B;
+        text-decoration: underline;
+    }
+
+    .alert {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #721c24;
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        border-radius: 5px;
+        padding: 10px;
+    }
+</style>
 {% endblock %}
