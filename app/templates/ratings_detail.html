@@ -37,7 +37,7 @@
 
     <!-- Terug knop -->
     <div class="logout-icon">
-        <a href="{{ url_for('main.ratings', rol=rol, idnummer=rating.klusaanbieder_id if rol == 'aanbieder' else rating.kluszoeker_id) }}">
+        <a href="{{ back_url }}">
             <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" style="width: 100px; height: auto;">
         </a>
     </div>

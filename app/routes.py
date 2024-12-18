@@ -811,6 +811,7 @@ def rate_zoeker(klusnummer):
             existing_rating.kwaliteit = form.kwaliteit.data
             existing_rating.communicatie_zoeker = form.communicatie.data
             existing_rating.algemene_ervaring_zoeker = form.algemene_ervaring.data
+            existing_rating.comment = form.comment.data
         else:
             # Maak een nieuwe beoordeling
             new_rating = Rating(
@@ -821,7 +822,8 @@ def rate_zoeker(klusnummer):
                 tijdigheid=form.tijdigheid.data,
                 kwaliteit=form.kwaliteit.data,
                 communicatie_zoeker=form.communicatie.data,
-                algemene_ervaring_zoeker=form.algemene_ervaring.data
+                algemene_ervaring_zoeker=form.algemene_ervaring.data,
+                comment=form.comment.data,
             )
             db.session.add(new_rating)
 
@@ -847,7 +849,6 @@ def rate_zoeker(klusnummer):
 
 @main.route('/rate_aanbieder/<klusnummer>', methods=['GET', 'POST'])
 def rate_aanbieder(klusnummer):
-    # Haal de klus op
     klus = Klus.query.filter_by(klusnummer=klusnummer).first()
     if not klus:
         flash('Klus niet gevonden.', 'danger')
@@ -874,6 +875,7 @@ def rate_aanbieder(klusnummer):
             existing_rating.betrouwbaarheid = form.betrouwbaarheid.data
             existing_rating.communicatie_aanbieder = form.communicatie.data
             existing_rating.algemene_ervaring_aanbieder = form.algemene_ervaring.data
+            existing_rating.comment = form.comment.data
             flash('Beoordeling succesvol bijgewerkt!', 'success')
         else:
             # Voeg nieuwe beoordeling toe als er geen bestaat
@@ -886,6 +888,7 @@ def rate_aanbieder(klusnummer):
                 betrouwbaarheid=form.betrouwbaarheid.data,
                 communicatie_aanbieder=form.communicatie.data,
                 algemene_ervaring_aanbieder=form.algemene_ervaring.data,
+                comment=form.comment.data,
                 created_at=datetime.utcnow()
             )
             db.session.add(new_rating)
@@ -971,11 +974,17 @@ def ratings_detail(rating_id):
     else:
         rol = 'onbekend'  # Als er geen geldig id is, kun je dit als fallback gebruiken
     
+    if rol == 'aanbieder':
+        back_url = url_for('main.ratings', rol='aanbieder', idnummer=rating.klusaanbieder_id)
+    else:
+        back_url = url_for('main.beoordelingen_kluszoeker', rol='zoeker', idnummer=rating.kluszoeker_id)
+
     # Render de detailpagina
     return render_template(
         'ratings_detail.html',
         rating=rating,
-        rol=rol
+        rol=rol,
+        back_url=back_url
     )
 
 
@@ -1140,11 +1149,14 @@ def beoordelingen_kluszoeker(klusnummer):
         func.avg(Rating.algemene_ervaring_zoeker).label('algemene_ervaring')
     ).filter_by(kluszoeker_id=kluszoeker.idnummer).first()
 
+    back_url = request.referrer or url_for('main.dashboard')
+
     return render_template(
         'beoordelingen_kluszoeker.html',
         klus=klus,
         kluszoeker=kluszoeker,
         ratings=ratings,
-        samenvatting=samenvatting
+        samenvatting=samenvatting,
+        back_url=back_url
     )
 
