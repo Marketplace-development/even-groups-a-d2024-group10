@@ -14,16 +14,11 @@
 
     <!-- Detailinformatie -->
     <div class="details-card">
-        <h2>Algemene ervaring: {{ rating.algemene_ervaring_aanbieder if rol == 'aanbieder' else rating.algemene_ervaring_zoeker }}</h2>
-        <p><strong>Vriendelijkheid:</strong> {{ rating.vriendelijkheid_aanbieder if rol == 'aanbieder' else rating.vriendelijkheid_zoeker }}</p>
-        {% if rol == 'aanbieder' %}
-        <p><strong>Gastvrijheid:</strong> {{ rating.gastvrijheid }}</p>
-        <p><strong>Betrouwbaarheid:</strong> {{ rating.betrouwbaarheid }}</p>
-        {% else %}
+        <h2>Algemene ervaring: {{ rating.algemene_ervaring_zoeker }}</h2>
+        <p><strong>Vriendelijkheid:</strong> {{ rating.vriendelijkheid_zoeker }}</p>
         <p><strong>Tijdigheid:</strong> {{ rating.tijdigheid }}</p>
         <p><strong>Kwaliteit:</strong> {{ rating.kwaliteit }}</p>
-        {% endif %}
-        <p><strong>Communicatie:</strong> {{ rating.communicatie_aanbieder if rol == 'aanbieder' else rating.communicatie_zoeker }}</p>
+        <p><strong>Communicatie:</strong> {{ rating.communicatie_zoeker }}</p>
         
         <!-- Alleen commentaar tonen als er een commentaar is -->
         {% if rating.comment %}
@@ -36,7 +31,7 @@
     </div>
 
     <!-- Terug knop -->
-    <div class="back">
+    <div class="back-icon">
         <a href="{{ back_url }}">
             <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" class="back-icon">
         </a>
@@ -91,6 +86,5 @@
     .back-icon:hover {
         transform: scale(1.1);
     }
-
 </style>
 {% endblock %}

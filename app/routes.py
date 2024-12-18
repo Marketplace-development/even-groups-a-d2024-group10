@@ -975,14 +975,39 @@ def ratings_detail(rating_id):
     else:
         rol = 'onbekend'  # Als er geen geldig id is, kun je dit als fallback gebruiken
     
-    if rol == 'aanbieder':
-        back_url = url_for('main.ratings', rol='aanbieder', idnummer=rating.klusaanbieder_id)
-    else:
-        back_url = url_for('main.beoordelingen_kluszoeker', rol='zoeker', idnummer=rating.kluszoeker_id)
+    back_url = url_for('main.ratings', rol=rol, idnummer=rating.klusaanbieder_id)
 
     # Render de detailpagina
     return render_template(
         'ratings_detail.html',
+        rating=rating,
+        rol=rol,
+        back_url=back_url
+    )
+
+
+@main.route('/rating/zoeker/<int:rating_id>', methods=['GET'])
+def ratings_detail_zoeker(rating_id):
+    # Zoek de beoordeling op in de database
+    rating = Rating.query.get(rating_id)
+    
+    # Controleer of de beoordeling bestaat
+    if not rating:
+        abort(404, description="Rating not found")
+    
+    # Bepaal de rol (zoeker of aanbieder) door te controleren welke id ingevuld is
+    if rating.kluszoeker_id:
+        rol = 'zoeker'  # Beoordeling door de kluszoeker
+    elif rating.klusaanbieder_id:
+        rol = 'aanbieder'  # Beoordeling door de klusaanbieder
+    else:
+        rol = 'onbekend'  # Fallback als er geen geldig id is
+    
+    back_url = url_for('main.beoordelingen_kluszoeker', rol=rol, idnummer=rating.kluszoeker_id, klusnummer=rating.klusnummer)
+
+    # Render de detailpagina voor de zoeker
+    return render_template(
+        'ratings_detail_zoeker.html',
         rating=rating,
         rol=rol,
         back_url=back_url
@@ -1138,17 +1163,12 @@ def beoordelingen_kluszoeker(klusnummer):
         return redirect(url_for('main.home'))
 
     # Haal alle beoordelingen voor deze kluszoeker
-    ratings = Rating.query.filter_by(kluszoeker_id=kluszoeker.idnummer).all()
+    ratings = Rating.query.filter_by(kluszoeker_id=kluszoeker.idnummer).order_by(Rating.created_at.desc()).all()
 
-    # Bereken gemiddelde scores
-    from sqlalchemy import func
-    samenvatting = db.session.query(
-        func.avg(Rating.vriendelijkheid_zoeker).label('vriendelijkheid'),
-        func.avg(Rating.tijdigheid).label('tijdigheid'),
-        func.avg(Rating.kwaliteit).label('kwaliteit'),
-        func.avg(Rating.communicatie_zoeker).label('communicatie'),
-        func.avg(Rating.algemene_ervaring_zoeker).label('algemene_ervaring')
-    ).filter_by(kluszoeker_id=kluszoeker.idnummer).first()
+    # Bereken gemiddelde score van de algemene ervaring
+    gemiddelde_scores = None
+    if ratings:
+        gemiddelde_scores = round(sum(r.algemene_ervaring_zoeker for r in ratings if r.algemene_ervaring_zoeker) / len(ratings), 1)
 
     back_url = request.referrer or url_for('main.dashboard')
 
@@ -1157,7 +1177,6 @@ def beoordelingen_kluszoeker(klusnummer):
         klus=klus,
         kluszoeker=kluszoeker,
         ratings=ratings,
-        samenvatting=samenvatting,
+        gemiddelde_scores=gemiddelde_scores,
         back_url=back_url
     )
-

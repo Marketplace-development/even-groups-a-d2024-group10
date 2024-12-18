@@ -29,7 +29,7 @@
                 <h2>Algemene ervaring: {{ rating.algemene_ervaring_zoeker }}</h2>
                 <p>Ingediend door: {{ rating.klusaanbieder.voornaam }} {{ rating.klusaanbieder.achternaam }}</p>
                 <p>Datum: {{ rating.created_at.strftime('%d-%m-%Y') }}</p>
-                <a href="{{ url_for('main.ratings_detail', rating_id=rating.id) }}" class="btn btn-light">Bekijk details →</a>
+                <a href="{{ url_for('main.ratings_detail_zoeker', rating_id=rating.id) }}" class="btn btn-light">Bekijk details →</a>
             </div>
             {% endfor %}
         {% else %}
