@@ -1111,10 +1111,6 @@ def alle_meldingen():
     return render_template('alle_meldingen.html', meldingen=alle_meldingen)
 
 
-from flask import render_template, request, session, redirect, url_for, flash
-from app.models import Rating, Persoon, db
-from sqlalchemy import func
-
 @main.route('/beoordelingen/<string:klusnummer>', methods=['GET'])
 def beoordelingen_kluszoeker(klusnummer):
     # Haal de klus op aan de hand van klusnummer

@@ -4,96 +4,87 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welkom - KLUSKOMPAS</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background-color: white;
+            background-color: #f9f9f9;
             color: #10246B;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
 
         .container {
-            width: 100%;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
             text-align: center;
+            background-color: #ffffff;
+            border-radius: 15px;
+            padding: 60px 40px; /* Grotere padding */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            width: 600px; /* Groter */
         }
 
-        .logo-container {
+        .logo img {
+            width: 300px; /* Logo groter */
+            height: auto;
             margin-bottom: 30px;
         }
 
-        .logo-container img {
-            width: 250px; 
-            height: auto;
-        }
-
         .welcome-text {
-            font-size: 36px;
-            font-family: Roboto, sans-serif;
-            font-weight: 500;
-            line-height: 40px;
-            letter-spacing: 1.8px;
-            color: #10246B;
-            margin-bottom: 20px;
-        }
-
-        .link {
-            font-size: 24px;
-            font-family: Inter, sans-serif;
-            font-weight: 400;
-            color: #10246B;
-            text-decoration: underline;
-            cursor: pointer;
-        }
-
-        .link:hover {
-            color: #0e1f4a;
+            font-size: 28px; /* Grotere tekst */
+            font-weight: 600;
+            margin-bottom: 40px;
+            line-height: 1.5;
         }
 
         .login-box {
-            width: 267px;
-            height: 126px;
-            background: #10246B;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: #F5EFF7;
-            font-size: 67px;
-            font-family: Inter, sans-serif;
-            font-weight: 700;
-            line-height: 115.2px;
-            text-align: center;
-            cursor: pointer;
-            margin-top: 40px; /* Toegevoegde marge om de login knop naar beneden te duwen */
-        }
-
-        .login-box a {
-            color: #F5EFF7;
+            display: inline-block;
+            background-color: #10246B;
+            color: #ffffff;
+            padding: 18px 60px; /* Grotere knop */
+            border-radius: 8px;
+            font-size: 26px; /* Grotere lettergrootte */
+            font-weight: bold;
             text-decoration: none;
-            font-size: 67px;
-            font-family: Inter, sans-serif;
-            font-weight: 700;
-            line-height: 115.2px;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
         }
 
-        /* Voeg margin-top toe aan de registratie link voor meer ruimte */
-        .register-link-container {
-            margin-top: 30px; /* Je kunt deze waarde aanpassen om de afstand te vergroten of verkleinen */
+        .login-box:hover {
+            background-color: #0e1f4a;
+            transform: translateY(-3px);
+        }
+
+        .register-link {
+            display: block;
+            margin-top: 30px; /* Meer ruimte boven de link */
+            font-size: 20px; /* Grotere lettergrootte */
+            text-decoration: none;
+            color: #10246B;
+            transition: color 0.3s ease;
+        }
+
+        .register-link:hover {
+            color: #0e1f4a;
+        }
+
+        hr {
+            border: none;
+            height: 1px;
+            background-color: #ddd;
+            margin: 30px 0;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <!-- Logo -->
-        <div style="left: 50%; top: 30px; position: absolute; transform: translateX(-50%);">
-            <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" style="width: 650px; height: auto;">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo">
         </div>
 
         <!-- Welkomsttekst -->
@@ -102,15 +93,13 @@
             Klik hieronder om je aan te melden of een account aan te maken.
         </div>
 
-        <!-- Login Box met link naar inlogpagina -->
-        <a href="{{ url_for('main.login') }}" class="login-box">
-            Log in
-        </a>
+        <hr>
 
-        <!-- Registratie link met extra marge eronder -->
-        <div class="register-link-container">
-            <a href="{{ url_for('main.register') }}" class="link">Of registreer</a>
-        </div>
+        <!-- Login-knop -->
+        <a href="{{ url_for('main.login') }}" class="login-box">Log in</a>
+
+        <!-- Registratie-link -->
+        <a href="{{ url_for('main.register') }}" class="register-link">Of registreer</a>
     </div>
 </body>
 </html>

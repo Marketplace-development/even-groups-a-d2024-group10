@@ -3,81 +3,68 @@
 {% block title %}Mijn geschiedenis - KLUSKOMPAS{% endblock %}
 
 {% block content %}
-<div class="container" style="margin-top: 50px;">
-    <div class="history-header">
-        <h2>Mijn geschiedenis</h2>
+<div class="container mt-5">
+    <!-- Titel -->
+    <div class="text-center mb-4">
+        <h1 class="text-dark-blue text-center">Mijn geschiedenis</h1>
     </div>
 
     <div class="row">
         <!-- Aangeboden Klussen -->
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    Aangeboden klussen
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark-blue text-white text-center">
+                    <h4>Aangeboden klussen</h4>
                 </div>
                 <div class="card-body">
                     {% if aangeboden_klussen %}
-                        <ul>
-                            {% for klus in aangeboden_klussen %}
-                                <li>
-                                    <strong>{{ klus.naam }}</strong> - {{ klus.datum.strftime('%d-%m-%Y') }}
-                                    <p>Locatie: {{ klus.locatie }}</p>
-                                    <p class="completion-date">Voltooid op: {{ klus.voltooid_op.strftime('%d-%m-%Y %H:%M') }}</p>
+                        {% for klus in aangeboden_klussen %}
+                            <div class="klus-item mb-3 p-3 border rounded">
+                                <h5 class="text-dark-blue"><strong>{{ klus.naam }}</strong> - {{ klus.datum.strftime('%d-%m-%Y') }}</h5>
+                                <p><strong>Locatie:</strong> {{ klus.locatie }}</p>
+                                <p class="text-muted small">Voltooid op: {{ klus.voltooid_op.strftime('%d-%m-%Y %H:%M') }}</p>
 
-                                    <!-- Debugging -->
-                                    <p>Debug: Beoordeeld door aanbieder: {{ klus.is_gewaardeerd_door_aanbieder() }}</p>
-                                    <p>Debug: Beoordeeld door zoeker: {{ klus.is_gewaardeerd_door_zoeker() }}</p>
-
-                                    <!-- Condities voor knop zichtbaar maken -->
-                                    {% if klus.is_gewaardeerd_door_aanbieder() and klus.is_gewaardeerd_door_zoeker() %}
-                                        <p>Beide beoordelingen zijn ingediend.</p>
-                                    {% elif klus.is_gewaardeerd_door_aanbieder() %}
-                                        <p>Beoordeling door jou als klusaanbieder is al ingediend.</p>
-                                    {% else %}
-                                        <a href="{{ url_for('main.rate_zoeker', klusnummer=klus.klusnummer) }}" class="btn-rating">Beoordeling Indienen</a>
-                                    {% endif %}
-                                </li>
-                            {% endfor %}
-                        </ul>
+                                <!-- Status en knop -->
+                                {% if klus.is_gewaardeerd_door_aanbieder() and klus.is_gewaardeerd_door_zoeker() %}
+                                    <p class="text-success mb-0">Beide beoordelingen zijn ingediend.</p>
+                                {% elif not klus.is_gewaardeerd_door_aanbieder() %}
+                                    <a href="{{ url_for('main.rate_zoeker', klusnummer=klus.klusnummer) }}" 
+                                       class="btn btn-sm btn-dark-blue text-white">Beoordeling Indienen</a>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
                     {% else %}
-                        <p>Je hebt nog geen klussen aangeboden in je geschiedenis.</p>
+                        <p class="text-center text-muted">Je hebt nog geen aangeboden klussen in je geschiedenis.</p>
                     {% endif %}
                 </div>
             </div>
         </div>
 
         <!-- Gezochte Klussen -->
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    Gezochte klussen
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark-blue text-white text-center">
+                    <h4>Gezochte klussen</h4>
                 </div>
                 <div class="card-body">
                     {% if gezochte_klussen %}
-                        <ul>
-                            {% for klus in gezochte_klussen %}
-                                <li>
-                                    <strong>{{ klus.naam }}</strong> - {{ klus.datum.strftime('%d-%m-%Y') }}
-                                    <p>Locatie: {{ klus.locatie }}</p>
-                                    <p class="completion-date">Voltooid op: {{ klus.voltooid_op.strftime('%d-%m-%Y %H:%M') }}</p>
+                        {% for klus in gezochte_klussen %}
+                            <div class="klus-item mb-3 p-3 border rounded">
+                                <h5 class="text-dark-blue"><strong>{{ klus.naam }}</strong> - {{ klus.datum.strftime('%d-%m-%Y') }}</h5>
+                                <p><strong>Locatie:</strong> {{ klus.locatie }}</p>
+                                <p class="text-muted small">Voltooid op: {{ klus.voltooid_op.strftime('%d-%m-%Y %H:%M') }}</p>
 
-                                    <!-- Debugging -->
-                                    <p>Debug: Beoordeeld door aanbieder: {{ klus.is_gewaardeerd_door_aanbieder() }}</p>
-                                    <p>Debug: Beoordeeld door zoeker: {{ klus.is_gewaardeerd_door_zoeker() }}</p>
-
-                                    <!-- Condities voor knop zichtbaar maken -->
-                                    {% if klus.is_gewaardeerd_door_zoeker() and klus.is_gewaardeerd_door_aanbieder() %}
-                                        <p>Beide beoordelingen zijn ingediend.</p>
-                                    {% elif klus.is_gewaardeerd_door_zoeker() %}
-                                        <p>Beoordeling door jou als kluszoeker is al ingediend.</p>
-                                    {% else %}
-                                        <a href="{{ url_for('main.rate_aanbieder', klusnummer=klus.klusnummer) }}" class="btn-rating">Beoordeling Indienen</a>
-                                    {% endif %}
-                                </li>
-                            {% endfor %}
-                        </ul>
+                                <!-- Status en knop -->
+                                {% if klus.is_gewaardeerd_door_zoeker() and klus.is_gewaardeerd_door_aanbieder() %}
+                                    <p class="text-success mb-0">Beide beoordelingen zijn ingediend.</p>
+                                {% elif not klus.is_gewaardeerd_door_zoeker() %}
+                                    <a href="{{ url_for('main.rate_aanbieder', klusnummer=klus.klusnummer) }}" 
+                                       class="btn btn-sm btn-dark-blue text-white">Beoordeling Indienen</a>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
                     {% else %}
-                        <p>Je hebt nog geen klussen gezocht in je geschiedenis.</p>
+                        <p class="text-center text-muted">Je hebt nog geen gezochte klussen in je geschiedenis.</p>
                     {% endif %}
                 </div>
             </div>
@@ -85,7 +72,7 @@
     </div>
 </div>
 
-<!-- Terug optie -->
+<!-- Terugknop -->
 <div class="back">
     <div class="back-icon">
         <a href="{{ url_for('main.dashboard') }}">
@@ -94,63 +81,72 @@
     </div>
 </div>
 
+<!-- Stijl -->
 <style>
     body {
-        background-color: #f4f7fa;
+        background-color: #f8f9fa;
         font-family: Arial, sans-serif;
         color: #333;
     }
+
+    .bg-dark-blue {
+        background-color: #10246B;
+    }
+
+    .text-dark-blue {
+        color: #10246B;
+    }
+
     .history-header {
         text-align: center;
         margin-bottom: 20px;
     }
+
     .history-header h2 {
         font-size: 32px;
         color: #10246B;
     }
+
     .card {
         border: none;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        margin-bottom: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
+
     .card-header {
-        background-color: #10246B;
-        color: white;
-        font-size: 20px;
+        font-size: 1.2rem;
         font-weight: bold;
     }
-    .card-body ul {
-        padding: 0;
-        list-style: none;
+
+    .klus-item {
+        background-color: #ffffff;
+        transition: box-shadow 0.3s ease;
     }
-    .card-body ul li {
-        margin-bottom: 15px;
-        border-bottom: 1px solid #ddd;
-        padding-bottom: 10px;
+
+    .klus-item:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     }
-    .card-body ul li:last-child {
-        border-bottom: none;
-    }
-    .card-body ul li strong {
-        font-weight: bold;
-        color: #10246B;
-    }
-    .completion-date {
-        font-size: 12px;
-        color: #888;
-    }
-    .btn-rating {
+
+    .btn-dark-blue {
         background-color: #10246B;
-        color: white;
-        padding: 5px 10px;
+        border: none;
+        padding: 8px 12px;
         border-radius: 5px;
-        text-decoration: none;
-        font-size: 14px;
     }
-    .btn-rating:hover {
+
+    .btn-dark-blue:hover {
         background-color: #0e1f4a;
+        color: white;
     }
+
+    .text-success {
+        color: #28a745;
+    }
+
+    .text-muted {
+        color: #6c757d;
+    }
+
     .back {
         position: fixed;
         left: 20px;
@@ -158,6 +154,7 @@
         text-align: center;
         z-index: 1000;
     }
+
     .back-icon {
         width: 120px;
         height: 120px;
@@ -168,11 +165,13 @@
         overflow: hidden;
         transition: transform 0.3s ease;
     }
+
     .back-icon img {
         width: 100%;
         height: 100%;
         object-fit: cover;
     }
+
     .back-icon:hover {
         transform: scale(1.1);
     }
