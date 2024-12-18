@@ -43,13 +43,13 @@ from .forms import RegistrationForm  # Zorg ervoor dat je de juiste import hebt 
 def register():
     form = RegistrationForm()
 
-    # Debugging: Controleer of het formulier is ingediend
     if form.validate_on_submit():
         print("Formulier is ingediend en geldig!")
         print(f"Gebruikersnaam: {form.username.data}")
         print(f"E-mail: {form.email.data}")
         print(f"Geboortedatum: {form.geboortedatum.data}")
-        
+
+        # Leeftijd berekenen
         geboortedatum = form.geboortedatum.data
         today = date.today()
         leeftijd = today.year - geboortedatum.year - ((today.month, today.day) < (geboortedatum.month, geboortedatum.day))
@@ -63,10 +63,20 @@ def register():
         if Persoon.query.filter_by(username=form.username.data).first():
             flash('Deze gebruikersnaam is al in gebruik. Kies een andere.', 'danger')
             return redirect(url_for('main.register'))
-        
+
         # Controleer of het e-mailadres al bestaat
         if Persoon.query.filter_by(email=form.email.data).first():
             flash('Dit e-mailadres is al in gebruik. Kies een ander e-mailadres.', 'danger')
+            return redirect(url_for('main.register'))
+
+        # Combineer stad en adres in een volledige locatie
+        stad = form.stad.data
+        adres = form.adres.data
+        volledige_locatie = f"{stad}, {adres}"
+
+        # Valideer het gecombineerde adres
+        if not valideer_adres(volledige_locatie):
+            flash("Het ingevoerde adres is ongeldig of bestaat niet.", 'danger')
             return redirect(url_for('main.register'))
 
         # Maak een nieuw Persoon object aan
@@ -77,24 +87,25 @@ def register():
             geslacht=form.gender.data,
             telefoonnummer=form.telefoonnummer.data,
             email=form.email.data,
-            adres=form.adres.data,
+            adres=volledige_locatie,  # De gecombineerde locatie opslaan
             username=form.username.data,
             idnummer=generate_id_number()  # Dynamische ID
         )
-        
+
         # Voeg de nieuwe persoon toe aan de database
         db.session.add(new_person)
         db.session.commit()
-        
+
         # Bevestigingsbericht
         flash('Je bent succesvol geregistreerd!', 'success')
-        
+
         # Redirect naar de loginpagina
         return redirect(url_for('main.login'))
 
     # Als het formulier niet is ingediend of niet geldig is, toon het registratieformulier
     age_error = session.pop('age_error', None)  # Get and remove 'age_error' from the session
     return render_template('register.html', form=form, age_error=age_error)
+
 
 
 

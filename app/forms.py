@@ -14,6 +14,7 @@ class PersoonForm(FlaskForm):
     voornaam = StringField('Voornaam', validators=[DataRequired()])
     achternaam = StringField('Achternaam', validators=[DataRequired()])
     leeftijd = IntegerField('Leeftijd', validators=[DataRequired()])
+    stad = StringField('Stad', validators=[DataRequired()])
     adres = StringField('Adres', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     tel_nr = StringField('Telefoonnummer', validators=[DataRequired(), Length(max=15)])
@@ -92,8 +93,22 @@ class RegistrationForm(FlaskForm):
         DataRequired(),
         Length(min=10, max=15, message='Telefoonnummer moet tussen 10 en 15 cijfers zijn.')
     ])
-    adres = StringField('Adres', validators=[DataRequired()])
+    stad = StringField('Stad', validators=[DataRequired(), Length(min=2, max=100)])
+    adres = StringField('Adres', validators=[DataRequired(), Length(min=2, max=100)])
     submit = SubmitField('Registeren')
+
+    def validate_stad(form, field):
+        from app.models import valideer_adres  # Zorg dat deze functie juist geïmporteerd is
+        stad = field.data
+        if not valideer_adres(stad):
+            raise ValidationError(f"De ingevoerde stad '{stad}' is ongeldig of bestaat niet.")
+
+    # Validatie voor adres (inclusief stad)
+    def validate_adres(form, field):
+        from app.models import valideer_adres  # Zorg dat deze functie juist geïmporteerd is
+        volledige_locatie = f"{form.stad.data}, {field.data}"
+        if not valideer_adres(volledige_locatie):
+            raise ValidationError("Het ingevoerde adres in combinatie met de stad is ongeldig of bestaat niet.")
 
 
 # Formulier voor inloggen (alleen gebruikersnaam)

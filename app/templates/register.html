@@ -88,6 +88,21 @@
     .terug-icon img:hover {
         opacity: 0.8;
     }
+
+    /* Flexbox voor Stad en Adres naast elkaar */
+    .form-row {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .form-row .form-group {
+        flex: 1;
+        margin-right: 10px;
+    }
+
+    .form-row .form-group:last-child {
+        margin-right: 0;
+    }
 </style>
 
 <div class="registration-page">
@@ -155,7 +170,7 @@
             </div>
 
             <!-- Geboortedatum -->
-            <<div class="form-group">
+            <div class="form-group">
                 <label for="geboortedatum">Geboortedatum</label>
                 {{ form.geboortedatum(class="form-control") }}
                 {% if form.geboortedatum.errors %}
@@ -172,7 +187,6 @@
                     </ul>
                 {% endif %}
             </div>
-            
 
             <!-- Geslacht -->
             <div class="form-group">
@@ -200,17 +214,33 @@
                 {% endif %}
             </div>
 
-            <!-- Adres -->
-            <div class="form-group">
-                <label for="adres">Adres</label>
-                {{ form.adres(class="form-control") }}
-                {% if form.adres.errors %}
-                    <ul class="error-list">
-                        {% for error in form.adres.errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
+            <!-- Flexbox voor Stad en Adres -->
+            <div class="form-row">
+                <!-- Stad -->
+                <div class="form-group">
+                    <label for="stad">Stad</label>
+                    {{ form.stad(class="form-control") }}
+                    {% if form.stad.errors %}
+                        <ul class="error-list">
+                            {% for error in form.stad.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <!-- Adres -->
+                <div class="form-group">
+                    <label for="adres">Adres</label>
+                    {{ form.adres(class="form-control") }}
+                    {% if form.adres.errors %}
+                        <ul class="error-list">
+                            {% for error in form.adres.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
             </div>
 
             <!-- Submit knop -->
