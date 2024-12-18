@@ -15,12 +15,14 @@
 
         .container {
             width: 100%;
-            height: 100vh;
+            min-height: 100vh; /* Zorgt ervoor dat het scherm wordt gevuld */
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
         .logo-container {
@@ -28,22 +30,22 @@
         }
 
         .logo-container img {
-            width: 250px; 
+            width: 100%; /* Volledige breedte op kleinere schermen */
+            max-width: 250px; /* Max grootte op grotere schermen */
             height: auto;
         }
 
         .welcome-text {
-            font-size: 36px;
+            font-size: 24px;
             font-family: Roboto, sans-serif;
             font-weight: 500;
-            line-height: 40px;
-            letter-spacing: 1.8px;
+            line-height: 1.5;
             color: #10246B;
             margin-bottom: 20px;
         }
 
         .link {
-            font-size: 24px;
+            font-size: 18px;
             font-family: Inter, sans-serif;
             font-weight: 400;
             color: #10246B;
@@ -56,8 +58,10 @@
         }
 
         .login-box {
-            width: 267px;
-            height: 126px;
+            width: 80%; /* Breder op kleinere schermen */
+            max-width: 267px; /* Limiteer op grotere schermen */
+            height: auto;
+            padding: 20px; /* Voeg padding toe voor responsiviteit */
             background: #10246B;
             border-radius: 12px;
             display: flex;
@@ -65,35 +69,51 @@
             justify-content: center;
             align-items: center;
             color: #F5EFF7;
-            font-size: 67px;
+            font-size: 36px; /* Verklein tekst op kleinere schermen */
             font-family: Inter, sans-serif;
             font-weight: 700;
-            line-height: 115.2px;
             text-align: center;
             cursor: pointer;
-            margin-top: 40px; /* Toegevoegde marge om de login knop naar beneden te duwen */
+            margin-top: 40px;
         }
 
         .login-box a {
             color: #F5EFF7;
             text-decoration: none;
-            font-size: 67px;
+            font-size: inherit; /* Houd consistentie met de box */
             font-family: Inter, sans-serif;
             font-weight: 700;
-            line-height: 115.2px;
         }
 
-        /* Voeg margin-top toe aan de registratie link voor meer ruimte */
         .register-link-container {
-            margin-top: 30px; /* Je kunt deze waarde aanpassen om de afstand te vergroten of verkleinen */
+            margin-top: 30px;
+        }
+
+        /* Responsieve media query */
+        @media (min-width: 768px) {
+            .welcome-text {
+                font-size: 36px;
+            }
+
+            .login-box {
+                font-size: 67px;
+            }
+
+            .link {
+                font-size: 24px;
+            }
+
+            .logo-container img {
+                max-width: 650px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <!-- Logo -->
-        <div style="left: 50%; top: 30px; position: absolute; transform: translateX(-50%);">
-            <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" style="width: 650px; height: auto;">
+        <div class="logo-container">
+            <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo">
         </div>
 
         <!-- Welkomsttekst -->
@@ -107,7 +127,7 @@
             Log in
         </a>
 
-        <!-- Registratie link met extra marge eronder -->
+        <!-- Registratie link -->
         <div class="register-link-container">
             <a href="{{ url_for('main.register') }}" class="link">Of registreer</a>
         </div>
