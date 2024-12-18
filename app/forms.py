@@ -46,7 +46,8 @@ class KlusaanbiederForm(FlaskForm):
     beschrijving = TextAreaField('Beschrijving', validators=[DataRequired()])
     vergoeding = DecimalField('Vergoeding', places=2, validators=[DataRequired()])
     datum = DateField('Datum', format='%Y-%m-%d', validators=[DataRequired()])
-    verwachte_duur = IntegerField('Verwachte duur (in uren)', validators=[DataRequired(), NumberRange(min=1)])
+    verwachte_duur_uren = SelectField('Uren', choices=[(str(i), str(i)) for i in range(9)], validators=[DataRequired()])
+    verwachte_duur_minuten = SelectField('Minuten', choices=[('00', '00'), ('30', '30')], validators=[DataRequired()])
     submit = SubmitField('Toevoegen')
 
     # Validatie voor datum

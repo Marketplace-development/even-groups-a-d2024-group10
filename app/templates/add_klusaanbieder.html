@@ -80,19 +80,28 @@
                 {% endif %}
             </div>
 
-            <!-- Geschatte duur -->
+            <!-- Geschatte duur (Uren en Minuten) -->
             <div class="form-group">
                 <label for="verwachte_duur">Geschatte duur:</label>
-                {{ form.verwachte_duur(class_="form-control", placeholder="Voer de geschatte duur in (in uren)") }}
-                {% if form.verwachte_duur.errors %}
-                    <span class="text-danger">{{ form.verwachte_duur.errors[0] }}</span>
+                <div style="display: flex; gap: 5px;">
+                    <!-- Uren (0-8) -->
+                    {{ form.verwachte_duur_uren(class_="form-control", style="width: 50%;") }}
+                    
+                    <!-- Minuten (enkel 00 en 30) -->
+                    {{ form.verwachte_duur_minuten(class_="form-control", style="width: 50%;") }}
+                </div>
+                {% if form.verwachte_duur_uren.errors or form.verwachte_duur_minuten.errors %}
+                    <span class="text-danger">
+                        {% if form.verwachte_duur_uren.errors %}{{ form.verwachte_duur_uren.errors[0] }}{% endif %}
+                        {% if form.verwachte_duur_minuten.errors %}{{ form.verwachte_duur_minuten.errors[0] }}{% endif %}
+                    </span>
                 {% endif %}
             </div>
-
+            
             <!-- Vergoeding -->
             <div class="form-group">
                 <label for="vergoeding">Vergoeding:</label>
-                {{ form.vergoeding(class_="form-control", placeholder="Voer de vergoeding in (€)") }}
+                {{ form.vergoeding(class_="form-control", placeholder="Voer de vergoeding in (in euro)") }}
                 {% if form.vergoeding.errors %}
                     <span class="text-danger">{{ form.vergoeding.errors[0] }}</span>
                 {% endif %}
@@ -211,7 +220,7 @@
         align-items: center;
         border-radius: 50%;
         overflow: hidden;
-        transition: transform 0.3s ease; /* Voor de vergrotingseffect bij hover */
+        transition: transform 0.3s ease;
     }
 
     .back-icon img {
@@ -221,7 +230,7 @@
     }
 
     .back-icon:hover {
-        transform: scale(1.1); /* Vergroot de knop bij hover */
+        transform: scale(1.1);
     }
 
 </style>

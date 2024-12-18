@@ -303,6 +303,14 @@ def add_klusaanbieder():
             # Combineer het uur en de minuut in een tijd in het formaat 'HH:MM'
             tijd = f"{tijd_uren:02}:{tijd_minuten:02}"
 
+            # Haal de uren en minuten voor de verwachte duur op
+            verwachte_duur_uren = int(form.verwachte_duur_uren.data)
+            verwachte_duur_minuten = int(form.verwachte_duur_minuten.data)
+
+            # Combineer de uren en minuten in een totale duur in minuten
+            verwachte_duur = f"{verwachte_duur_uren:01} u {verwachte_duur_minuten:02} min"
+
+            # Stad en adres
             stad = form.stad.data
             adres = form.adres.data
 
@@ -321,7 +329,7 @@ def add_klusaanbieder():
                 vergoeding=form.vergoeding.data,
                 categorie=form.categorie.data,
                 datum=form.datum.data,
-                verwachte_duur=form.verwachte_duur.data,
+                verwachte_duur=verwachte_duur,  # De totale geschatte duur in minuten
                 idnummer=persoon.idnummer
             )
             db.session.add(nieuwe_klus)
@@ -339,6 +347,7 @@ def add_klusaanbieder():
 
     # Toon het formulier
     return render_template('add_klusaanbieder.html', form=form)
+
 
 
 

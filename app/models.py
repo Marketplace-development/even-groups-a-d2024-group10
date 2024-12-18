@@ -138,7 +138,7 @@ class Klus(db.Model):
     tijd = db.Column(db.Time, nullable=False)
     vergoeding = db.Column(db.Numeric(10, 2), nullable=False)
     datum = db.Column(db.Date, nullable=False)
-    verwachte_duur = db.Column(db.Integer, nullable=False)
+    verwachte_duur = db.Column(db.String(10), nullable=False)
     created_at = db.Column(db.TIMESTAMP, default=datetime.utcnow, nullable=False)
     status = db.Column(db.String(20), default='beschikbaar', nullable=False)
     idnummer = db.Column(db.String(10), db.ForeignKey('persoon.idnummer'), nullable=False)
