@@ -9,7 +9,7 @@ from flask_login import login_required
 from datetime import datetime, date
 import requests # type: ignore
 from app.chat import get_ongelezen_chats_count
-
+from werkzeug.exceptions import NotFound
 
 
 def maak_melding(gebruiker_id, bericht):
@@ -172,24 +172,33 @@ def logout():
 @main.route('/profiel_bewerken', methods=['GET', 'POST'])
 def profiel_bewerken():
     user_id = session.get('user_id')
+    
+    # Controleer of de gebruiker is ingelogd
     if not user_id:
         flash('Je moet ingelogd zijn om je profiel te bewerken.', 'danger')
         return redirect(url_for('main.login'))
 
+    # Haal de gebruiker op uit de database
     user = Persoon.query.get(user_id)
-
+    if not user:
+        raise NotFound("Gebruiker niet gevonden.")
+    
+    # Verwerken van de POST-aanvraag om profielinformatie bij te werken
     if request.method == 'POST':
         user.voornaam = request.form['voornaam']
         user.achternaam = request.form['achternaam']
-        user.leeftijd = request.form['leeftijd']
+        user.geboortedatum = datetime.strptime(request.form['geboortedatum'], '%Y-%m-%d').date()  # Zet de geboortedatum om
         user.email = request.form['email']
         user.telefoonnummer = request.form['telefoonnummer']
         user.adres = request.form['adres']
+        
         db.session.commit()
+        
         flash('Profiel succesvol bijgewerkt!', 'success')
         return redirect(url_for('main.profile'))
 
     return render_template('profiel_bewerken.html', user=user)
+
 
 
 @main.route('/bevestig_verwijdering', methods=['GET', 'POST'])

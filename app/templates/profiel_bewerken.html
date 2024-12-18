@@ -19,10 +19,10 @@
                 <input type="text" class="form-control" id="achternaam" name="achternaam" value="{{ user.achternaam }}" placeholder="Voer je achternaam in">
             </div>
 
-            <!-- Leeftijd -->
+            <!-- Geboortedatum -->
             <div class="form-group" style="margin-bottom: 15px;">
-                <label for="leeftijd" style="font-size: 16px; font-weight: bold; color: #10246B;">Leeftijd</label>
-                <input type="number" class="form-control" id="leeftijd" name="leeftijd" value="{{ user.leeftijd }}" placeholder="Voer je leeftijd in">
+                <label for="geboortedatum" style="font-size: 16px; font-weight: bold; color: #10246B;">Geboortedatum</label>
+                <input type="date" class="form-control" id="geboortedatum" name="geboortedatum" value="{{ user.geboortedatum.strftime('%Y-%m-%d') }}" placeholder="Kies je geboortedatum">
             </div>
 
             <!-- Email -->
