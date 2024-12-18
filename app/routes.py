@@ -542,17 +542,13 @@ def mijn_aangeboden_klussen():
         flash('Je moet ingelogd zijn om deze pagina te bekijken.', 'danger')
         return redirect(url_for('main.login'))
 
-    # Query voor klussen aangeboden door de ingelogde gebruiker, joinedload voor zoekers
-    klussen = Klus.query.filter(Klus.idnummer == user_id).options(
-        joinedload(Klus.klussen_zoekers)
+    # Query: Haal alleen klussen op die niet voltooid zijn
+    klussen = Klus.query.filter(
+        Klus.idnummer == user_id,   # Alleen klussen aangeboden door de gebruiker
+        Klus.status != 'voltooid'   # Sluit voltooide klussen uit
     ).order_by(Klus.datum.desc()).all()
 
-    # Print debug om te zien of klussen_zoekers geladen zijn
-    for klus in klussen:
-        print(f"Klusnummer: {klus.klusnummer}, Zoekers: {[zoeker.idnummer for zoeker in klus.klussen_zoekers]}")
-
     return render_template('mijn_aangeboden_klussen.html', klussen=klussen)
-
 
 @main.route('/mijn_gezochte_klussen')
 def mijn_gezochte_klussen():
@@ -616,19 +612,30 @@ def delete_klus(klusnummer):
         flash('Je hebt geen toestemming om deze klus te verwijderen.', 'danger')
         return redirect(url_for('main.mijn_aangeboden_klussen'))
 
-    # Notificatie naar alle gekoppelde kluszoekers
-    for zoeker in klus.klussen_zoekers:
+    try:
+        # Notificatie naar alle gekoppelde kluszoekers
+        for zoeker in klus.klussen_zoekers:
+            maak_melding(
+                gebruiker_id=zoeker.idnummer,
+                bericht=f"De klus '{klus.naam}' is verwijderd door de aanbieder."
+            )
+
+        # Notificatie naar de klusaanbieder zelf
         maak_melding(
-            gebruiker_id=zoeker.idnummer,
-            bericht=f"De klus '{klus.naam}' is verwijderd door de aanbieder."
+            gebruiker_id=user_id,
+            bericht=f"Je hebt de klus '{klus.naam}' succesvol verwijderd."
         )
 
-    # Verwijder de klus
-    db.session.delete(klus)
-    db.session.commit()
-    flash(f"De klus '{klus.naam}' is verwijderd en de zoekers zijn op de hoogte gesteld.", 'success')
-    return redirect(url_for('main.mijn_aangeboden_klussen'))
+        # Verwijder de klus
+        db.session.delete(klus)
+        db.session.commit()
+        flash(f"De klus '{klus.naam}' is verwijderd en de zoekers zijn op de hoogte gesteld.", 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Er is een fout opgetreden bij het verwijderen van de klus: {e}", 'danger')
+        print(f"Fout bij verwijderen klus: {e}")
 
+    return redirect(url_for('main.mijn_aangeboden_klussen'))
 
 
 @main.route('/klus/<klusnummer>/accepteren', methods=['POST'])
@@ -664,24 +671,46 @@ def accepteer_klus(klusnummer):
         # Voeg de gebruiker toe aan de klus_zoeker relatie
         if gebruiker not in klus.klussen_zoekers:
             klus.klussen_zoekers.append(gebruiker)
-            db.session.commit()
             print(f"Kluszoeker {gebruiker.idnummer} toegevoegd aan klus {klus.klusnummer}")
         else:
             print(f"Kluszoeker {gebruiker.idnummer} was al gekoppeld aan klus {klus.klusnummer}")
 
+        # Werk de statistieken voor de categorie bij
+        categorie_statistiek = CategorieStatistiek.query.filter_by(
+            idnummer=user_id,
+            categorie=klus.categorie
+        ).first()
+
+        if categorie_statistiek:
+            categorie_statistiek.aantal_accepteerd += 1
+        else:
+            nieuwe_statistiek = CategorieStatistiek(
+                idnummer=user_id,
+                categorie=klus.categorie,
+                aantal_accepteerd=1
+            )
+            db.session.add(nieuwe_statistiek)
+
+        # Debugging: controleer statistieken
+        print(f"Categorie {klus.categorie} bijgewerkt voor gebruiker {user_id}")
+
+        # Maak een melding voor de klusaanbieder
+        maak_melding(
+            gebruiker_id=klus.idnummer,
+            bericht=f"Je klus '{klus.naam}' is geaccepteerd door {gebruiker.voornaam} {gebruiker.achternaam}."
+        )
+
+        # Sla de wijzigingen op
         db.session.commit()
-        print("Commit succesvol uitgevoerd!")  # Debug: Commit-status
+        print("Commit succesvol uitgevoerd!")  # Debugging
 
         flash('Je hebt de klus geaccepteerd!', 'success')
-        return redirect(url_for('main.mijn_gezochte_klussen'))  # Geldige return
-
+        return redirect(url_for('main.mijn_gezochte_klussen'))
     except Exception as e:
-        db.session.rollback()
+        db.session.rollback()  # Rollback bij een fout
         flash(f'Er is een fout opgetreden: {e}', 'danger')
         print(f"Fout bij commit: {e}")  # Debugging
         return redirect(url_for('main.klussen'))
-
-
 
 
 @main.route('/mijn_geschiedenis')
@@ -797,6 +826,19 @@ def rate_zoeker(klusnummer):
             db.session.add(new_rating)
 
         db.session.commit()
+
+        # Meldingen
+        # Melding naar de kluszoeker
+        maak_melding(
+            gebruiker_id=klus.klussen_zoekers[0].idnummer,
+            bericht=f"Je bent beoordeeld door de klusaanbieder voor de klus '{klus.naam}'."
+        )
+        # Melding naar de klusaanbieder
+        maak_melding(
+            gebruiker_id=session.get('user_id'),
+            bericht=f"Bedankt voor het achterlaten van een beoordeling voor de kluszoeker van '{klus.naam}'."
+        )
+
         flash('Beoordeling succesvol toegevoegd!', 'success')
         return redirect(url_for('main.mijn_geschiedenis'))
 
@@ -851,19 +893,21 @@ def rate_aanbieder(klusnummer):
 
         db.session.commit()
 
-        # Melding sturen
+        # Meldingen
+        # Melding naar de klusaanbieder
         maak_melding(
             gebruiker_id=klus.idnummer,
             bericht=f"Je bent beoordeeld door de kluszoeker voor de klus '{klus.naam}'."
+        )
+        # Melding naar de kluszoeker
+        maak_melding(
+            gebruiker_id=session.get('user_id'),
+            bericht=f"Bedankt voor het achterlaten van een beoordeling voor de klusaanbieder van '{klus.naam}'."
         )
 
         return redirect(url_for('main.mijn_geschiedenis'))
 
     return render_template('rate_aanbieder.html', form=form, klus=klus)
-
-
-
-
 
 
 @main.route('/ratings/<rol>/<idnummer>', methods=['GET'])
