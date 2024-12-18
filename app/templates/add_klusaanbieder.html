@@ -92,7 +92,7 @@
             <!-- Vergoeding -->
             <div class="form-group">
                 <label for="vergoeding">Vergoeding:</label>
-                {{ form.vergoeding(class_="form-control", placeholder="Voer de vergoeding in (in euro)") }}
+                {{ form.vergoeding(class_="form-control", placeholder="Voer de vergoeding in (€)") }}
                 {% if form.vergoeding.errors %}
                     <span class="text-danger">{{ form.vergoeding.errors[0] }}</span>
                 {% endif %}
