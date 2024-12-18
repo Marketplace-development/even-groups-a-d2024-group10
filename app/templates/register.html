@@ -154,13 +154,13 @@
                 {% endif %}
             </div>
 
-            <!-- Leeftijd -->
+            <!-- Geboortedatum -->
             <div class="form-group">
-                <label for="leeftijd">Leeftijd</label>
-                {{ form.leeftijd(class="form-control") }}
-                {% if form.leeftijd.errors %}
+                <label for="geboortedatum">Geboortedatum</label>
+                {{ form.geboortedatum(class="form-control") }}
+                {% if form.geboortedatum.errors %}
                     <ul class="error-list">
-                        {% for error in form.leeftijd.errors %}
+                        {% for error in form.geboortedatum.errors %}
                             <li>{{ error }}</li>
                         {% endfor %}
                     </ul>

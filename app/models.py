@@ -1,9 +1,10 @@
-from datetime import datetime
+from datetime import datetime, date
 from . import db  # Verwijzen naar extensiemodule
 import uuid
 from flask_login import current_user
 from sqlalchemy import CheckConstraint
 import requests # type: ignore
+from sqlalchemy.orm import validates
 
 
 # Functie om een ID-nummer te genereren
@@ -23,7 +24,7 @@ class Persoon(db.Model):
     idnummer = db.Column(db.String(10), primary_key=True, default=generate_id_number)
     voornaam = db.Column(db.String(100), nullable=False)
     achternaam = db.Column(db.String(100))
-    leeftijd = db.Column(db.SmallInteger)
+    geboortedatum = db.Column(db.Date, nullable=False)
     geslacht = db.Column(db.String(10))
     adres = db.Column(db.String(255))
     email = db.Column(db.String(100), nullable=False, unique=True, index=True)
@@ -35,6 +36,12 @@ class Persoon(db.Model):
     voorkeur_categorie_rel = db.relationship('Categorie', backref='personen', lazy=True)
     klusaanbieders = db.relationship('Klusaanbieder', backref='persoon_aanbieder', lazy='joined')
     kluszoekers = db.relationship('Kluszoeker', backref='persoon_zoeker', lazy='joined')
+
+    @validates('geboortedatum')
+    def update_leeftijd(self, key, value):
+        today = date.today()
+        self.leeftijd = today.year - value.year - ((today.month, today.day) < (value.month, value.day))
+        return value
     
 
     def gemiddelde_score_aanbieder(self):

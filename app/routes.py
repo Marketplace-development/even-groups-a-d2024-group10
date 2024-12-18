@@ -6,7 +6,7 @@ from app.forms import RatingFormForZoeker, RatingFormForAanbieder, RatingForm
 import uuid
 from app.models import Klus  # Voeg deze regel toe om de Klus-klasse te importeren
 from flask_login import login_required
-from datetime import datetime
+from datetime import datetime, date
 import requests # type: ignore
 from app.chat import get_ongelezen_chats_count
 
@@ -42,7 +42,10 @@ def register():
         print("Formulier is ingediend en geldig!")
         print(f"Gebruikersnaam: {form.username.data}")
         print(f"E-mail: {form.email.data}")
-        print(f"Leeftijd: {form.leeftijd.data}")
+        print(f"Geboortedatum: {form.geboortedatum.data}")
+        geboortedatum = form.geboortedatum.data
+        today = date.today()
+        leeftijd = today.year - geboortedatum.year - ((today.month, today.day) < (geboortedatum.month, geboortedatum.day))
         
         # Controleer of de gebruikersnaam al bestaat
         if Persoon.query.filter_by(username=form.username.data).first():
@@ -60,7 +63,7 @@ def register():
         new_person = Persoon(
             voornaam=form.voornaam.data,
             achternaam=form.achternaam.data,
-            leeftijd=form.leeftijd.data,
+            geboortedatum=form.geboortedatum.data,
             geslacht=form.gender.data,
             telefoonnummer=form.telefoonnummer.data,
             email=form.email.data,

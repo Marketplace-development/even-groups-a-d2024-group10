@@ -86,7 +86,7 @@ class RegistrationForm(FlaskForm):
     email = StringField('E-mail', validators=[DataRequired(), Email()])
     voornaam = StringField('Voornaam', validators=[DataRequired()])
     achternaam = StringField('Achternaam', validators=[DataRequired()])
-    leeftijd = IntegerField('Leeftijd', validators=[InputRequired(), NumberRange(min=18, max=100)])
+    geboortedatum = DateField('Geboortedatum', validators=[DataRequired()], format='%Y-%m-%d')
     gender = SelectField('Geslacht', choices=[('', 'Selecteer'), ('Man', 'Man'), ('Vrouw', 'Vrouw'), ('Andere', 'Andere')])
     telefoonnummer = StringField('Telefoonnummer', validators=[
         DataRequired(),
