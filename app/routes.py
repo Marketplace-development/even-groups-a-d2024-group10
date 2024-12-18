@@ -383,6 +383,17 @@ def klus_detail(klusnummer):
     return render_template('klus_detail.html', klus=klus)
 
 
+@main.route('/eigen_klus/<klusnummer>')
+def details_eigen_klus(klusnummer):
+    klus = Klus.query.filter_by(klusnummer=klusnummer).first()
+    if klus is None:
+        flash('Klus niet gevonden', 'danger')
+        return redirect(url_for('main.klussen'))
+    
+    return render_template('details_eigen_klus.html', klus=klus)
+
+
+
 from app.models import CategorieStatistiek, Klus, Persoon
 @main.route('/klussen')
 def klussen():

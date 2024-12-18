@@ -58,11 +58,16 @@
 
                         <!-- Knop voor beoordelingen bekijken -->
                         {% if klus.status == 'geaccepteerd' and klus.klussen_zoekers %}
-                            <a href="{{ url_for('main.beoordelingen_kluszoeker', klusnummer=klus.klusnummer) }}" 
-                               class="btn btn-info btn-sm">
-                                Bekijk Beoordelingen
-                            </a>
+                        <a href="{{ url_for('main.beoordelingen_kluszoeker', klusnummer=klus.klusnummer) }}" 
+                           class="btn btn-info btn-sm">
+                            Bekijk Beoordelingen
+                        </a>
                         {% endif %}
+
+                        <a href="{{ url_for('main.details_eigen_klus', klusnummer=klus.klusnummer) }}" 
+                           class="btn btn-secondary btn-sm">
+                            Bekijk Details
+                        </a>
                     </td>
                 </tr>
                 {% endfor %}
@@ -70,7 +75,6 @@
         </table>
     </div>
 </div>
-
 
 <!-- Terug knop -->
 <div class="back">
@@ -154,12 +158,8 @@
 
     .back-icon img {
         width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .back-icon:hover {
-        transform: scale(1.1);
     }
 </style>
 {% endblock %}
+
+

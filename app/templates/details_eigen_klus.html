@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klus details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f7fa;
+            font-family: 'Arial', sans-serif;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 500px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo img {
+            width: 200px;
+            height: auto;
+        }
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #10246B;
+        }
+        .details {
+            margin-bottom: 20px;
+        }
+        .details div {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        .details div:last-child {
+            border-bottom: none;
+        }
+        .details span {
+            font-size: 16px;
+        }
+        .details .label {
+            color: #555;
+            font-weight: bold;
+        }
+        .details .value {
+            color: #333;
+        }
+        .buttons {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .buttons a {
+            width: 100%;
+            padding: 12px;
+            background: #10246B;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            text-decoration: none;
+            text-align: center;
+        }
+        .buttons a:hover {
+            background: #0e1f4a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Logo -->
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo">
+        </div>
+
+        <!-- Titel -->
+        <div class="title">{{ klus.naam }}</div>
+
+        <!-- Klusdetails -->
+        <div class="details">
+            <div>
+                <span class="label">Categorie:</span>
+                <span class="value">{{ klus.categorie_ref.categorie if klus.categorie_ref else 'Onbekend' }}</span>
+            </div>
+            <div>
+                <span class="label">Beschrijving:</span>
+                <span class="value">{{ klus.beschrijving }}</span>
+            </div>
+            <div>
+                <span class="label">Tijd:</span>
+                <span class="value">{{ klus.tijd }}</span>
+            </div>
+            <div>
+                <span class="label">Locatie:</span>
+                <span class="value">{{ klus.locatie }}</span>
+            </div>
+            <div>
+                <span class="label">Geschatte duur:</span>
+                <span class="value">{{ klus.verwachte_duur }}</span>
+            </div>
+            <div>
+                <span class="label">Vergoeding:</span>
+                <span class="value">€ {{ klus.vergoeding }}</span>
+            </div>
+        </div>
+
+        <!-- Terugknop -->
+        <div class="buttons">
+            <a href="{{ url_for('main.mijn_aangeboden_klussen') }}" class="back-link">Terug naar overzicht</a>
+        </div>
+    </div>
+</body>
+</html>
