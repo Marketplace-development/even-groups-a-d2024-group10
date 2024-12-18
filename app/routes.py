@@ -33,6 +33,12 @@ def generate_id_number():
 def home():
     return render_template('index.html')
 
+from datetime import date
+from flask import render_template, redirect, flash, url_for
+from .models import Persoon  # Zorg ervoor dat je de juiste import hebt voor je model
+from . import db  # Je moet 'db' importeren voor database interactie
+from .forms import RegistrationForm  # Zorg ervoor dat je de juiste import hebt voor je formulier
+
 @main.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
@@ -43,19 +49,23 @@ def register():
         print(f"Gebruikersnaam: {form.username.data}")
         print(f"E-mail: {form.email.data}")
         print(f"Geboortedatum: {form.geboortedatum.data}")
+        
         geboortedatum = form.geboortedatum.data
         today = date.today()
         leeftijd = today.year - geboortedatum.year - ((today.month, today.day) < (geboortedatum.month, geboortedatum.day))
-        
+
+        # Controleer of de leeftijd minder dan 16 jaar is
+        if leeftijd < 16:
+            session['age_error'] = 'Je moet ouder zijn dan 16 jaar om een account aan te maken.'
+            return redirect(url_for('main.register'))
+
         # Controleer of de gebruikersnaam al bestaat
         if Persoon.query.filter_by(username=form.username.data).first():
-            print(f"De gebruikersnaam {form.username.data} is al in gebruik.")
             flash('Deze gebruikersnaam is al in gebruik. Kies een andere.', 'danger')
             return redirect(url_for('main.register'))
         
         # Controleer of het e-mailadres al bestaat
         if Persoon.query.filter_by(email=form.email.data).first():
-            print(f"Het e-mailadres {form.email.data} is al in gebruik.")
             flash('Dit e-mailadres is al in gebruik. Kies een ander e-mailadres.', 'danger')
             return redirect(url_for('main.register'))
 
@@ -73,22 +83,20 @@ def register():
         )
         
         # Voeg de nieuwe persoon toe aan de database
-        print("Nieuwe persoon wordt toegevoegd aan de database...")
         db.session.add(new_person)
         db.session.commit()
         
         # Bevestigingsbericht
         flash('Je bent succesvol geregistreerd!', 'success')
         
-        # Debugging: Bekijk de redirect
-        print("Redirecten naar de loginpagina...")
-        
-        # Directe redirect naar de loginpagina
+        # Redirect naar de loginpagina
         return redirect(url_for('main.login'))
 
     # Als het formulier niet is ingediend of niet geldig is, toon het registratieformulier
-    print("Formulier niet geldig of nog niet ingediend.")
-    return render_template('register.html', form=form)
+    age_error = session.pop('age_error', None)  # Get and remove 'age_error' from the session
+    return render_template('register.html', form=form, age_error=age_error)
+
+
 
 
 @main.route('/login', methods=['GET', 'POST'])

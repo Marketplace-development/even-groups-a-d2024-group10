@@ -155,7 +155,7 @@
             </div>
 
             <!-- Geboortedatum -->
-            <div class="form-group">
+            <<div class="form-group">
                 <label for="geboortedatum">Geboortedatum</label>
                 {{ form.geboortedatum(class="form-control") }}
                 {% if form.geboortedatum.errors %}
@@ -165,7 +165,14 @@
                         {% endfor %}
                     </ul>
                 {% endif %}
+                <!-- Foutmelding als de gebruiker jonger is dan 16 -->
+                {% if age_error %}
+                    <ul class="error-list">
+                        <li>{{ age_error }}</li>
+                    </ul>
+                {% endif %}
             </div>
+            
 
             <!-- Geslacht -->
             <div class="form-group">
@@ -222,4 +229,5 @@
         </div>
     </div>
 </div>
+
 {% endblock %}
