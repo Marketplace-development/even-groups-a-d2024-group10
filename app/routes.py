@@ -803,6 +803,8 @@ def rate_aanbieder(klusnummer):
 
 @main.route('/ratings/<rol>/<idnummer>', methods=['GET'])
 def ratings(rol, idnummer):
+    back_url = request.args.get('back_url', url_for('main.dashboard'))
+    
     # Controleer of de rol geldig is
     if rol not in ['aanbieder', 'zoeker']:
         flash('Ongeldige rol opgegeven.', 'error')
@@ -838,7 +840,8 @@ def ratings(rol, idnummer):
         persoon=persoon,
         rol=rol,
         ratings=ratings,
-        gemiddelde_scores=gemiddelde_scores
+        gemiddelde_scores=gemiddelde_scores,
+        back_url=back_url
     )
 
 

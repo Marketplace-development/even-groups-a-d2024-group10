@@ -38,8 +38,8 @@
     </div>
 
     <!-- Terug knop -->
-    <div class="logout-icon">
-        <a href="{{ url_for('main.dashboard') }}">
+    <div class="back-icon">
+        <a href="{{ back_url }}">
             <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" style="width: 100px; height: auto;">
         </a>
     </div>
@@ -125,14 +125,34 @@
         background-color: #f0f0f0;
     }
 
-    .logout-icon {
-        margin-top: 20px;
+    .back {
+        position: fixed;
+        left: 20px;
+        bottom: 20px;
         text-align: center;
+        z-index: 100;
     }
 
-    .logout-icon img {
-        width: 100px;
-        height: auto;
+    .back-icon {
+        width: 120px;
+        height: 120px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        overflow: hidden;
+        transition: transform 0.3s ease;
     }
+
+    .back-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .back-icon:hover {
+        transform: scale(1.1);
+    }
+
 </style>
 {% endblock %}
