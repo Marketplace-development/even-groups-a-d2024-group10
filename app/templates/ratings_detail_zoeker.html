@@ -3,18 +3,17 @@
 {% block title %}Beoordelingsdetails{% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container my-5">
     <!-- Logo -->
-    <div class="logo">
-        <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo">
+    <div class="text-center mb-4">
+        <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" class="img-fluid" style="max-width: 300px;">
     </div>
-
     <!-- Titel van de pagina -->
-    <h1 class="text-center" style="font-size: 28px; color: #10246B;">Beoordelingsdetails</h1>
+    <h1 class="text-center text-custom" style="font-size: 28px;">Beoordelingsdetails</h1>
 
     <!-- Detailinformatie -->
-    <div class="details-card">
-        <h2>Algemene ervaring: {{ rating.algemene_ervaring_zoeker }}</h2>
+    <div class="card mx-auto my-4 p-4 shadow-lg" style="max-width: 600px; background-color: #f9f9f9;">
+        <h2 class="card-title text-custom">{{ rating.algemene_ervaring_zoeker }}</h2>
         <p><strong>Vriendelijkheid:</strong> {{ rating.vriendelijkheid_zoeker }}</p>
         <p><strong>Tijdigheid:</strong> {{ rating.tijdigheid }}</p>
         <p><strong>Kwaliteit:</strong> {{ rating.kwaliteit }}</p>
@@ -31,60 +30,16 @@
     </div>
 
     <!-- Terug knop -->
-    <div class="back-icon">
-        <a href="{{ back_url }}">
-            <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" class="back-icon">
+    <div class="position-fixed" style="left: 10px; bottom: 10px; z-index: 100;">
+        <a href="{{ url_for('main.mijn_aangeboden_klussen') }}" class="back-icon">
+            <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" class="img-fluid" style="width: 70px;">
         </a>
     </div>
 </div>
-
 <style>
-    .details-card {
-        width: 90%;
-        max-width: 600px;
-        background-color: #f9f9f9;
+    .text-custom{
         color: #10246B;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-        margin: 20px auto;
-        text-align: left;
-    }
-
-    .details-card h2 {
-        font-size: 24px;
-        font-weight: bold;
-        margin-bottom: 16px;
-        color: #10246B;
-    }
-
-    .details-card p {
-        font-size: 18px;
-        margin: 8px 0;
-    }
-
-    .back {
-        position: fixed;
-        left: 20px;
-        bottom: 20px;
-        z-index: 100;
-    }
-
-    .back-icon {
-        width: auto;
-        height: auto;
-        display: block;
-        transition: transform 0.3s ease;
-    }
-
-    .back-icon img {
-        width: 100px;
-        height: auto;
-        object-fit: contain;
-    }
-
-    .back-icon:hover {
-        transform: scale(1.1);
     }
 </style>
+
 {% endblock %}

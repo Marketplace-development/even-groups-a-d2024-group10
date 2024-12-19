@@ -2,9 +2,9 @@
 
 {% block content %}
     <div style="max-width: 800px; margin: 50px auto; padding: 20px; background-color: #f9f9f9; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius: 8px;">
-        <h1 style="text-align: center; color: #10246B;">Beoordelingen voor llus: {{ klusnummer }}</h1>
+        <h1 style="text-align: center; color: #10246B;">Beoordelingen voor klus: {{ klusnummer }}</h1>
 
-        {% if ratings %}
+        {% if ratings %}à
             <h3 style="color: #10246B;">Gemiddelde beoordeling: {{ average_rating }}</h3>
             <ul>
                 {% for rating in ratings %}

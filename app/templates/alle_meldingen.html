@@ -2,8 +2,8 @@
 
 {% block content %}
 <div class="container mt-4" style="max-width: 1100px;">
-    <div class="card shadow" style="border-color: #10246B;">
-        <div class="card-header text-white" style="background-color: #10246B;">
+    <div class="card shadow border-primary">
+        <div class="card-header bg-custom text-white">
             <h2 class="mb-0">Alle meldingen</h2>
         </div>
         <ul class="list-group list-group-flush">
@@ -23,11 +23,21 @@
                 </div>
             </li>
             {% else %}
-            <li class="list-group-item text-center" style="background-color: #f8f9fa;">
+            <li class="list-group-item text-center bg-light">
                 <span class="text-muted">Je hebt nog geen meldingen.</span>
             </li>
             {% endfor %}
         </ul>
     </div>
 </div>
+<div class="position-fixed" style="left: 10px; bottom: 10px; z-index: 100;">
+    <a href="{{ url_for('main.dashboard') }}" class="back-icon">
+        <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" class="img-fluid" style="width: 70px;">
+    </a>
+</div> 
+<style>
+    .bg-custom{
+        background-color: #10246B;
+    }
+</style>
 {% endblock %}

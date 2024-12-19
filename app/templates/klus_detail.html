@@ -121,12 +121,11 @@
             </div>
             <div>
                 <span class="label">Aanbieder:</span>
-                <span class="value">
+                <span class="btn btn-link">
                     <a href="{{ url_for('main.ratings', rol='aanbieder', idnummer=klus.persoon_aanbieder.idnummer, back_url=request.url) }}" 
                         style="text-decoration: none; color: #10246B;">
                         {{ klus.persoon_aanbieder.username }}
                     </a>
-
                 </span>
             </div>
         </div>

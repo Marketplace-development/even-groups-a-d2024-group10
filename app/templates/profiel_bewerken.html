@@ -3,9 +3,11 @@
 {% block title %}Profiel Bewerken - KLUSKOMPAS{% endblock %}
 
 {% block content %}
-<div class="main-container" style="display: flex; justify-content: center; align-items: center; height: calc(100vh - 80px);">
-    <div class="form-container" style="width: 500px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); background: white;">
-        <h2 style="text-align: center; color: #10246B; margin-bottom: 20px;">Profiel Bewerken</h2>
+<div class="d-flex justify-content-center align-items-center" style="height: calc(100vh - 10px);">
+    <div class="card shadow" style="width: 500px;">
+        <div class="card-header text-center bg-custom text-white">
+            <h2>Profiel Bewerken</h2>
+        </div>
         
         <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -19,116 +21,88 @@
         {% endwith %}
         
         <form method="POST">
-            <!-- Voornaam -->
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label for="voornaam" style="font-size: 16px; font-weight: bold; color: #10246B;">Voornaam</label>
-                <input type="text" class="form-control" id="voornaam" name="voornaam" value="{{ user.voornaam }}" placeholder="Voer je voornaam in">
-            </div>
+            <div class="card-body">
+                <!-- Voornaam -->
+                <div class="form-group mb-3">
+                    <label for="voornaam" class="font-weight-bold text-custom">Voornaam</label>
+                    <input type="text" class="form-control" id="voornaam" name="voornaam" value="{{ user.voornaam }}" placeholder="Voer je voornaam in">
+                </div>
 
-            <!-- Achternaam -->
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label for="achternaam" style="font-size: 16px; font-weight: bold; color: #10246B;">Achternaam</label>
-                <input type="text" class="form-control" id="achternaam" name="achternaam" value="{{ user.achternaam }}" placeholder="Voer je achternaam in">
-            </div>
+                <!-- Achternaam -->
+                <div class="form-group mb-3">
+                    <label for="achternaam" class="font-weight-bold text-custom">Achternaam</label>
+                    <input type="text" class="form-control" id="achternaam" name="achternaam" value="{{ user.achternaam }}" placeholder="Voer je achternaam in">
+                </div>
 
-            <!-- Geboortedatum -->
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label for="geboortedatum" style="font-size: 16px; font-weight: bold; color: #10246B;">Geboortedatum</label>
-                <input type="date" class="form-control" id="geboortedatum" name="geboortedatum" 
-                       value="{{ user.geboortedatum.strftime('%Y-%m-%d') if user.geboortedatum else '' }}" 
-                       placeholder="Kies je geboortedatum">
-            </div>
+                <!-- Geboortedatum -->
+                <div class="form-group mb-3">
+                    <label for="geboortedatum" class="font-weight-bold text-custom">Geboortedatum</label>
+                    <input type="date" class="form-control" id="geboortedatum" name="geboortedatum" 
+                           value="{{ user.geboortedatum.strftime('%Y-%m-%d') if user.geboortedatum else '' }}" 
+                           placeholder="Kies je geboortedatum">
+                </div>
 
-            <!-- Email -->
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label for="email" style="font-size: 16px; font-weight: bold; color: #10246B;">Email</label>
-                <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" placeholder="Voer je e-mailadres in">
-            </div>
+                <!-- Email -->
+                <div class="form-group mb-3">
+                    <label for="email" class="font-weight-bold text-custom">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" placeholder="Voer je e-mailadres in">
+                </div>
 
-            <!-- Telefoonnummer -->
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label for="telefoonnummer" style="font-size: 16px; font-weight: bold; color: #10246B;">Telefoonnummer</label>
-                <input type="text" class="form-control" id="telefoonnummer" name="telefoonnummer" value="{{ user.telefoonnummer }}" placeholder="Voer je telefoonnummer in">
-            </div>
+                <!-- Telefoonnummer -->
+                <div class="form-group mb-3">
+                    <label for="telefoonnummer" class="font-weight-bold text-custom">Telefoonnummer</label>
+                    <input type="text" class="form-control" id="telefoonnummer" name="telefoonnummer" value="{{ user.telefoonnummer }}" placeholder="Voer je telefoonnummer in">
+                </div>
 
-            <!-- Adres -->
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label for="adres" style="font-size: 16px; font-weight: bold; color: #10246B;">Adres</label>
-                <input type="text" class="form-control" id="adres" name="adres" value="{{ user.adres }}" placeholder="Voer je adres in">
-            </div>
+                <!-- Adres -->
+                <div class="form-group mb-3">
+                    <label for="adres" class="font-weight-bold text-custom">Adres</label>
+                    <input type="text" class="form-control" id="adres" name="adres" value="{{ user.adres }}" placeholder="Voer je adres in">
+                </div>
 
-            <!-- Gebruikersnaam -->
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label for="username" style="font-size: 16px; font-weight: bold; color: #10246B;">Gebruikersnaam</label>
-                <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" placeholder="Voer je gebruikersnaam in">
-            </div>
+                <!-- Gebruikersnaam -->
+                <div class="form-group mb-3">
+                    <label for="username" class="font-weight-bold text-custom">Gebruikersnaam</label>
+                    <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" placeholder="Voer je gebruikersnaam in">
+                </div>
 
-            <!-- Geslacht -->
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label for="geslacht" style="font-size: 16px; font-weight: bold; color: #10246B;">Geslacht</label>
-                <select class="form-control" id="geslacht" name="geslacht">
+                <!-- Geslacht -->
+                <div class="form-group mb-3">
+                    <label for="geslacht" class="font-weight-bold text-custom">Geslacht</label>
+                    <select class="form-control" id="geslacht" name="geslacht">
                         <option value="Man" {% if user.geslacht == 'Man' %}selected{% endif %}>Man</option>
                         <option value="Vrouw" {% if user.geslacht == 'Vrouw' %}selected{% endif %}>Vrouw</option>
                         <option value="Anders" {% if user.geslacht == 'Anders' %}selected{% endif %}>Anders</option>
-                </select>
+                    </select>
+                </div>
             </div>
 
             <!-- Actieknoppen -->
-            <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-                <button type="submit" class="btn btn-primary" style="width: 48%; padding: 12px; font-size: 16px; background-color: #10246B; border: none; border-radius: 8px; cursor: pointer;">Opslaan</button>
-                <a href="{{ url_for('main.profile') }}" class="btn btn-secondary" style="width: 48%; padding: 12px; font-size: 16px; border-radius: 8px; text-align: center; text-decoration: none;">Annuleren</a>
+            <div class="card-footer d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary w-48">Opslaan</button>
+                <a href="{{ url_for('main.profile') }}" class="btn btn-secondary w-48">Annuleren</a>
             </div>
         </form>
     </div>
 </div>
-
-<!-- Stijlen behouden -->
+<div class="position-fixed" style="left: 10px; bottom: 10px; z-index: 100;">
+    <a href="{{ url_for('main.dashboard') }}" class="back-icon">
+        <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" class="img-fluid" style="width: 70px;">
+    </a>
+</div>
 <style>
-    .form-control {
-        padding: 10px;
-        font-size: 16px;
-        border-radius: 8px;
-        border: 1px solid #B2B2B2;
+    .bg-custom{
+        background-color: #10246B;
     }
-
-    .form-control:focus {
-        outline: none;
-        border-color: #10246B;
+    .text-custom{
+        color: #10246B;
     }
-
-    .btn-primary:hover {
-        background-color: #0d1c59;
-    }
-
-    .btn-secondary {
-        background-color: #6c757d;
-        color: white;
+    .btn-primary {
+        background-color: #10246B;
         border: none;
     }
-
-    .btn-secondary:hover {
-        background-color: #5a6268;
+    .btn-primary:hover {
+        background-color: #0e1f4a;
     }
-
-    .alert-container {
-        margin-bottom: 20px;
-    }
-
-    .alert {
-        font-size: 14px;
-        padding: 15px;
-        margin-bottom: 10px;
-        border-radius: 5px;
-    }
-
-    .alert-danger {
-        background-color: #f8d7da;
-        color: #721c24;
-    }
-
-    .alert-success {
-        background-color: #d4edda;
-        color: #155724;
-    }
-</style>
+</style>  
 {% endblock %}
