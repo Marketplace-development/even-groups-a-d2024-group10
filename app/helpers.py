@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 def utc_to_plus_one(dt):
-    if dt is None:  # Check of de datum geldig is
+    if dt is None:  
         return None
     return dt + timedelta(hours=1)
 
