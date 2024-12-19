@@ -435,6 +435,12 @@ def details_eigen_klus(klusnummer):
 
 
 from app.models import CategorieStatistiek, Klus, Persoon
+from datetime import datetime
+from flask import flash, redirect, url_for, request
+from sqlalchemy import func
+
+from datetime import datetime
+
 @main.route('/klussen')
 def klussen():
     # Controleer of de gebruiker is ingelogd
@@ -452,7 +458,8 @@ def klussen():
     datum_tot = request.args.get('datum_tot', '')
 
     # Query voor alle beschikbare klussen (basisquery)
-    basis_klussen_query = Klus.query.filter(Klus.status == 'beschikbaar', Klus.persoon_aanbieder != user)
+    vandaag = datetime.utcnow().date()
+    basis_klussen_query = Klus.query.filter(Klus.status == 'beschikbaar', Klus.persoon_aanbieder != user, Klus.datum >= vandaag)
 
     # Query voor beschikbare klussen (inclusief actieve filters)
     beschikbare_klussen_query = basis_klussen_query
@@ -502,8 +509,6 @@ def klussen():
         datum_van=datum_van,
         datum_tot=datum_tot
     )
-
-
 
 
 
