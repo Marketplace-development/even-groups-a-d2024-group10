@@ -11,6 +11,7 @@
 
     <!-- Tabel met klussen -->
     <div class="klussen-table mt-5">
+        {% if klussen|length > 0 %}
         <table class="table table-hover text-center">
             <thead class="table-header">
                 <tr>
@@ -58,6 +59,11 @@
                 {% endfor %}
             </tbody>
         </table>
+        {% else %}
+        <div class="alert alert-info text-center mt-5">
+            <strong>Je hebt geen aangeboden klussen.</strong>
+        </div>
+        {% endif %}
     </div>
 </div>
 
@@ -154,5 +160,11 @@
     .back-icon img:hover {
         transform: scale(1.1);
     }
+
+    .alert {
+        font-size: 1.2rem;
+        padding: 20px;
+    }
 </style>
 {% endblock %}
+

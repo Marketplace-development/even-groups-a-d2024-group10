@@ -11,6 +11,7 @@ import requests # type: ignore
 from app.chat import get_ongelezen_chats_count
 from werkzeug.exceptions import NotFound
 from sqlalchemy.sql import func
+from app.helpers import utc_to_plus_one
 
 
 
@@ -254,34 +255,46 @@ def bevestig_verwijdering():
                 flash('Profiel niet gevonden.', 'danger')
                 return redirect(url_for('main.profile'))
 
-            # **1. Verwijder gekoppelde berichten**
+            # **1. Verwijder records uit klus_zoeker**
+            db.session.execute(
+                klus_zoeker.delete().where(
+                    klus_zoeker.c.idnummer == user_id
+                )
+            )
+
+            # **2. Verwijder gekoppelde berichten**
             Bericht.query.filter_by(afzender_id=user_id).delete()
             Bericht.query.filter_by(ontvanger_id=user_id).delete()
 
-            # **2. Verwijder gekoppelde ratings**
-            Rating.query.filter_by(klusaanbieder_id=user_id).delete()
-            Rating.query.filter_by(kluszoeker_id=user_id).delete()
+            # **3. Behoud beoordelingen die de gebruiker heeft gemaakt**
+            # Verwijder alleen beoordelingen die de gebruiker ONTVANGEN heeft
+            Rating.query.filter_by(klusaanbieder_id=user_id).delete()  # Beoordelingen over hem als klusaanbieder
+            Rating.query.filter_by(kluszoeker_id=user_id).delete()    # Beoordelingen over hem als kluszoeker
 
-            # **3. Verwijder aangeboden klussen**
-            Klus.query.filter_by(idnummer=user_id).delete()
+            # **4. Verwijder aangeboden klussen**
+            klussen = Klus.query.filter_by(idnummer=user_id).all()
+            for klus in klussen:
+                # Verwijder records uit klus_zoeker gekoppeld aan deze klus
+                db.session.execute(
+                    klus_zoeker.delete().where(
+                        klus_zoeker.c.klusnummer == klus.klusnummer
+                    )
+                )
+                db.session.delete(klus)
 
-            # **4. Update gekoppelde categorie_statistiek records**
-            CategorieStatistiek.query.filter_by(idnummer=user_id).update({
-                "idnummer": "0000000000"
-            })
+            # **5. Verwijder gekoppelde notificaties**
+            Notificatie.query.filter_by(gebruiker_id=user_id).delete()
 
-            # **5. Update gekoppelde notificaties**
-            Notificatie.query.filter_by(gebruiker_id=user_id).update({
-                "gebruiker_id": "0000000000"
-            })
+            # **6. Verwijder gekoppelde categorie_statistieken**
+            CategorieStatistiek.query.filter_by(idnummer=user_id).delete()
 
-            # **6. Verwijder het profiel**
+            # **7. Verwijder het profiel**
             db.session.delete(user)
             db.session.commit()
 
-            # **7. Clear de sessie en uitloggen**
+            # **8. Clear de sessie en uitloggen**
             session.clear()
-            flash('Je profiel en gekoppelde gegevens zijn succesvol verwijderd.', 'success')
+            flash('Je profiel en gekoppelde gegevens zijn succesvol verwijderd. Beoordelingen die je hebt gemaakt zijn behouden.', 'success')
             return redirect(url_for('main.home'))
 
         except Exception as e:
@@ -788,7 +801,7 @@ def markeer_klus_voltooid(klusnummer):
 
     # Markeer de klus als voltooid
     klus.status = 'voltooid'
-    klus.voltooid_op = datetime.utcnow()
+    klus.voltooid_op = utc_to_plus_one()
     db.session.commit()
 
     # Notificatie naar kluszoekers
@@ -908,7 +921,7 @@ def rate_aanbieder(klusnummer):
                 communicatie_aanbieder=form.communicatie.data,
                 algemene_ervaring_aanbieder=form.algemene_ervaring.data,
                 comment=form.comment.data,
-                created_at=datetime.utcnow()
+                created_at=utc_to_plus_one()
             )
             db.session.add(new_rating)
             flash('Beoordeling succesvol toegevoegd!', 'success')
