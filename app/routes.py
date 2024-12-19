@@ -10,6 +10,8 @@ from datetime import datetime, date
 import requests # type: ignore
 from app.chat import get_ongelezen_chats_count
 from werkzeug.exceptions import NotFound
+from sqlalchemy.sql import func
+
 
 
 def maak_melding(gebruiker_id, bericht):
@@ -438,39 +440,71 @@ def klussen():
         return redirect(url_for('main.login'))
 
     user_id = session['user_id']
-    
-    # Haal de persoon op van de ingelogde gebruiker
     user = Persoon.query.get(user_id)
 
-    # Haal de categorieën op waar de gebruiker de meeste klussen in heeft geaccepteerd
-    categorie_voorkeuren = (
-        db.session.query(CategorieStatistiek.categorie)
-        .filter_by(idnummer=user_id)
-        .order_by(CategorieStatistiek.aantal_accepteerd.desc())
-        .all()
+    # Filters ophalen uit de querystring
+    geselecteerde_categorie = request.args.get('categorie', '')
+    geselecteerde_locatie = request.args.get('locatie', '').lower()
+    datum_van = request.args.get('datum_van', '')
+    datum_tot = request.args.get('datum_tot', '')
+
+    # Query voor alle beschikbare klussen (basisquery)
+    basis_klussen_query = Klus.query.filter(Klus.status == 'beschikbaar', Klus.persoon_aanbieder != user)
+
+    # Query voor beschikbare klussen (inclusief actieve filters)
+    beschikbare_klussen_query = basis_klussen_query
+
+    # Filter op categorie
+    if geselecteerde_categorie:
+        beschikbare_klussen_query = beschikbare_klussen_query.filter(Klus.categorie == geselecteerde_categorie)
+
+    # Filter op locatie (stad zonder postcode)
+    if geselecteerde_locatie:
+        beschikbare_klussen_query = beschikbare_klussen_query.filter(
+            func.lower(Klus.locatie).like(f"%{geselecteerde_locatie}%")
+        )
+
+    # Filter op datumbereik
+    if datum_van:
+        try:
+            datum_van = datetime.strptime(datum_van, '%Y-%m-%d').date()
+            beschikbare_klussen_query = beschikbare_klussen_query.filter(Klus.datum >= datum_van)
+        except ValueError:
+            flash('Ongeldig formaat voor datum_van. Gebruik YYYY-MM-DD.', 'danger')
+
+    if datum_tot:
+        try:
+            datum_tot = datetime.strptime(datum_tot, '%Y-%m-%d').date()
+            beschikbare_klussen_query = beschikbare_klussen_query.filter(Klus.datum <= datum_tot)
+        except ValueError:
+            flash('Ongeldig formaat voor datum_tot. Gebruik YYYY-MM-DD.', 'danger')
+
+    # Haal gefilterde klussen op
+    beschikbare_klussen = beschikbare_klussen_query.all()
+
+    # Locaties ophalen uit de basisquery (zonder actieve locatie-filter)
+    beschikbare_locaties_query = basis_klussen_query.with_entities(func.lower(Klus.locatie)).distinct()
+    unieke_steden = sorted({
+        ''.join(filter(str.isalpha, locatie[0].split(",")[0])).strip().capitalize()
+        for locatie in beschikbare_locaties_query
+    })
+
+    return render_template(
+        'klussen_overzicht.html',
+        klussen=beschikbare_klussen,
+        categorieën=[c[0] for c in db.session.query(Klus.categorie).distinct()],
+        locaties=unieke_steden,
+        geselecteerde_categorie=geselecteerde_categorie,
+        geselecteerde_locatie=geselecteerde_locatie,
+        datum_van=datum_van,
+        datum_tot=datum_tot
     )
 
-    # Zet de categorieën in een volgorde van meest naar minst voorkomend
-    voorkeuren_volgorde = [voorkeur[0] for voorkeur in categorie_voorkeuren]
 
-    # Haal alle beschikbare klussen op, maar sluit de klussen uit die door de ingelogde gebruiker zelf zijn aangeboden
-    beschikbare_klussen = Klus.query.filter(Klus.status == 'beschikbaar', Klus.persoon_aanbieder != user).all()
 
-    # Sorteer de klussen op basis van de voorkeursvolgorde
-    def sorteer_klussen(klus):
-        try:
-            return voorkeuren_volgorde.index(klus.categorie)
-        except ValueError:
-            # Als de categorie niet in de voorkeursvolgorde zit, zet hem achteraan
-            return len(voorkeuren_volgorde)
 
-    gesorteerde_klussen = sorted(beschikbare_klussen, key=sorteer_klussen)
 
-    # Voeg een melding toe als er geen klussen beschikbaar zijn
-    if not gesorteerde_klussen:
-        flash('Er zijn geen aangeboden klussen beschikbaar.', 'info')
 
-    return render_template('klussen_overzicht.html', klussen=gesorteerde_klussen)
 
 @main.route('/klus/<klusnummer>/bekijken', methods=['GET'])
 @login_required

@@ -12,30 +12,76 @@
     <!-- Titel van de pagina -->
     <h1 class="text-center" style="font-size: 28px; color: #10246B;">Alle Klussen</h1>
 
+    <!-- Filtersectie -->
+    <div class="filters">
+        <form method="GET" action="{{ url_for('main.klussen') }}">
+            <div class="form-group">
+                <label for="categorie">Categorie:</label>
+                <select name="categorie" id="categorie" class="form-control">
+                    <option value="">Alle categorieën</option>
+                    {% for categorie in categorieën %}
+                        <option value="{{ categorie }}" {% if categorie == geselecteerde_categorie %}selected{% endif %}>
+                            {{ categorie }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        
+            <div class="form-group">
+                <label for="locatie">Locatie:</label>
+                <select name="locatie" id="locatie" class="form-control">
+                    <option value="">Alle locaties</option>
+                    {% for stad in locaties %}
+                        <option value="{{ stad }}" {% if stad.lower() == geselecteerde_locatie %}selected{% endif %}>
+                            {{ stad }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>            
+        
+            <div class="form-group">
+                <label for="datum_van">Van:</label>
+                <input type="date" name="datum_van" id="datum_van" class="form-control" value="{{ datum_van }}">
+            </div>
+        
+            <div class="form-group">
+                <label for="datum_tot">Tot:</label>
+                <input type="date" name="datum_tot" id="datum_tot" class="form-control" value="{{ datum_tot }}">
+            </div>
+        
+            <button type="submit" class="btn btn-primary">Filteren</button>
+        </form>
+        
+    </div>
+
     <!-- Lijst met klussen -->
     <div>
-        {% for klus in klussen %}
-            <div class="klus-card">
-                <!-- Titel van de klus -->
-                <h2>{{ klus.naam if klus.naam else "Geen titel beschikbaar" }}</h2>
+        {% if klussen %}
+            {% for klus in klussen %}
+                <div class="klus-card">
+                    <!-- Titel van de klus -->
+                    <h2>{{ klus.naam if klus.naam else "Geen titel beschikbaar" }}</h2>
 
-                <!-- Datum van de klus -->
-                <p><strong>Datum:</strong> {{ klus.datum.strftime('%d-%m-%Y') if klus.datum else "Niet opgegeven" }}</p>
+                    <!-- Datum van de klus -->
+                    <p><strong>Datum:</strong> {{ klus.datum.strftime('%d-%m-%Y') if klus.datum else "Niet opgegeven" }}</p>
 
-                <!-- Locatie van de klus -->
-                <p><strong>Locatie:</strong> {{ klus.locatie if klus.locatie else "Niet opgegeven" }}</p>
+                    <!-- Locatie van de klus -->
+                    <p><strong>Locatie:</strong> {{ klus.locatie if klus.locatie else "Niet opgegeven" }}</p>
 
-                <!-- Link naar details -->
-                <a href="{{ url_for('main.klus_detail', klusnummer=klus.klusnummer) }}">Meer informatie →</a>
-            </div>
-        {% endfor %}
+                    <!-- Link naar details -->
+                    <a href="{{ url_for('main.klus_detail', klusnummer=klus.klusnummer) }}">Meer informatie →</a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-center" style="margin-top: 20px; color: #10246B;">Geen klussen gevonden. Probeer andere filters.</p>
+        {% endif %}
     </div>
 
     <!-- Terug naar Dashboard optie -->
     <div class="back">
         <div class="back-icon">
             <a href="{{ url_for('main.dashboard') }}">
-                <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug">
+                <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" style="width: 100px; height: auto;">
             </a>
         </div>
     </div>
@@ -64,6 +110,28 @@
         max-width: 100%;
         height: auto;
         width: 300px;
+    }
+
+    .filters {
+        margin-bottom: 20px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+    }
+
+    .filters .form-group {
+        margin-bottom: 15px;
+    }
+
+    .filters label {
+        font-weight: bold;
+        color: #10246B;
+    }
+
+    .filters .btn {
+        background-color: #10246B;
+        color: white;
     }
 
     .klus-card {
@@ -117,38 +185,31 @@
 
     .back {
         position: fixed;
-        left: 0px; /* Meer naar de hoek op mobiel */
-        bottom: 2px; /* Meer naar de hoek op mobiel */
+        left: 20px;
+        bottom: 20px;
         text-align: center;
         z-index: 100;
     }
 
     .back-icon {
-        width: 70px; /* Verklein de afbeelding op mobiel */
-        height: auto;
-        display: block;
+        width: 120px;
+        height: 120px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        overflow: hidden;
         transition: transform 0.3s ease;
     }
 
     .back-icon img {
-        width: 100%; /* Volledige breedte van de back-icon */
-        height: auto;
-        object-fit: contain;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 
     .back-icon:hover {
         transform: scale(1.1);
-    }
-
-    @media (max-width: 768px) {
-        .back {
-            left: 0px; /* Extra naar de hoek op mobiel */
-            bottom: 5px; /* Extra naar de hoek op mobiel */
-        }
-
-        .back-icon img {
-            width: 50px; /* Nog kleiner op mobiel */
-        }
     }
 </style>
 {% endblock %}
