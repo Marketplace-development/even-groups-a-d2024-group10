@@ -6,7 +6,7 @@ import string
 from datetime import datetime
 
 
-# Functie om een 10-cijferig ID-nummer te genereren
+
 def generate_id_number():
     return ''.join(random.choices(string.digits, k=10))
 
@@ -51,7 +51,7 @@ class KlusaanbiederForm(FlaskForm):
     verwachte_duur_minuten = SelectField('Minuten', choices=[('00', '00'), ('30', '30')], validators=[DataRequired()])
     submit = SubmitField('Toevoegen')
 
-    # Validatie voor datum
+    
     def validate_datum(form, field):
         if not field.data:
             raise ValidationError('Er is geen datum ingevoerd.')
@@ -60,16 +60,16 @@ class KlusaanbiederForm(FlaskForm):
         if ingevoerde_datum <= huidige_datum:
             raise ValidationError('Gelieve een datum in de toekomst in te voeren.')
 
-    # Validatie voor stad
+    
     def validate_stad(form, field):
-        from app.models import valideer_adres  # Zorg dat deze functie juist geïmporteerd is
+        from app.models import valideer_adres 
         stad = field.data
         if not valideer_adres(stad):
             raise ValidationError(f"De ingevoerde stad '{stad}' is ongeldig of bestaat niet.")
 
-    # Validatie voor adres (inclusief stad)
+    
     def validate_adres(form, field):
-        from app.models import valideer_adres  # Zorg dat deze functie juist geïmporteerd is
+        from app.models import valideer_adres  
         volledige_locatie = f"{form.stad.data}, {field.data}"
         if not valideer_adres(volledige_locatie):
             raise ValidationError("Het ingevoerde adres in combinatie met de stad is ongeldig of bestaat niet.")
@@ -98,20 +98,20 @@ class RegistrationForm(FlaskForm):
     submit = SubmitField('Registeren')
 
     def validate_stad(form, field):
-        from app.models import valideer_adres  # Zorg dat deze functie juist geïmporteerd is
+        from app.models import valideer_adres  
         stad = field.data
         if not valideer_adres(stad):
             raise ValidationError(f"De ingevoerde stad '{stad}' is ongeldig of bestaat niet.")
 
-    # Validatie voor adres (inclusief stad)
+    
     def validate_adres(form, field):
-        from app.models import valideer_adres  # Zorg dat deze functie juist geïmporteerd is
+        from app.models import valideer_adres  
         volledige_locatie = f"{form.stad.data}, {field.data}"
         if not valideer_adres(volledige_locatie):
             raise ValidationError("Het ingevoerde adres in combinatie met de stad is ongeldig of bestaat niet.")
 
 
-# Formulier voor inloggen (alleen gebruikersnaam)
+
 class LoginForm(FlaskForm):
     username = StringField('Gebruikersnaam', validators=[DataRequired()])
     submit = SubmitField('Login')
