@@ -180,6 +180,9 @@ def profile():
         flash('Profiel niet gevonden.', 'danger')   
         return redirect(url_for('main.home'))
 
+@main.route('/about')
+def about():
+    return render_template('about.html')
 
 
 
