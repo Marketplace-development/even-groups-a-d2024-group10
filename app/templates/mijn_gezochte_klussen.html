@@ -23,7 +23,7 @@
                     <p><strong>Datum:</strong> {{ klus.datum }}</p>
                     <p><strong>Vergoeding:</strong> €{{ klus.vergoeding }}</p>
                     <p><strong>Categorie:</strong> {{ klus.categorie_ref.naam if klus.categorie_ref else 'Onbekend' }}</p>
-                    <p><strong>Verwachte duur:</strong> {{ klus.verwachte_duur }} uur</p>
+                    <p><strong>Verwachte duur:</strong> {{ klus.verwachte_duur }}</p>
                     <p><strong>Beschrijving:</strong> {{ klus.beschrijving }}</p>
 
                     <!-- Status van de klus -->
@@ -37,12 +37,12 @@
 
                     <!-- Acties -->
                     {% if klus.status == 'geaccepteerd' %}
-                        <div class="action-buttons">
-                            <a href="{{ url_for('chat.chat_page', klusnummer=klus.klusnummer) }}" class="btn btn-primary btn-sm">Chatten</a>
-                            <form action="{{ url_for('main.leave_klus', klusnummer=klus.klusnummer) }}" method="POST">
-                                <button type="submit" class="btn btn-danger btn-sm">Annuleren</button>
-                            </form>
-                        </div>
+                        <!-- Chatten-knop -->
+                        <a href="{{ url_for('chat.chat_page', klusnummer=klus.klusnummer) }}" class="btn btn-primary btn-sm">Chatten</a>
+
+                        <form action="{{ url_for('main.leave_klus', klusnummer=klus.klusnummer) }}" method="POST" class="text-center">
+                            <button type="submit" class="btn btn-danger btn-sm">Annuleren</button>
+                        </form>
                     {% endif %}
                 </div>
             {% endfor %}
@@ -115,18 +115,6 @@
     .status-accepted {
         color: orange;
         font-weight: bold;
-    }
-
-    .action-buttons {
-        display: flex;
-        justify-content: space-between; /* Zorgt voor gelijke ruimte tussen de knoppen */
-        align-items: center; /* Horizontale uitlijning van knoppen */
-        gap: 10px; /* Optionele ruimte tussen de knoppen */
-    }
-
-    .action-buttons a,
-    .action-buttons form {
-        margin: 0;
     }
 
     .back {

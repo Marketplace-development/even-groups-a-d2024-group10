@@ -1,18 +1,18 @@
 {% extends 'base.html' %}
 
-{% block title %}Mijn Aangeboden klussen - KLUSKOMPAS{% endblock %}
+{% block title %}Mijn Aangeboden Klussen - KLUSKOMPAS{% endblock %}
 
 {% block content %}
 <div class="container">
     <!-- Logo en decoratie -->
     <div class="logo">
-        <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" style="width: 500px; height: auto;">
+        <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" class="logo-img">
     </div>
 
     <!-- Tabel met klussen -->
     <div class="klussen-table mt-5">
-        <table class="table table-bordered">
-            <thead>
+        <table class="table table-hover text-center">
+            <thead class="table-header">
                 <tr>
                     <th>Klusnaam</th>
                     <th>Datum</th>
@@ -29,45 +29,30 @@
                     <td>{{ klus.status or "beschikbaar" }}</td>
                     <td>
                         {% if klus.klussen_zoekers %}
-                            <ul>
-                                {% for zoeker in klus.klussen_zoekers %}
-                                    <li>{{ zoeker.voornaam }} {{ zoeker.achternaam }}</li>
-                                {% endfor %}
-                            </ul>
+                            {% for zoeker in klus.klussen_zoekers %}
+                                {{ zoeker.voornaam }} {{ zoeker.achternaam }}
+                            {% endfor %}
                         {% else %}
                             <span class="text-muted">Geen kluszoeker gekoppeld</span>
                         {% endif %}
                     </td>
                     <td>
-                        <!-- Chatten-knop -->
-                        {% if klus.status == 'geaccepteerd' %}
-                        <a href="{{ url_for('chat.chat_page', klusnummer=klus.klusnummer) }}" class="btn btn-primary btn-sm">Chatten</a>
-                        {% endif %}
-
-                        <!-- Formulier voor markeren als voltooid -->
-                        {% if klus.status == 'geaccepteerd' %}
-                        <form action="{{ url_for('main.markeer_klus_voltooid', klusnummer=klus.klusnummer) }}" method="POST" style="display: inline-block;">
-                            <button type="submit" class="btn btn-success btn-sm">Markeer als voltooid</button>
-                        </form>
-                        {% endif %}
-
-                        <!-- Formulier voor verwijderen -->
-                        <form action="{{ url_for('main.delete_klus', klusnummer=klus.klusnummer) }}" method="POST" style="display: inline-block;">
-                            <button type="submit" class="btn btn-danger btn-sm">Verwijder Klus</button>
-                        </form>
-
-                        <!-- Knop voor beoordelingen bekijken -->
-                        {% if klus.status == 'geaccepteerd' and klus.klussen_zoekers %}
-                        <a href="{{ url_for('main.beoordelingen_kluszoeker', klusnummer=klus.klusnummer) }}" 
-                           class="btn btn-info btn-sm">
-                            Bekijk Beoordelingen
-                        </a>
-                        {% endif %}
-
-                        <a href="{{ url_for('main.details_eigen_klus', klusnummer=klus.klusnummer) }}" 
-                           class="btn btn-secondary btn-sm">
-                            Bekijk Details
-                        </a>
+                        <!-- Actieknoppen -->
+                        <div class="btn-group" role="group">
+                            {% if klus.status == 'geaccepteerd' %}
+                                <a href="{{ url_for('chat.chat_page', klusnummer=klus.klusnummer) }}" class="btn btn-primary btn-sm">Chatten</a>
+                                <form action="{{ url_for('main.markeer_klus_voltooid', klusnummer=klus.klusnummer) }}" method="POST" style="display: inline-block;">
+                                    <button type="submit" class="btn btn-success btn-sm">Markeer als voltooid</button>
+                                </form>
+                            {% endif %}
+                            <form action="{{ url_for('main.delete_klus', klusnummer=klus.klusnummer) }}" method="POST" style="display: inline-block;">
+                                <button type="submit" class="btn btn-danger btn-sm">Verwijder Klus</button>
+                            </form>
+                            <a href="{{ url_for('main.details_eigen_klus', klusnummer=klus.klusnummer) }}" class="btn btn-secondary btn-sm">Bekijk Details</a>
+                            {% if klus.status == 'geaccepteerd' and klus.klussen_zoekers %}
+                                <a href="{{ url_for('main.beoordelingen_kluszoeker', klusnummer=klus.klusnummer) }}" class="btn btn-info btn-sm">Bekijk Beoordelingen</a>
+                            {% endif %}
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}
@@ -80,12 +65,13 @@
 <div class="back">
     <div class="back-icon">
         <a href="{{ url_for('main.mijn_klussen_selectie') }}">
-            <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" style="width: 100px; height: auto;">
+            <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug">
         </a>
     </div>
 </div>
 
 <style>
+    /* Algemene stijl */
     body {
         margin: 0;
         font-family: Arial, sans-serif;
@@ -93,48 +79,62 @@
         color: #10246B;
     }
 
-    .container {
-        position: relative;
-        width: 100%;
-        min-height: 100vh;
-        background: white;
-        border: 1px solid white;
-        padding-top: 20px;
-        padding-bottom: 50px;
-    }
-
     .logo {
-        margin-top: 30px auto; 
-        margin-bottom: 30px;
-        text-align: center;
-        display: block;
-    }
-
-    .klussen-table {
-        width: 100%;
-        margin-top: 100px;
+        margin: 30px auto;
         text-align: center;
     }
 
-    .klussen-table th, .klussen-table td {
-        padding: 15px;
-        border: 1px solid #ddd;
+    .logo-img {
+        width: 400px;
+        height: auto;
     }
 
-    .klussen-table th {
+    .table-header {
         background-color: #10246B;
         color: white;
     }
 
-    .klussen-table tr:nth-child(even) {
-        background-color: #f2f2f2;
+    .btn-group .btn {
+        margin: 2px;
+        border-radius: 5px;
     }
 
-    .klussen-table button, .klussen-table a {
-        width: 100%;
-        padding: 10px;
-        font-size: 16px;
-        margin: 5px 0;
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: white;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+        color: white;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+        color: white;
+    }
+
+    .btn-info {
+        background-color: #17a2b8;
+        border-color: #17a2b8;
+        color: white;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        color: white;
+    }
+
+    .btn:hover {
+        filter: brightness(90%);
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
     }
 
     .back {
@@ -145,21 +145,14 @@
         z-index: 1000;
     }
 
-    .back-icon {
-        width: 120px;
-        height: 120px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: 50%;
-        overflow: hidden;
+    .back-icon img {
+        width: 80px;
+        height: auto;
         transition: transform 0.3s ease;
     }
 
-    .back-icon img {
-        width: 100%;
+    .back-icon img:hover {
+        transform: scale(1.1);
     }
 </style>
 {% endblock %}
-
-

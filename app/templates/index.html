@@ -4,35 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welkom - KLUSKOMPAS</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background-color: white;
+            background-color: #f9f9f9;
             color: #10246B;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
         
         .container {
-            width: 100%;
-            min-height: 100vh; /* Zorgt ervoor dat het scherm wordt gevuld */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
             text-align: center;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        .logo-container {
-            margin-bottom: 30px;
+            background-color: #ffffff;
+            border-radius: 15px;
+            padding: 60px 40px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            width: 600px;
         }
 
         .logo-container img {
-            width: 100%; /* Volledige breedte op kleinere schermen */
-            max-width: 250px; /* Max grootte op grotere schermen */
+            width: 100%;
+            max-width: 300px;
             height: auto;
+            margin-bottom: 30px;
         }
 
         .welcome-text {
@@ -44,9 +41,32 @@
             margin-bottom: 20px;
         }
 
+        .login-box {
+            background: #10246B;
+            color: #F5EFF7;
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+            padding: 15px 30px;
+            border-radius: 12px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 20px auto;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .login-box:hover {
+            transform: scale(1.05);
+            background: #0e1f4a;
+        }
+
+        .register-link-container {
+            margin-top: 20px;
+        }
+
         .link {
             font-size: 18px;
-            font-family: Inter, sans-serif;
             font-weight: 400;
             color: #10246B;
             text-decoration: underline;
@@ -57,54 +77,18 @@
             color: #0e1f4a;
         }
 
-        .login-box {
-            width: 80%; /* Breder op kleinere schermen */
-            max-width: 267px; /* Limiteer op grotere schermen */
-            height: auto;
-            padding: 20px; /* Voeg padding toe voor responsiviteit */
-            background: #10246B;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: #F5EFF7;
-            font-size: 36px; /* Verklein tekst op kleinere schermen */
-            font-family: Inter, sans-serif;
-            font-weight: 700;
-            text-align: center;
-            cursor: pointer;
-            margin-top: 40px;
-        }
-
-        .login-box a {
-            color: #F5EFF7;
-            text-decoration: none;
-            font-size: inherit; /* Houd consistentie met de box */
-            font-family: Inter, sans-serif;
-            font-weight: 700;
-        }
-
-        .register-link-container {
-            margin-top: 30px;
-        }
-
         /* Responsieve media query */
         @media (min-width: 768px) {
             .welcome-text {
-                font-size: 36px;
+                font-size: 32px;
             }
 
             .login-box {
-                font-size: 67px;
+                font-size: 28px;
             }
 
             .link {
-                font-size: 24px;
-            }
-
-            .logo-container img {
-                max-width: 650px;
+                font-size: 20px;
             }
         }
     </style>
@@ -122,10 +106,8 @@
             Klik hieronder om je aan te melden of een account aan te maken.
         </div>
 
-        <!-- Login Box met link naar inlogpagina -->
-        <a href="{{ url_for('main.login') }}" class="login-box">
-            Log in
-        </a>
+        <!-- Log in knop -->
+        <a href="{{ url_for('main.login') }}" class="login-box">Log in</a>
 
         <!-- Registratie link -->
         <div class="register-link-container">

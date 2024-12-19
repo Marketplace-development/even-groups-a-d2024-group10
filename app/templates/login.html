@@ -1,7 +1,3 @@
-{% extends 'base.html' %}
-
-{% block title %}Inloggen - KLUSKOMPAS{% endblock %}
-
 {% block content %}
 <div class="main-container">
     <!-- Logo -->
@@ -70,47 +66,49 @@
     }
 
     .logo-container {
-        margin-bottom: 30px;
+        margin-bottom: 50px;
     }
 
     .logo {
-        width: 300px;
+        width: 350px; /* Logo groter */
         height: auto;
     }
 
     .form-container {
         width: 100%;
-        max-width: 400px;
-        padding: 20px;
+        max-width: 500px; /* Breder form */
+        padding: 30px;
         background-color: #fff;
         border: 1px solid #ddd;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
     }
 
     .form-title {
         text-align: center;
-        margin-bottom: 20px;
+        margin-bottom: 30px;
+        font-size: 32px; /* Grotere titel */
         color: #10246B;
     }
 
     .form-group {
-        margin-bottom: 20px;
+        margin-bottom: 25px; /* Meer ruimte tussen velden */
     }
 
     .form-group label {
         display: block;
-        margin-bottom: 5px;
+        margin-bottom: 10px;
+        font-size: 18px; /* Grotere tekst */
         font-weight: bold;
         color: #10246B;
     }
 
     .form-control {
         width: 100%;
-        padding: 10px;
-        border: 1px solid #B2B2B2;
-        border-radius: 8px;
-        font-size: 16px;
+        padding: 12px;
+        font-size: 18px; /* Grotere invoervelden */
+        border: 2px solid #B2B2B2;
+        border-radius: 10px;
     }
 
     .form-control:focus {
@@ -120,10 +118,10 @@
 
     .btn {
         width: 100%;
-        padding: 10px;
-        border: none;
-        border-radius: 8px;
-        font-size: 16px;
+        padding: 15px; /* Grotere knoppen */
+        font-size: 18px;
+        font-weight: bold;
+        border-radius: 10px;
         cursor: pointer;
     }
 
@@ -136,31 +134,28 @@
         background-color: #0d1d54;
     }
 
-    .text-danger {
-        color: red;
-        font-size: 14px;
-        margin-top: 5px;
-        display: block;
-    }
-
     .text-center {
         text-align: center;
         color: #10246B;
+        font-size: 18px;
     }
 
     .register-link {
         color: #10246B;
         text-decoration: underline;
+        font-size: 18px;
     }
 
     .alert {
         text-align: center;
         margin-bottom: 20px;
-        color: #721c24;
+        font-size: 16px;
+        padding: 12px;
+        border-radius: 8px;
         background-color: #f8d7da;
+        color: #721c24;
         border: 1px solid #f5c6cb;
-        border-radius: 5px;
-        padding: 10px;
     }
 </style>
 {% endblock %}
+
