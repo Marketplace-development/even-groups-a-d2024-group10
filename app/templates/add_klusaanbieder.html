@@ -80,14 +80,11 @@
                 {% endif %}
             </div>
 
-            <!-- Geschatte duur (Uren en Minuten) -->
+            <!-- Geschatte duur -->
             <div class="form-group">
                 <label for="verwachte_duur">Geschatte duur:</label>
                 <div style="display: flex; gap: 5px;">
-                    <!-- Uren (0-8) -->
                     {{ form.verwachte_duur_uren(class_="form-control", style="width: 50%;") }}
-                    
-                    <!-- Minuten (enkel 00 en 30) -->
                     {{ form.verwachte_duur_minuten(class_="form-control", style="width: 50%;") }}
                 </div>
                 {% if form.verwachte_duur_uren.errors or form.verwachte_duur_minuten.errors %}
@@ -108,130 +105,63 @@
             </div>
 
             <!-- Aanmaken knop -->
-            <button type="submit" class="btn btn-primary">Aanmaken</button>
+            <button type="submit" class="btn btn-primary aanmaken-btn">Aanmaken</button>
         </form>
     </div>
 
     <!-- Terug knop -->
     <div class="back">
-        <div class="back-icon">
-            <a href="{{ url_for('main.dashboard') }}">
-                <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" style="width: 100px; height: auto;">
-            </a>
-        </div>
+        <a href="{{ url_for('main.dashboard') }}" class="back-icon">
+            <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug">
+        </a>
     </div>
 </div>
 
-<!-- CSS -->
 <style>
-    body, html {
-        height: 100%;
-        margin: 0;
-        font-family: 'Inter', sans-serif;
-        background-color: #f4f4f9;
+    .aanmaken-btn {
+        margin-top: 40px; /* Voeg extra ruimte boven de knop toe */
     }
 
-    .main-container {
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-        min-height: 100vh;
-        margin: 20px;
+    @media (max-width: 768px) {
+        .aanmaken-btn {
+            margin-top: 60px; /* Extra ruimte op mobiel */
+        }
     }
 
-    .form-container {
-        width: 100%;
-        max-width: 500px;
-        padding: 20px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        background: white;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    h1 {
-        text-align: center;
-        color: white;
-        background-color: #10246B;
-        padding: 20px 0;
-        margin-bottom: 20px;
-        border-radius: 8px;
-    }
-
-    .form-group {
-        margin-bottom: 15px;
-    }
-
-    .form-group label {
-        font-weight: bold;
-        margin-bottom: 5px;
-        display: block;
-        color: #10246B;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 10px;
-        border-radius: 8px;
-        border: 1px solid #B2B2B2;
-        font-size: 16px;
-    }
-
-    .form-control:focus {
-        border-color: #10246B;
-        outline: none;
-    }
-
-    .text-danger {
-        color: red;
-        font-size: 14px;
-        margin-top: 5px;
-        display: block;
-    }
-
-    button {
-        width: 100%;
-        padding: 10px;
-        font-size: 16px;
-        border: none;
-        border-radius: 8px;
-        background-color: #10246B;
-        color: white;
-        cursor: pointer;
-    }
-
-    button:hover {
-        background-color: #0d1d54;
-    }
-
+    /* Terug knop */
     .back {
         position: fixed;
-        left: 20px; 
-        bottom: 20px; 
-        text-align: center;
+        left: 10px; /* Meer naar de hoek */
+        bottom: 10px; /* Meer naar de hoek */
         z-index: 100;
     }
 
     .back-icon {
-        width: 120px;
-        height: 120px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: 50%;
-        overflow: hidden;
+        width: auto;
+        height: auto;
+        display: block;
         transition: transform 0.3s ease;
     }
 
     .back-icon img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
+        width: 70px; /* Kleiner formaat */
+        height: auto;
+        object-fit: contain;
     }
 
     .back-icon:hover {
         transform: scale(1.1);
     }
 
+    @media (max-width: 768px) {
+        .back {
+            left: 5px; /* Extra naar de hoek op mobiel */
+            bottom: 5px; /* Extra naar de hoek op mobiel */
+        }
+
+        .back-icon img {
+            width: 50px; /* Kleiner op mobiel */
+        }
+    }
 </style>
 {% endblock %}
