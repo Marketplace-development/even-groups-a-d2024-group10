@@ -12,7 +12,7 @@
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f4f4f9;
-            color: #333;
+            color: #333333;
         }
 
         /* Navigatiebalk */
@@ -36,6 +36,38 @@
         .navbar-nav .nav-link:hover {
             color: #2ecc71 !important;
         }
+
+        /* Remove the default hamburger icon background */
+        .navbar-toggler-icon {
+            background-image: none;
+            position: relative;
+            width: 5px;
+            height: 5px;
+        }
+
+        /* Add custom lines for the hamburger icon */
+        .navbar-toggler-icon::before,
+        .navbar-toggler-icon::after,
+        .navbar-toggler-icon span {
+            content: '';
+            position: absolute;
+            width: 29px;
+            height: 4px;
+            background-color: #f4f4f9; /* Set your desired color */
+            transition: all 0.3s;
+            right: -12px;
+        }
+
+        /* Position the lines in the default place */
+        .navbar-toggler-icon::before {
+            top: -8px;
+        }
+
+        .navbar-toggler-icon::after {
+            top: 8px;
+        }
+
+
 
         /* Container */
         .container {

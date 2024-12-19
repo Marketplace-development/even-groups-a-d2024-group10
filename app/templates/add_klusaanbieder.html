@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block title %}Klus Aanmaken - KLUSKOMPAS{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="form-container mx-auto" style="max-width: 600px;">
+        <h1 class="text-center mb-4">Klus aanmaken</h1>
+        
+        <form method="POST" action="{{ url_for('main.add_klusaanbieder') }}">
+            {{ form.hidden_tag() }}
+
+            <!-- Titel -->
+            <div class="mb-3">
+                <label for="naam" class="form-label">Titel:</label>
+                {{ form.naam(class_="form-control", placeholder="Voer een titel in") }}
+                {% if form.naam.errors %}
+                    <div class="text-danger">{{ form.naam.errors[0] }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Categorie -->
+            <div class="mb-3">
+                <label for="categorie" class="form-label">Categorie:</label>
+                {{ form.categorie(class_="form-control") }}
+                {% if form.categorie.errors %}
+                    <div class="text-danger">{{ form.categorie.errors[0] }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Stad -->
+            <div class="mb-3">
+                <label for="stad" class="form-label">Stad:</label>
+                {{ form.stad(class_="form-control", placeholder="Voer een stad in") }}
+                {% if form.stad.errors %}
+                    <div class="text-danger">{{ form.stad.errors[0] }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Adres -->
+            <div class="mb-3">
+                <label for="adres" class="form-label">Adres:</label>
+                {{ form.adres(class_="form-control", placeholder="Voer een adres in") }}
+                {% if form.adres.errors %}
+                    <div class="text-danger">{{ form.adres.errors[0] }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Beschrijving -->
+            <div class="mb-3">
+                <label for="beschrijving" class="form-label">Beschrijving:</label>
+                {{ form.beschrijving(class_="form-control", placeholder="Beschrijf de klus") }}
+                {% if form.beschrijving.errors %}
+                    <div class="text-danger">{{ form.beschrijving.errors[0] }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Datum -->
+            <div class="mb-3">
+                <label for="datum" class="form-label">Datum:</label>
+                {{ form.datum(class_="form-control", placeholder="Selecteer een datum") }}
+                {% if form.datum.errors %}
+                    <div class="text-danger">{{ form.datum.errors[0] }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Tijd -->
+            <div class="mb-3">
+                <label for="tijd" class="form-label">Tijd:</label>
+                <div class="d-flex gap-3">
+                    {{ form.uren(class_="form-control", id="tijd-uren", style="width: 50%;") }}
+                    {{ form.minuten(class_="form-control", id="tijd-minuten", style="width: 50%;") }}
+                </div>
+                {% if form.uren.errors or form.minuten.errors %}
+                    <div class="text-danger">
+                        {% if form.uren.errors %}{{ form.uren.errors[0] }}{% endif %}
+                        {% if form.minuten.errors %}{{ form.minuten.errors[0] }}{% endif %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Geschatte duur -->
+            <div class="mb-3">
+                <label for="verwachte_duur" class="form-label">Geschatte duur:</label>
+                <div class="d-flex gap-3">
+                    {{ form.verwachte_duur_uren(class_="form-control", style="width: 50%;") }}
+                    {{ form.verwachte_duur_minuten(class_="form-control", style="width: 50%;") }}
+                </div>
+                {% if form.verwachte_duur_uren.errors or form.verwachte_duur_minuten.errors %}
+                    <div class="text-danger">
+                        {% if form.verwachte_duur_uren.errors %}{{ form.verwachte_duur_uren.errors[0] }}{% endif %}
+                        {% if form.verwachte_duur_minuten.errors %}{{ form.verwachte_duur_minuten.errors[0] }}{% endif %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Vergoeding -->
+            <div class="mb-3">
+                <label for="vergoeding" class="form-label">Vergoeding:</label>
+                {{ form.vergoeding(class_="form-control", placeholder="Voer de vergoeding in (in euro)") }}
+                {% if form.vergoeding.errors %}
+                    <div class="text-danger">{{ form.vergoeding.errors[0] }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Aanmaken button -->
+            <button type="submit" class="btn btn-primary w-100">Aanmaken</button>
+        </form>
+    </div>
+
+    <!-- Terug knop -->
+    <div class="position-fixed" style="left: 10px; bottom: 10px; z-index: 100;">
+        <a href="{{ url_for('main.dashboard') }}" class="back-icon">
+            <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" class="img-fluid" style="width: 70px;">
+        </a>
+    </div>
+</div>
+
+<style>
+    .back-icon img {
+        transition: transform 0.3s ease;
+    }
+
+    .back-icon:hover img {
+        transform: scale(1.1);
+    }
+
+    @media (max-width: 768px) {
+        .back-icon img {
+            width: 50px; /* Smaller on mobile */
+        }
+    }
+</style>
+{% endblock %}

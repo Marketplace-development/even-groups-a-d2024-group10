@@ -1,53 +1,12 @@
 {% block content %}
-<div class="main-container">
-    <!-- Logo -->
-    <div class="logo-container">
-        <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" class="logo">
-    </div>
-
-    <!-- Login formulier -->
-    <div class="form-container">
-        <h1 class="form-title">Inloggen</h1>
-
-        <!-- Flash foutmeldingen -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    {% if category == 'danger' %}
-                        <div class="alert alert-danger">{{ message }}</div>
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-        <form method="POST">
-            {{ form.hidden_tag() }}
-
-            <!-- Gebruikersnaam veld -->
-            <div class="form-group">
-                <label for="username">Gebruikersnaam:</label>
-                {{ form.username(class="form-control", placeholder="Voer je gebruikersnaam in") }}
-                {% if form.username.errors %}
-                    <span class="text-danger">{{ form.username.errors[0] }}</span>
-                {% endif %}
-            </div>
-
-            <!-- Login knop -->
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary">Inloggen</button>
-            </div>
-        </form>
-
-        <!-- Registreer link -->
-        <p class="text-center">
-            Heb je nog geen account? 
-            <a href="{{ url_for('main.register') }}" class="register-link">Registreer hier</a>
-        </p>
-    </div>
-</div>
-
-<!-- CSS -->
-<style>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <style>
     body, html {
         margin: 0;
         padding: 0;
@@ -56,185 +15,107 @@
         background-color: #f4f4f9;
     }
 
-    /* Basis instellingen voor de container */
     .main-container {
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         min-height: 100vh;
-        padding: 2vh 2vw; /* Gebruik van viewport units voor padding */
-    }
-
-    .logo-container {
-        margin-bottom: 5vh; /* Margin op basis van de viewport hoogte */
-        text-align: center;
     }
 
     .logo {
-        width: 60vw; /* Logo als percentage van de viewport breedte */
-        max-width: 350px; /* Max breedte van het logo */
+        width: 60vw;
+        max-width: 350px;
         height: auto;
+        margin-bottom: 30px;
     }
 
     .form-container {
-        width: 90%; /* Het formulier neemt 90% van de breedte van het scherm in */
-        max-width: 400px; /* Max breedte van het formulier voor desktop */
-        padding: 5vh 5vw; /* Padding op basis van viewport units */
         background-color: #fff;
         border: 1px solid #ddd;
         border-radius: 10px;
         box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-        margin: 0 auto;
+        padding: 30px;
+        width: 90%;
+        max-width: 400px;
     }
 
     .form-title {
+        font-size: 32px;
+        color: #10246B;
         text-align: center;
-        margin-bottom: 5vh; /* Margin gebaseerd op de hoogte van het scherm */
-        font-size: 32px; /* Blijft hetzelfde voor desktop */
-        color: #10246B;
-    }
-
-    .form-group {
-        margin-bottom: 5vh; /* Meer ruimte tussen velden op basis van hoogte van het scherm */
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 2vh; /* Margin onder label gebaseerd op de hoogte */
-        font-size: 18px; /* Vergrote label tekst afhankelijk van de viewport */
-        font-weight: bold;
-        color: #10246B;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 12px; /* Padding van invoervelden op basis van viewport */
-        font-size: 18px; /* Vergrote tekst in invoervelden */
-        border: 2px solid #B2B2B2;
-        border-radius: 10px;
-    }
-
-    .form-control:focus {
-        border-color: #10246B;
-        outline: none;
-    }
-
-    .btn {
-        width: 100%;
-        padding: 15px; /* Vergrote knoppen met padding op basis van de viewport */
-        font-size: 18px; /* Vergrote tekst in de knoppen */
-        font-weight: bold;
-        border-radius: 10px;
-        cursor: pointer;
+        margin-bottom: 30px;
     }
 
     .btn-primary {
         background-color: #10246B;
-        color: #fff;
+        border-color: #10246B;
     }
 
     .btn-primary:hover {
         background-color: #0d1d54;
-    }
-
-    .text-center {
-        text-align: center;
-        color: #10246B;
-        font-size: 18px; /* Vergrote tekst voor de tekst en link */
+        border-color: #0d1d54;
     }
 
     .register-link {
         color: #10246B;
         text-decoration: underline;
-        font-size: 18px; /* Vergroot de tekst van de registratie link */
     }
 
     .alert {
         text-align: center;
-        margin-bottom: 2vh; /* Onderste marge op basis van viewport hoogte */
-        font-size: 16px; /* Vergroot de tekst van foutmeldingen */
-        padding: 12px;
-        border-radius: 8px;
-        background-color: #f8d7da;
-        color: #721c24;
-        border: 1px solid #f5c6cb;
+        font-size: 14px;
     }
+  </style>
+</head>
+<body>
+<div class="container">
+    <div class="main-container">
+        <!-- Logo -->
+        <div>
+            <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" class="logo">
+        </div>
 
-    /* Responsieve stijlen voor kleinere schermen (max-width: 768px) */
-    @media (max-width: 768px) {
-        .main-container {
-            padding: 5vh 5vw; /* Vergrote padding voor kleinere schermen */
-        }
+        <!-- Login Form -->
+        <div class="form-container">
+            <h1 class="form-title">Inloggen</h1>
 
-        .logo {
-            width: 75vw; /* Logo groter voor mobiel, maar nog steeds proportioneel */
-        }
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% if category == 'danger' %}
+                        <div class="alert alert-danger">{{ message }}</div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            {% endwith %}
 
-        .form-container {
-            width: 90%; /* Maak de container breder op kleinere schermen */
-            max-width: 100%; /* Verwijder de max-width voor nog bredere container op mobiel */
-            padding: 5vh 5vw;
-        }
+            <form method="POST">
+                {{ form.hidden_tag() }}
 
-        .form-title {
-            font-size: 6vw; /* Grotere titel voor kleinere schermen */
-            margin-bottom: 4vh; /* Minder ruimte tussen de titel en het formulier */
-        }
+                <div class="form-group">
+                    <label for="username">Gebruikersnaam:</label>
+                    {{ form.username(class="form-control", placeholder="Voer je gebruikersnaam in") }}
+                    {% if form.username.errors %}
+                        <span class="text-danger">{{ form.username.errors[0] }}</span>
+                    {% endif %}
+                </div>
 
-        .form-group {
-            margin-bottom: 3vh; /* Minder ruimte tussen velden */
-        }
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-block">Inloggen</button>
+                </div>
+            </form>
 
-        .form-group label {
-            font-size: 4.5vw; /* Grotere labels op kleinere schermen */
-        }
-
-        .form-control {
-            font-size: 5vw; /* Vergrote tekst in de invoervelden */
-            padding: 4vw; /* Vergrote padding in de invoervelden */
-        }
-
-        .btn {
-            font-size: 5vw;
-            padding: 5vw;
-        }
-
-        .register-link {
-            font-size: 4.5vw;
-        }
-    }
-
-    /* Extra stijlen voor kleinere schermen (max-width: 480px) */
-    @media (max-width: 480px) {
-        .form-container {
-            width: 100%; /* Formulier vult nu 100% van het scherm op mobiel */
-            max-width: 100%;
-            padding: 8vh 5vw;
-        }
-
-        .form-title {
-            font-size: 8vw; /* Grotere titel voor de kleinste schermen */
-            margin-bottom: 3vh; /* Minder ruimte onder de titel */
-        }
-
-        .form-group label {
-            font-size: 5vw; /* Vergrote labels voor kleinere schermen */
-        }
-
-        .form-control {
-            font-size: 6.5vw;
-            padding: 5vw;
-        }
-
-        .btn {
-            font-size: 7vw;
-            padding: 7vw;
-        }
-
-        .register-link {
-            font-size: 6vw;
-        }
-    }
-</style>
+            <p class="text-center">
+                Heb je nog geen account?
+            </p>
+            <p class="text-center">
+                <a href="{{ url_for('main.register') }}" class="register-link">Registreer hier</a>
+            </p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
 {% endblock %}

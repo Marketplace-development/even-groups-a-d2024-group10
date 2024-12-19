@@ -3,16 +3,16 @@
 {% block title %}Profiel - KLUSKOMPAS{% endblock %}
 
 {% block content %}
-<div class="container profile-container">
-    <h1 class="text-center profile-title">Profiel van {{ user.voornaam }} {{ user.achternaam }}</h1>
-    <p class="text-center profile-subtitle">Welkom op je persoonlijke profielpagina</p>
-    
+<div class="container profile-container mt-5 p-4 shadow-sm rounded" style="background-color: #ffffff;">
+    <h1 class="text-center mb-4" style="color:#10246B;">Profiel van {{ user.voornaam }} {{ user.achternaam }}</h1>
+    <p class="text-center mb-4" style="color: #10246B;">Welkom op je persoonlijke profielpagina</p>
+
     <!-- Profielgegevens en Beoordelingen -->
-    <div class="profile-content">
+    <div class="row">
         <!-- Profielgegevens -->
-        <div class="profile-details">
-            <h3 class="section-title">Profielgegevens</h3>
-            <ul class="detail-list">
+        <div class="col-md-6 mb-4">
+            <h3 class="mb-3" style="color: #10246B;">Profielgegevens</h3>
+            <ul class="list-unstyled">
                 <li><strong>Gebruikersnaam:</strong> {{ user.username }}</li>
                 <li><strong>Geboortedatum:</strong> {{ user.geboortedatum }}</li>
                 <li><strong>Email:</strong> {{ user.email }}</li>
@@ -23,12 +23,12 @@
         </div>
 
         <!-- Beoordelingen -->
-        <div class="profile-ratings">
-            <div class="rating-section">
-                <h4>Beoordeling als kluszoeker</h4>
+        <div class="col-md-6">
+            <div class="mb-4">
+                <h4 class="mb-3" style="color: #10246B;">Beoordeling als kluszoeker</h4>
                 {% set gemiddelde_score_zoeker = user.gemiddelde_score_zoeker() %}
                 {% if gemiddelde_score_zoeker %}
-                    <div class="stars">
+                    <div class="stars mb-2">
                         {% for _ in range(gemiddelde_score_zoeker|int) %}
                             <span class="rating-star">&#9733;</span>
                         {% endfor %}
@@ -42,11 +42,11 @@
                 {% endif %}
             </div>
             
-            <div class="rating-section">
-                <h4>Beoordeling als klusaanbieder</h4>
+            <div class="mb-4">
+                <h4 class="mb-3" style="color: #10246B;">Beoordeling als klusaanbieder</h4>
                 {% set gemiddelde_score_aanbieder = user.gemiddelde_score_aanbieder() %}
                 {% if gemiddelde_score_aanbieder %}
-                    <div class="stars">
+                    <div class="stars mb-2">
                         {% for _ in range(gemiddelde_score_aanbieder|int) %}
                             <span class="rating-star">&#9733;</span>
                         {% endfor %}
@@ -63,155 +63,11 @@
     </div>
 
     <!-- Navigatieknoppen -->
-    <div class="profile-actions">
-        <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">Terug naar dashboard</a>
-        <a href="{{ url_for('main.profiel_bewerken') }}" class="btn btn-primary">Profiel bewerken</a>
-        <a href="{{ url_for('main.bevestig_verwijdering') }}" class="btn btn-danger">Verwijder profiel</a>
+    <div class="d-flex flex-column flex-md-row justify-content-center gap-3 mt-4">
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary col-12 col-md-auto">Terug naar dashboard</a>
+        <a href="{{ url_for('main.profiel_bewerken') }}" class="btn btn-primary col-12 col-md-auto">Profiel bewerken</a>
+        <a href="{{ url_for('main.bevestig_verwijdering') }}" class="btn btn-danger col-12 col-md-auto">Verwijder profiel</a>
     </div>
 </div>
 
-<!-- CSS -->
-<style>
-    body {
-        background-color: #f4f7fa;
-        font-family: 'Arial', sans-serif;
-        color: #333;
-    }
-
-    .profile-container {
-        max-width: 1100px;
-        margin: 50px auto;
-        background: #ffffff;
-        border-radius: 12px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        padding: 30px;
-    }
-
-    .profile-title {
-        color: #10246B;
-        font-size: 32px;
-        font-weight: bold;
-    }
-
-    .profile-subtitle {
-        color: #555;
-        font-size: 16px;
-        margin-bottom: 20px;
-    }
-
-    .profile-content {
-        display: flex;
-        justify-content: space-between;
-        flex-wrap: wrap;
-    }
-
-    .profile-details {
-        flex: 1;
-        margin-right: 20px;
-    }
-
-    .section-title {
-        color: #10246B;
-        font-size: 20px;
-        margin-bottom: 10px;
-    }
-
-    .detail-list {
-        list-style: none;
-        padding-left: 0;
-    }
-
-    .detail-list li {
-        margin: 5px 0;
-        font-size: 16px;
-        color: #555;
-        display: flex;
-    }
-
-    .detail-list li strong {
-        width: 150px; /* Pas de breedte aan indien nodig */
-        color: #10246B;
-    }
-
-    .profile-ratings {
-        flex: 1;
-        text-align: center;
-    }
-
-    .rating-section {
-        margin-bottom: 20px;
-    }
-
-    .rating-section h4 {
-        color: #10246B;
-        font-size: 18px;
-        margin-bottom: 10px;
-    }
-
-    .stars {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .rating-star {
-        font-size: 22px;
-        color: #f5c518;
-        margin: 0 2px;
-    }
-
-    .rating-star.empty {
-        color: #ddd;
-    }
-
-    .score {
-        margin-top: 5px;
-        font-size: 16px;
-        font-weight: bold;
-        color: #10246B;
-    }
-
-    .no-rating {
-        font-size: 16px;
-        color: #555;
-        font-style: italic;
-    }
-
-    .profile-actions {
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-        margin-top: 20px;
-    }
-
-    .btn {
-        padding: 10px 20px;
-        border: none;
-        border-radius: 8px;
-        text-decoration: none;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-    }
-
-    .btn-secondary {
-        background-color: #6c757d;
-        color: white;
-    }
-
-    .btn-primary {
-        background-color: #10246B;
-        color: white;
-    }
-
-    .btn-danger {
-        background-color: #e74c3c;
-        color: white;
-    }
-
-    .btn:hover {
-        opacity: 0.9;
-    }
-</style>
 {% endblock %}
-

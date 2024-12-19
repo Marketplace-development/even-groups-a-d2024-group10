@@ -1,75 +1,35 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div style="text-align: center; margin-top: 50px; padding: 20px;">
+<div class="container text-center py-5" style="max-width: 400px; margin: 0 auto;">
     <!-- Logo -->
     <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" 
          alt="Kluskompas Logo" 
-         style="width: 300px; height: auto; margin-bottom: 30px;">
+         class="img-fluid mb-4" style="max-width: 100%;">
 
     <!-- Titel -->
-    <h1 style="color: #10246B; margin-bottom: 20px;">Mijn klussen</h1>
-    
+    <h1 style="color:#10246B;" class="mb-4">Mijn klussen</h1>
+
     <!-- Knoppen -->
-    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 30px;">
+    <div class="d-flex flex-wrap justify-content-center gap-3 mt-4">
         <!-- Knop voor Mijn Aangeboden Klussen -->
         <a href="{{ url_for('main.mijn_aangeboden_klussen') }}" 
-           aria-label="Bekijk mijn aangeboden klussen"
-           style="background-color: #28a745; color: white; padding: 15px 30px; border-radius: 8px; text-decoration: none; font-size: 18px; transition: 0.3s;">
+           class="btn btn-success btn-lg px-4 py-3" aria-label="Bekijk mijn aangeboden klussen">
             Mijn aangeboden klussen
         </a>
 
         <!-- Knop voor Mijn Gezochte Klussen -->
         <a href="{{ url_for('main.mijn_gezochte_klussen') }}" 
-           aria-label="Bekijk mijn gezochte klussen"
-           style="background-color: #007bff; color: white; padding: 15px 30px; border-radius: 8px; text-decoration: none; font-size: 18px; transition: 0.3s;">
+           class="btn btn-primary btn-lg px-4 py-3" aria-label="Bekijk mijn gezochte klussen">
             Mijn gezochte klussen
         </a>
     </div>
 </div>
 
-<!-- Terug optie -->
-<div class="back">
-    <div class="back-icon">
-        <a href="{{ url_for('main.dashboard') }}">
-            <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" style="width: 100px; height: auto;">
-        </a>
-    </div>
+<!-- Terug knop -->
+<div class="position-fixed" style="left: 10px; bottom: 10px; z-index: 100;">
+    <a href="{{ url_for('main.dashboard') }}" class="back-icon">
+        <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" class="img-fluid" style="width: 70px;">
+    </a>
 </div>
-
-<!-- CSS -->
-<style>
-    body {
-        font-family: Arial, sans-serif;
-    }
-
-    .back {
-        position: fixed;
-        left: 20px;
-        bottom: 20px;
-        text-align: center;
-        z-index: 1000;
-    }
-
-    .back-icon {
-        width: 120px;
-        height: 120px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: 50%;
-        overflow: hidden;
-        transition: transform 0.3s ease;
-    }
-
-    .back-icon img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .back-icon:hover {
-        transform: scale(1.1);
-    }
-</style>
 {% endblock %}

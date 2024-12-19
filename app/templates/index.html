@@ -4,115 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welkom - KLUSKOMPAS</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            color: #10246B;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        
-        .container {
-            text-align: center;
-            background-color: #ffffff;
-            border-radius: 15px;
-            padding: 60px 40px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-            width: 600px;
-        }
-
-        .logo-container img {
-            width: 100%;
-            max-width: 300px;
-            height: auto;
-            margin-bottom: 30px;
-        }
-
-        .welcome-text {
-            font-size: 24px;
-            font-family: Roboto, sans-serif;
-            font-weight: 500;
-            line-height: 1.5;
-            color: #10246B;
-            margin-bottom: 20px;
-        }
-
-        .login-box {
-            background: #10246B;
-            color: #F5EFF7;
-            font-size: 24px;
-            font-weight: 700;
-            text-align: center;
-            padding: 15px 30px;
-            border-radius: 12px;
-            text-decoration: none;
-            display: inline-block;
-            margin: 20px auto;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s ease, background 0.2s ease;
-        }
-
-        .login-box:hover {
-            transform: scale(1.05);
-            background: #0e1f4a;
-        }
-
-        .register-link-container {
-            margin-top: 20px;
-        }
-
-        .link {
-            font-size: 18px;
-            font-weight: 400;
-            color: #10246B;
-            text-decoration: underline;
-            cursor: pointer;
-        }
-
-        .link:hover {
-            color: #0e1f4a;
-        }
-
-        /* Responsieve media query */
-        @media (min-width: 768px) {
-            .welcome-text {
-                font-size: 32px;
-            }
-
-            .login-box {
-                font-size: 28px;
-            }
-
-            .link {
-                font-size: 20px;
-            }
-        }
-    </style>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <div class="container">
-        <!-- Logo -->
-        <div class="logo-container">
-            <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo">
-        </div>
+<body class="bg-light">
 
-        <!-- Welkomsttekst -->
-        <div class="welcome-text">
-            Welkom bij ons klusplatform.<br>
-            Klik hieronder om je aan te melden of een account aan te maken.
-        </div>
-
-        <!-- Log in knop -->
-        <a href="{{ url_for('main.login') }}" class="login-box">Log in</a>
-
-        <!-- Registratie link -->
-        <div class="register-link-container">
-            <a href="{{ url_for('main.register') }}" class="link">Of registreer</a>
+    <div class="container d-flex justify-content-center align-items-center vh-100">
+        <!-- Card with logo and content -->
+        <div class="card p-4 shadow-lg" style="max-width: 600px; width: 100%;">
+            <div class="text-center mb-4">
+                <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" class="img-fluid" style="max-width: 300px;">
+            </div>
+            <div class="text-center mb-4">
+                <h3 style="color: #10246B;">Welkom bij ons klusplatform.</h3>
+                <p>Klik hieronder om je aan te melden of een account aan te maken.</p>
+            </div>
+            <div class="text-center">
+                <a href="{{ url_for('main.login') }}" class="btn btn-primary" style="background-color: #10246B; color: white; font-size: 18px; padding: 10px 30px; text-decoration: none;">Log in</a>
+                <br>
+                <a href="{{ url_for('main.register') }}" class="btn btn-link" style="color: #10246B; text-decoration: underline;">Of registreer</a>
+            </div>
         </div>
     </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
