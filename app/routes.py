@@ -112,7 +112,6 @@ def register():
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():
-    print("Login route is reached")  # Debug om te zien of de route wordt aangeroepen
     form = LoginForm()
 
     # Controleer of het formulier wordt verzonden
@@ -251,38 +250,31 @@ def bevestig_verwijdering():
                 return redirect(url_for('main.profile'))
 
             # **1. Verwijder gekoppelde berichten**
-            print(f"DEBUG: Verwijderen berichten voor gebruiker {user_id}")
             Bericht.query.filter_by(afzender_id=user_id).delete()
             Bericht.query.filter_by(ontvanger_id=user_id).delete()
 
             # **2. Verwijder gekoppelde ratings**
-            print(f"DEBUG: Verwijderen ratings voor gebruiker {user_id}")
             Rating.query.filter_by(klusaanbieder_id=user_id).delete()
             Rating.query.filter_by(kluszoeker_id=user_id).delete()
 
             # **3. Verwijder aangeboden klussen**
-            print(f"DEBUG: Verwijderen aangeboden klussen voor gebruiker {user_id}")
             Klus.query.filter_by(idnummer=user_id).delete()
 
             # **4. Update gekoppelde categorie_statistiek records**
-            print(f"DEBUG: Bijwerken categorie_statistiek voor gebruiker {user_id}")
             CategorieStatistiek.query.filter_by(idnummer=user_id).update({
                 "idnummer": "0000000000"
             })
 
             # **5. Update gekoppelde notificaties**
-            print(f"DEBUG: Bijwerken notificaties voor gebruiker {user_id}")
             Notificatie.query.filter_by(gebruiker_id=user_id).update({
                 "gebruiker_id": "0000000000"
             })
 
             # **6. Verwijder het profiel**
-            print(f"DEBUG: Verwijderen gebruiker {user_id}")
             db.session.delete(user)
             db.session.commit()
 
             # **7. Clear de sessie en uitloggen**
-            print("DEBUG: Profiel verwijderd en gebruiker uitgelogd.")
             session.clear()
             flash('Je profiel en gekoppelde gegevens zijn succesvol verwijderd.', 'success')
             return redirect(url_for('main.home'))
@@ -564,10 +556,6 @@ def mijn_gezochte_klussen():
         Klus.klussen_zoekers.any(Persoon.idnummer == user_id)
     ).order_by(Klus.created_at.desc()).all()
 
-    # Debugging
-    for klus in gezochte_klussen:
-        print(f"Klus in template: {klus.naam}, Status: {klus.status}, Zoekers: {[zoeker.idnummer for zoeker in klus.klussen_zoekers]}")
-    
     # Variabele naam consistent maken met de template
     return render_template('mijn_gezochte_klussen.html', klussen=gezochte_klussen)
 
@@ -692,8 +680,6 @@ def accepteer_klus(klusnummer):
             )
             db.session.add(nieuwe_statistiek)
 
-        # Debugging: controleer statistieken
-        print(f"Categorie {klus.categorie} bijgewerkt voor gebruiker {user_id}")
 
         # Maak een melding voor de klusaanbieder
         maak_melding(
@@ -703,14 +689,12 @@ def accepteer_klus(klusnummer):
 
         # Sla de wijzigingen op
         db.session.commit()
-        print("Commit succesvol uitgevoerd!")  # Debugging
 
         flash('Je hebt de klus geaccepteerd!', 'success')
         return redirect(url_for('main.mijn_gezochte_klussen'))
     except Exception as e:
         db.session.rollback()  # Rollback bij een fout
         flash(f'Er is een fout opgetreden: {e}', 'danger')
-        print(f"Fout bij commit: {e}")  # Debugging
         return redirect(url_for('main.klussen'))
 
 
@@ -728,20 +712,12 @@ def mijn_geschiedenis():
         Klus.voltooid_op.isnot(None)
     ).order_by(Klus.voltooid_op.desc()).all()
 
-    # Debugging
-    for klus in aangeboden_klussen:
-        print(f"Aangeboden klus: {klus.naam}, Beoordeeld door aanbieder: {klus.is_gewaardeerd_door_aanbieder()}, Beoordeeld door zoeker: {klus.is_gewaardeerd_door_zoeker()}")
-
     # Gezochte klussen
     gezochte_klussen = Klus.query.join(Klus.klussen_zoekers).filter(
         Persoon.idnummer == user_id,
         Klus.status == 'voltooid',
         Klus.voltooid_op.isnot(None)
     ).order_by(Klus.voltooid_op.desc()).all()
-
-    # Debugging
-    for klus in gezochte_klussen:
-        print(f"Gezochte klus: {klus.naam}, Beoordeeld door aanbieder: {klus.is_gewaardeerd_door_aanbieder()}, Beoordeeld door zoeker: {klus.is_gewaardeerd_door_zoeker()}")
 
     return render_template(
         'mijn_geschiedenis.html',
