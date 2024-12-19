@@ -712,7 +712,7 @@ def markeer_klus_voltooid(klusnummer):
         return redirect(url_for('main.mijn_aangeboden_klussen'))
 
     klus.status = 'voltooid'
-    klus.voltooid_op = utc_to_plus_one()
+    klus.voltooid_op = utc_to_plus_one(datetime.utcnow())
     db.session.commit()
 
     for zoeker in klus.klussen_zoekers:
@@ -982,70 +982,6 @@ def inject_notificaties():
     }
 
 
-@main.route('/klus/<klusnummer>/beoordeel_aanbieder', methods=['POST'])
-def beoordeel_aanbieder(klusnummer):
-    klus = Klus.query.filter_by(klusnummer=klusnummer).first()
-    if not klus:
-        flash("Klus niet gevonden.", "danger")
-        return redirect(url_for('main.dashboard'))
-
-    form = RatingForm()
-    if form.validate_on_submit():
-        rating = Rating(
-            klusnummer=klusnummer,
-            klusaanbieder_id=klus.idnummer,
-            kluszoeker_id=session['user_id'],
-            vriendelijkheid_aanbieder=form.vriendelijkheid.data,
-            gastvrijheid=form.gastvrijheid.data,
-            betrouwbaarheid=form.betrouwbaarheid.data,
-            communicatie_aanbieder=form.communicatie.data,
-            algemene_ervaring_aanbieder=form.algemene_ervaring.data,
-            comment=form.algemene_ervaring_comment.data
-        )
-        db.session.add(rating)
-        db.session.commit()
-
-        maak_melding(
-            gebruiker_id=klus.idnummer,
-            bericht=f"Je bent beoordeeld door de kluszoeker voor de klus '{klus.naam}'."
-        )
-
-        flash("Beoordeling opgeslagen en melding verstuurd.", "success")
-        return redirect(url_for('main.mijn_geschiedenis'))
-    return render_template('beoordeel_aanbieder.html', form=form, klus=klus)
-
-
-@main.route('/klus/<klusnummer>/beoordeel_zoeker', methods=['POST'])
-def beoordeel_zoeker(klusnummer):
-    klus = Klus.query.filter_by(klusnummer=klusnummer).first()
-    if not klus:
-        flash("Klus niet gevonden.", "danger")
-        return redirect(url_for('main.dashboard'))
-
-    form = RatingFormForZoeker()
-    if form.validate_on_submit():
-        rating = Rating(
-            klusnummer=klusnummer,
-            klusaanbieder_id=session['user_id'],
-            kluszoeker_id=klus.klussen_zoekers[0].idnummer,
-            vriendelijkheid_zoeker=form.vriendelijkheid.data,
-            tijdigheid=form.tijdigheid.data,
-            kwaliteit=form.kwaliteit.data,
-            communicatie_zoeker=form.communicatie.data,
-            algemene_ervaring_zoeker=form.algemene_ervaring.data,
-            comment=form.algemene_ervaring_comment.data
-        )
-        db.session.add(rating)
-        db.session.commit()
-
-        maak_melding(
-            gebruiker_id=klus.klussen_zoekers[0].idnummer,
-            bericht=f"Je bent beoordeeld door de klusaanbieder voor de klus '{klus.naam}'."
-        )
-
-        flash("Beoordeling opgeslagen en melding verstuurd.", "success")
-        return redirect(url_for('main.mijn_geschiedenis'))
-    return render_template('beoordeel_zoeker.html', form=form, klus=klus)
 
 
 @main.route('/meldingen', methods=['GET'])
