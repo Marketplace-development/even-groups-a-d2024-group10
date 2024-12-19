@@ -436,8 +436,23 @@ def klussen():
         except ValueError:
             flash('Ongeldig formaat voor datum_tot. Gebruik YYYY-MM-DD.', 'danger')
 
+    # Haal beschikbare klussen op
     beschikbare_klussen = beschikbare_klussen_query.all()
 
+    # Haal de statistieken van de gebruiker op
+    categorie_statistieken = CategorieStatistiek.query.filter_by(idnummer=user_id).all()
+
+    # Maak een mapping van categorieën naar acceptatiefrequentie
+    categorie_rangorde = {
+        stat.categorie: stat.aantal_accepteerd for stat in categorie_statistieken
+    }
+
+    # Sorteer klussen op basis van categorie-rangorde (hoogste frequentie eerst)
+    beschikbare_klussen.sort(
+        key=lambda klus: -categorie_rangorde.get(klus.categorie, 0)
+    )
+
+    # Haal unieke locaties op
     beschikbare_locaties_query = basis_klussen_query.with_entities(func.lower(Klus.locatie)).distinct()
     unieke_steden = sorted({
         ''.join(filter(str.isalpha, locatie[0].split(",")[0])).strip().capitalize()
@@ -454,6 +469,7 @@ def klussen():
         datum_van=datum_van,
         datum_tot=datum_tot
     )
+
 
 
 
