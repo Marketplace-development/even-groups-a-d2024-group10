@@ -19,22 +19,22 @@ def chat_page(klusnummer):
         flash("Je moet ingelogd zijn om deze pagina te bekijken.", "danger")
         return redirect(url_for('main.login'))
 
-    # Haal de klus en berichten op
+   
     klus = Klus.query.get_or_404(klusnummer)
     berichten = Bericht.query.filter_by(klusnummer=klusnummer).order_by(Bericht.verzonden_op).all()
 
-    # Controleer of de gebruiker deel uitmaakt van de klus
+    
     if user_id != klus.idnummer and user_id not in [zoeker.idnummer for zoeker in klus.klussen_zoekers]:
         flash("Je hebt geen toegang tot deze chat.", "danger")
         return redirect(url_for('main.dashboard'))
 
-    # Markeer de berichten als gelezen voor de ingelogde gebruiker
+    
     for bericht in berichten:
         if bericht.ontvanger_id == user_id and not bericht.gelezen:
             bericht.gelezen = True
     db.session.commit()
 
-    # Ontvanger bepalen
+    
     if klus.idnummer == user_id:
         ontvanger = klus.klussen_zoekers[0] if klus.klussen_zoekers else None
     else:
@@ -44,7 +44,7 @@ def chat_page(klusnummer):
         flash("Geen ontvanger gevonden voor deze klus.", "danger")
         return redirect(url_for('main.dashboard'))
 
-    # Verwerk POST (nieuw bericht)
+    
     if request.method == 'POST':
         inhoud = request.form.get('inhoud')
         if inhoud:
@@ -59,7 +59,7 @@ def chat_page(klusnummer):
             flash("Bericht verzonden!", "success")
             return redirect(url_for('chat.chat_page', klusnummer=klusnummer))
 
-    # Render de chatpagina
+    
     return render_template('chat.html', klus=klus, berichten=berichten, ontvanger=ontvanger)
 
 
@@ -71,31 +71,31 @@ def mijn_chats():
         flash('Je moet ingelogd zijn om deze pagina te bekijken.', 'danger')
         return redirect(url_for('main.login'))
 
-    # Bericht verzenden via POST
+    
     if request.method == 'POST':
         klusnummer = request.form.get('klusnummer')
         inhoud = request.form.get('inhoud')
 
         if klusnummer and inhoud:
-            # Haal de klus op
+            
             klus = Klus.query.filter_by(klusnummer=klusnummer).first()
             if not klus:
                 flash('Deze klus bestaat niet.', 'danger')
                 return redirect(url_for('main.mijn_chats'))
 
-            # Ontvanger bepalen (afhankelijk van de rol van de gebruiker)
-            if klus.idnummer == user_id:  # Jij bent de aanbieder
-                if klus.klussen_zoekers:  # Controleer of er zoekers zijn
+            
+            if klus.idnummer == user_id:  
+                if klus.klussen_zoekers:  
                     ontvanger_id = klus.klussen_zoekers[0].idnummer
                 else:
                     flash('Er is geen zoeker voor deze klus.', 'warning')
                     return redirect(url_for('main.mijn_chats'))
-            else:  # Jij bent de zoeker
+            else:  
                 ontvanger_id = klus.idnummer
 
             print(f"DEBUG: Ontvanger ID voor bericht: {ontvanger_id}")
 
-            # Nieuw bericht opslaan
+            
             nieuw_bericht = Bericht(
                 klusnummer=klusnummer,
                 afzender_id=user_id,
@@ -106,7 +106,7 @@ def mijn_chats():
             db.session.add(nieuw_bericht)
             db.session.commit()
 
-            # **Maak een melding voor de ontvanger**
+            
             if ontvanger_id:
                 maak_melding(
                     gebruiker_id=ontvanger_id,
@@ -118,25 +118,25 @@ def mijn_chats():
 
             return redirect(url_for('main.mijn_chats'))
 
-    # Aangeboden klussen ophalen
+    
     aangeboden_klussen = Klus.query.filter(
         Klus.idnummer == user_id,
         Klus.status.in_(['geaccepteerd', 'voltooid']),
     ).order_by(Klus.voltooid_op.desc()).all()
 
-    # Gezochte klussen ophalen
+    
     gezochte_klussen = Klus.query.filter(
         Klus.klussen_zoekers.any(Persoon.idnummer == user_id),
         Klus.status.in_(['geaccepteerd', 'voltooid']),
     ).order_by(Klus.voltooid_op.desc()).all()
 
-    # Combineer beide lijsten en voeg berichten en namen toe
+    
     klussen_info = []
     for klus in aangeboden_klussen + gezochte_klussen:
         berichten = Bericht.query.filter_by(klusnummer=klus.klusnummer).order_by(Bericht.verzonden_op.desc()).all()
 
         ontvanger = None
-        if klus.idnummer == user_id:  # Jij bent de aanbieder
+        if klus.idnummer == user_id:  
             if klus.klussen_zoekers:
                 ontvanger = Persoon.query.filter_by(idnummer=klus.klussen_zoekers[0].idnummer).first()
         else:
@@ -162,32 +162,32 @@ def mijn_chats():
     return render_template('mijn_chats.html', klussen=klussen_info)
 
 
-# app/chat.py
+
 def get_ongelezen_chats_count(user):
-    # Haal alle klussen op waar de gebruiker aan deelneemt
+    
     klussen_info = []
 
-    # Aangeboden klussen ophalen
+    
     aangeboden_klussen = Klus.query.filter(
         Klus.idnummer == user.idnummer,
         Klus.status.in_(['geaccepteerd', 'voltooid']),
     ).all()
 
-    # Gezochte klussen ophalen
+    
     gezochte_klussen = Klus.query.filter(
         Klus.klussen_zoekers.any(Persoon.idnummer == user.idnummer),
         Klus.status.in_(['geaccepteerd', 'voltooid']),
     ).all()
 
-    # Combineer beide lijsten
+    
     klussen = aangeboden_klussen + gezochte_klussen
 
     ongelezen_count = 0
     for klus in klussen:
-        # Zoek de berichten voor de klus
+        
         berichten = Bericht.query.filter_by(klusnummer=klus.klusnummer).all()
         
-        # Tel het aantal ongelezen berichten voor deze gebruiker
+        
         ongelezen_berichten = [bericht for bericht in berichten if bericht.ontvanger_id == user.idnummer and not bericht.gelezen]
         ongelezen_count += len(ongelezen_berichten)
 
