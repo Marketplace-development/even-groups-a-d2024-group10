@@ -1,17 +1,18 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, session, request, abort 
 from app import db
-from app.models import Persoon, Klusaanbieder, Kluszoeker, Categorie, Rating, klus_zoeker, Bericht, valideer_adres, Notificatie
-from app.forms import PersoonForm, KlusaanbiederForm, KluszoekerForm, RegistrationForm, LoginForm
-from app.forms import RatingFormForZoeker, RatingFormForAanbieder, RatingForm
+from app.models import Persoon, Klusaanbieder, Kluszoeker, Klus, Categorie, Rating, klus_zoeker, Bericht, valideer_adres, Notificatie, CategorieStatistiek
+from app.forms import PersoonForm, KlusaanbiederForm, KluszoekerForm, RegistrationForm, LoginForm, RatingFormForZoeker, RatingFormForAanbieder, RatingForm
 import uuid
-from app.models import Klus  # Voeg deze regel toe om de Klus-klasse te importeren
 from flask_login import login_required
 from datetime import datetime, date
-import requests # type: ignore
+import requests
 from app.chat import get_ongelezen_chats_count
 from werkzeug.exceptions import NotFound
 from sqlalchemy.sql import func
 from app.helpers import utc_to_plus_one
+from sqlalchemy import func
+from sqlalchemy.orm import joinedload
+
 
 
 
@@ -24,23 +25,15 @@ def get_aantal_ongelezen_meldingen(user_id):
     return Bericht.query.filter_by(ontvanger_id=user_id, gelezen=False).count()
 
 
-# Maak een blueprint
 main = Blueprint('main', __name__)
 
-# Functie om een 10-cijferig ID-nummer te genereren
 def generate_id_number():
-    return str(uuid.uuid4().int)[:10]  # Genereer een unieke UUID (beperk tot 10 cijfers)
+    return str(uuid.uuid4().int)[:10]
 
-# Route voor de startpagina
 @main.route('/')
 def home():
     return render_template('index.html')
 
-from datetime import date
-from flask import render_template, redirect, flash, url_for
-from .models import Persoon  # Zorg ervoor dat je de juiste import hebt voor je model
-from . import db  # Je moet 'db' importeren voor database interactie
-from .forms import RegistrationForm  # Zorg ervoor dat je de juiste import hebt voor je formulier
 
 @main.route('/register', methods=['GET', 'POST'])
 def register():
@@ -52,37 +45,30 @@ def register():
         print(f"E-mail: {form.email.data}")
         print(f"Geboortedatum: {form.geboortedatum.data}")
 
-        # Leeftijd berekenen
         geboortedatum = form.geboortedatum.data
         today = date.today()
         leeftijd = today.year - geboortedatum.year - ((today.month, today.day) < (geboortedatum.month, geboortedatum.day))
 
-        # Controleer of de leeftijd minder dan 16 jaar is
         if leeftijd < 16:
             session['age_error'] = 'Je moet ouder zijn dan 16 jaar om een account aan te maken.'
             return redirect(url_for('main.register'))
 
-        # Controleer of de gebruikersnaam al bestaat
         if Persoon.query.filter_by(username=form.username.data).first():
             flash('Deze gebruikersnaam is al in gebruik. Kies een andere.', 'danger')
             return redirect(url_for('main.register'))
 
-        # Controleer of het e-mailadres al bestaat
         if Persoon.query.filter_by(email=form.email.data).first():
             flash('Dit e-mailadres is al in gebruik. Kies een ander e-mailadres.', 'danger')
             return redirect(url_for('main.register'))
 
-        # Combineer stad en adres in een volledige locatie
         stad = form.stad.data
         adres = form.adres.data
         volledige_locatie = f"{stad}, {adres}"
 
-        # Valideer het gecombineerde adres
         if not valideer_adres(volledige_locatie):
             flash("Het ingevoerde adres is ongeldig of bestaat niet.", 'danger')
             return redirect(url_for('main.register'))
 
-        # Maak een nieuw Persoon object aan
         new_person = Persoon(
             voornaam=form.voornaam.data,
             achternaam=form.achternaam.data,
@@ -90,23 +76,19 @@ def register():
             geslacht=form.gender.data,
             telefoonnummer=form.telefoonnummer.data,
             email=form.email.data,
-            adres=volledige_locatie,  # De gecombineerde locatie opslaan
+            adres=volledige_locatie,
             username=form.username.data,
-            idnummer=generate_id_number()  # Dynamische ID
+            idnummer=generate_id_number()
         )
 
-        # Voeg de nieuwe persoon toe aan de database
         db.session.add(new_person)
         db.session.commit()
 
-        # Bevestigingsbericht
         flash('Je bent succesvol geregistreerd!', 'success')
 
-        # Redirect naar de loginpagina
         return redirect(url_for('main.login'))
 
-    # Als het formulier niet is ingediend of niet geldig is, toon het registratieformulier
-    age_error = session.pop('age_error', None)  # Get and remove 'age_error' from the session
+    age_error = session.pop('age_error', None)
     return render_template('register.html', form=form, age_error=age_error)
 
 
@@ -117,20 +99,16 @@ def register():
 def login():
     form = LoginForm()
 
-    # Controleer of het formulier wordt verzonden
-    if form.validate_on_submit():  # Dit gebeurt alleen bij een POST-verzoek
+    if form.validate_on_submit():
         username = form.username.data
         user = Persoon.query.filter_by(username=username).first()
 
         if user:
-            # Sla gebruiker op in de sessie en stuur door naar dashboard
             session['user_id'] = user.idnummer
             return redirect(url_for('main.dashboard'))
         else:
-            # Flash alleen een foutmelding bij een foute gebruikersnaam
             flash('Ongeldige gebruikersnaam', 'danger')
 
-    # Render het formulier (zonder flash-meldingen voor ingelogde gebruikers)
     return render_template('login.html', form=form)
 
 
@@ -140,13 +118,11 @@ def dashboard():
         flash('Je moet eerst inloggen', 'danger')
         return redirect(url_for('main.login'))
 
-    # Haal de gebruiker op uit de database
     user = Persoon.query.get(session['user_id'])
     if not user:
         flash('Gebruiker niet gevonden', 'danger')
         return redirect(url_for('main.login'))
 
-    # Haal de geaccepteerde en aangeboden klussen op
     geaccepteerde_klussen = Klus.query.filter_by(idnummer=user.idnummer, status='geaccepteerd').all()
     aangeboden_klussen = Klus.query.filter_by(idnummer=user.idnummer).all()
     ongelezen_chats_count = get_ongelezen_chats_count(user)
@@ -157,7 +133,6 @@ def dashboard():
                            aangeboden_klussen=aangeboden_klussen, 
                            ongelezen_chats_count=ongelezen_chats_count)
 
-# Route voor het profiel (weergeven van gebruikersgegevens)
 @main.route('/profile')
 def profile():
     if 'user_id' not in session:
@@ -189,30 +164,26 @@ def about():
 
 @main.route('/logout')
 def logout():
-    session.clear()  # Wis de sessie om de gebruiker uit te loggen
+    session.clear()
     flash('Je bent succesvol uitgelogd.', 'success')
-    return redirect(url_for('main.login'))  # Stuur de gebruiker naar de loginpagina
+    return redirect(url_for('main.login'))
 
 
 @main.route('/profiel_bewerken', methods=['GET', 'POST'])
 def profiel_bewerken():
     user_id = session.get('user_id')
     
-    # Controleer of de gebruiker is ingelogd
     if not user_id:
         flash('Je moet ingelogd zijn om je profiel te bewerken.', 'danger')
         return redirect(url_for('main.login'))
 
-    # Haal de gebruiker op uit de database
     user = Persoon.query.get(user_id)
     if not user:
         raise NotFound("Gebruiker niet gevonden.")
     
     if request.method == 'POST':
-        # Verkrijg gegevens uit het formulier
         geboortedatum = datetime.strptime(request.form['geboortedatum'], '%Y-%m-%d').date()
 
-        # Leeftijd berekenen
         today = date.today()
         leeftijd = today.year - geboortedatum.year - ((today.month, today.day) < (geboortedatum.month, geboortedatum.day))
 
@@ -220,7 +191,6 @@ def profiel_bewerken():
             flash('Je moet ouder zijn dan 16 jaar.', 'danger')
             return redirect(url_for('main.profiel_bewerken'))
 
-        # Update de gegevens van de gebruiker
         user.voornaam = request.form['voornaam']
         user.achternaam = request.form['achternaam']
         user.geboortedatum = geboortedatum
@@ -255,26 +225,20 @@ def bevestig_verwijdering():
                 flash('Profiel niet gevonden.', 'danger')
                 return redirect(url_for('main.profile'))
 
-            # **1. Verwijder records uit klus_zoeker**
             db.session.execute(
                 klus_zoeker.delete().where(
                     klus_zoeker.c.idnummer == user_id
                 )
             )
 
-            # **2. Verwijder gekoppelde berichten**
             Bericht.query.filter_by(afzender_id=user_id).delete()
             Bericht.query.filter_by(ontvanger_id=user_id).delete()
 
-            # **3. Behoud beoordelingen die de gebruiker heeft gemaakt**
-            # Verwijder alleen beoordelingen die de gebruiker ONTVANGEN heeft
-            Rating.query.filter_by(klusaanbieder_id=user_id).delete()  # Beoordelingen over hem als klusaanbieder
-            Rating.query.filter_by(kluszoeker_id=user_id).delete()    # Beoordelingen over hem als kluszoeker
+            Rating.query.filter_by(klusaanbieder_id=user_id).delete()
+            Rating.query.filter_by(kluszoeker_id=user_id).delete()
 
-            # **4. Verwijder aangeboden klussen**
             klussen = Klus.query.filter_by(idnummer=user_id).all()
             for klus in klussen:
-                # Verwijder records uit klus_zoeker gekoppeld aan deze klus
                 db.session.execute(
                     klus_zoeker.delete().where(
                         klus_zoeker.c.klusnummer == klus.klusnummer
@@ -282,17 +246,13 @@ def bevestig_verwijdering():
                 )
                 db.session.delete(klus)
 
-            # **5. Verwijder gekoppelde notificaties**
             Notificatie.query.filter_by(gebruiker_id=user_id).delete()
 
-            # **6. Verwijder gekoppelde categorie_statistieken**
             CategorieStatistiek.query.filter_by(idnummer=user_id).delete()
 
-            # **7. Verwijder het profiel**
             db.session.delete(user)
             db.session.commit()
 
-            # **8. Clear de sessie en uitloggen**
             session.clear()
             flash('Je profiel en gekoppelde gegevens zijn succesvol verwijderd. Beoordelingen die je hebt gemaakt zijn behouden.', 'success')
             return redirect(url_for('main.home'))
@@ -306,8 +266,7 @@ def bevestig_verwijdering():
     return render_template('bevestig_verwijdering.html')
 
 
-
-# Helper functie voor het ophalen van suggesties
+# gebruiken we dit nog????
 def get_suggestions(query, is_street=False):
     url = "https://nominatim.openstreetmap.org/search"
     params = {
@@ -332,67 +291,58 @@ def get_suggestions(query, is_street=False):
 
     return suggestions
 
-# Route voor het weergeven van suggesties en het verwerken van het formulier
+
+
 @main.route('/add_klusaanbieder', methods=['GET', 'POST'])
 def add_klusaanbieder():
-    # Controleer of de gebruiker is ingelogd
     if 'user_id' not in session:
         flash('Je moet ingelogd zijn om deze actie uit te voeren', 'danger')
         return redirect(url_for('main.login'))
 
-    # Haal de ingelogde persoon op
     persoon = Persoon.query.get(session['user_id'])
 
     if not persoon:
         flash('Persoon niet gevonden', 'danger')
         return redirect(url_for('main.dashboard'))
 
-    # Het formulier wordt aangemaakt
     form = KlusaanbiederForm()
 
     if form.validate_on_submit():
         try:
-            # Haal de uur en minuut op uit het formulier
             tijd_uren = int(form.uren.data)
             tijd_minuten = int(form.minuten.data)
 
-            # Combineer het uur en de minuut in een tijd in het formaat 'HH:MM'
             tijd = f"{tijd_uren:02}:{tijd_minuten:02}"
 
-            # Haal de uren en minuten voor de verwachte duur op
             verwachte_duur_uren = int(form.verwachte_duur_uren.data)
             verwachte_duur_minuten = int(form.verwachte_duur_minuten.data)
 
-            # Combineer de uren en minuten in een totale duur in minuten
             verwachte_duur = f"{verwachte_duur_uren:01} u {verwachte_duur_minuten:02} min"
 
-            # Stad en adres
             stad = form.stad.data
             adres = form.adres.data
 
-            # Validatie: controleer of het ingevoerde adres bestaat
             volledige_locatie = f"{stad}, {adres}"
             if not valideer_adres(volledige_locatie):
                 flash("Het ingevoerde adres is ongeldig of bestaat niet.", 'danger')
                 return redirect(url_for('main.add_klusaanbieder'))
 
-            # Maak een nieuwe Klus aan
             nieuwe_klus = Klus(
                 naam=form.naam.data,
-                locatie=volledige_locatie,  # De gecombineerde locatie
-                tijd=tijd,  # De gecombineerde tijd
+                locatie=volledige_locatie,
+                tijd=tijd,
                 beschrijving=form.beschrijving.data,
                 vergoeding=form.vergoeding.data,
                 categorie=form.categorie.data,
                 datum=form.datum.data,
-                verwachte_duur=verwachte_duur,  # De totale geschatte duur in minuten
+                verwachte_duur=verwachte_duur,
                 idnummer=persoon.idnummer
             )
             db.session.add(nieuwe_klus)
             db.session.commit()
 
             flash('Klus succesvol toegevoegd!', 'success')
-            return redirect(url_for('main.mijn_aangeboden_klussen'))  # Redirect naar de klussenoverzicht
+            return redirect(url_for('main.mijn_aangeboden_klussen'))
         except Exception as e:
             db.session.rollback()
             flash(f'Er is een fout opgetreden bij het opslaan: {e}', 'danger')
@@ -401,28 +351,25 @@ def add_klusaanbieder():
         if form.errors:
             flash(f'Formulierfout: {form.errors}', 'danger')
 
-    # Toon het formulier
     return render_template('add_klusaanbieder.html', form=form)
 
 
 
-
+#gebruiken we dit???????
 @main.route('/choose_role')
 def choose_role():
     if 'user_id' not in session:
-        return redirect(url_for('login'))  # Zorg ervoor dat de gebruiker is ingelogd
+        return redirect(url_for('login'))
     
-    # Verkrijg de gebruiker via het idnummer in de sessie
-    user = Persoon.query.get(session['user_id'])  # Gebruik get met idnummer
+    user = Persoon.query.get(session['user_id'])
     if not user:
         flash('Geen gebruiker gevonden.', 'danger')
         return redirect(url_for('login'))
 
-    # Voeg hier de logica toe voor het kiezen van een rol, bijvoorbeeld een formulier
     return render_template('choose_role.html', user=user)
 
 
-# Route om de details van een klus te tonen
+
 @main.route('/klus/<klusnummer>')
 def klus_detail(klusnummer):
     klus = Klus.query.filter_by(klusnummer=klusnummer).first()
@@ -430,10 +377,10 @@ def klus_detail(klusnummer):
         flash('Klus niet gevonden', 'danger')
         return redirect(url_for('main.klussen'))
     
-    # Print de status van de klus om te controleren of het daadwerkelijk 'beschikbaar' is
-    print(f"Status van de klus: {klus.status}")  # Voeg deze regel toe om de status te controleren
+    print(f"Status van de klus: {klus.status}")
 
     return render_template('klus_detail.html', klus=klus)
+
 
 
 @main.route('/eigen_klus/<klusnummer>')
@@ -447,16 +394,9 @@ def details_eigen_klus(klusnummer):
 
 
 
-from app.models import CategorieStatistiek, Klus, Persoon
-from datetime import datetime
-from flask import flash, redirect, url_for, request
-from sqlalchemy import func
-
-from datetime import datetime
 
 @main.route('/klussen')
 def klussen():
-    # Controleer of de gebruiker is ingelogd
     if 'user_id' not in session:
         flash('Je moet ingelogd zijn om klussen te bekijken.', 'danger')
         return redirect(url_for('main.login'))
@@ -464,30 +404,24 @@ def klussen():
     user_id = session['user_id']
     user = Persoon.query.get(user_id)
 
-    # Filters ophalen uit de querystring
     geselecteerde_categorie = request.args.get('categorie', '')
     geselecteerde_locatie = request.args.get('locatie', '').lower()
     datum_van = request.args.get('datum_van', '')
     datum_tot = request.args.get('datum_tot', '')
 
-    # Query voor alle beschikbare klussen (basisquery)
     vandaag = datetime.utcnow().date()
     basis_klussen_query = Klus.query.filter(Klus.status == 'beschikbaar', Klus.persoon_aanbieder != user, Klus.datum >= vandaag)
 
-    # Query voor beschikbare klussen (inclusief actieve filters)
     beschikbare_klussen_query = basis_klussen_query
 
-    # Filter op categorie
     if geselecteerde_categorie:
         beschikbare_klussen_query = beschikbare_klussen_query.filter(Klus.categorie == geselecteerde_categorie)
 
-    # Filter op locatie (stad zonder postcode)
     if geselecteerde_locatie:
         beschikbare_klussen_query = beschikbare_klussen_query.filter(
             func.lower(Klus.locatie).like(f"%{geselecteerde_locatie}%")
         )
 
-    # Filter op datumbereik
     if datum_van:
         try:
             datum_van = datetime.strptime(datum_van, '%Y-%m-%d').date()
@@ -502,10 +436,8 @@ def klussen():
         except ValueError:
             flash('Ongeldig formaat voor datum_tot. Gebruik YYYY-MM-DD.', 'danger')
 
-    # Haal gefilterde klussen op
     beschikbare_klussen = beschikbare_klussen_query.all()
 
-    # Locaties ophalen uit de basisquery (zonder actieve locatie-filter)
     beschikbare_locaties_query = basis_klussen_query.with_entities(func.lower(Klus.locatie)).distinct()
     unieke_steden = sorted({
         ''.join(filter(str.isalpha, locatie[0].split(",")[0])).strip().capitalize()
@@ -580,7 +512,7 @@ def mijn_klussen():
 def mijn_klussen_selectie():
     return render_template('mijn_klussen_selectie.html')
 
-from sqlalchemy.orm import joinedload
+
 
 
 @main.route('/mijn_aangeboden_klussen', methods=['GET', 'POST'])
