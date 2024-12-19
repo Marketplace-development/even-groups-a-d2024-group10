@@ -17,7 +17,6 @@
                         <h5 class="text-dark font-weight-bold">{{ klus.naam }} 
                             <span class="badge bg-secondary">{{ klus.status }}</span>
                         </h5>
-                        <p><strong>Klusnaam:</strong> {{ klus.naam }}</p>
                         <p><strong>Naam:</strong> {{ klus.other_person_name }}</p>
                         {% if klus.berichten %}
                             <p><strong>Aantal berichten:</strong> {{ klus.berichten|length }}</p>
@@ -45,9 +44,8 @@
                     <div class="klus-card mb-4 p-3 border rounded bg-white shadow-sm 
                                 {% if klus.ongelezen_berichten > 0 %}ongelezen{% endif %}">
                         <h5 class="text-dark font-weight-bold">{{ klus.naam }} 
-                            <span class="badge bg-success">{{ klus.status }}</span>
+                            <span class="badge bg-secondary">{{ klus.status }}</span>
                         </h5>
-                        <p><strong>Klusnaam:</strong> {{ klus.naam }}</p>
                         <p><strong>Naam:</strong> {{ klus.other_person_name }}</p>
                         {% if klus.berichten %}
                             <p><strong>Aantal berichten:</strong> {{ klus.berichten|length }}</p>
@@ -103,9 +101,8 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
-    /* Stijl voor ongelezen berichten */
     .ongelezen {
-        border: 2px solid black !important; /* Donkerzwarte rand */
+        border: 5px solid red !important; /* Donkerzwarte rand */
     }
 
     /* Knoppen */
@@ -120,11 +117,6 @@
 
     .bg-secondary {
         background-color: #6c757d;
-        color: white;
-    }
-
-    .bg-success {
-        background-color: #28a745;
         color: white;
     }
 
