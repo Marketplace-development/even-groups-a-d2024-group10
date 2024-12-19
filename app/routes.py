@@ -479,7 +479,7 @@ def klus_geaccepteerd(klusnummer):
         return render_template('klus_geaccepteerd.html', klus=klus)
     else:
         flash('Deze klus bestaat niet.', 'danger')
-        return redirect(url_for('main.klussen'))  # Terug naar de overzichtspagina als de klus niet gevonden wordt
+        return redirect(url_for('main.klussen'))
 
 
 @main.route('/klus/<klusnummer>/bevestiging', methods=['GET'])
@@ -495,14 +495,12 @@ def bevestiging_klus(klusnummer):
 
 @main.route('/mijn_klussen')
 def mijn_klussen():
-    # Controleer of de gebruiker is ingelogd via de sessie
     if 'user_id' not in session:
-        return redirect(url_for('main.login'))  # Als er geen user_id in de sessie is, doorverwijzen naar login
+        return redirect(url_for('main.login'))
 
     user_id = session['user_id']
     user = Persoon.query.get(user_id)
     
-    # Haal de klussen van de ingelogde gebruiker op
     klussen = Klus.query.filter(Klus.idnummer == user.idnummer, Klus.status == 'geaccepteerd').all()
 
     return render_template('mijn_klussen.html', klussen=klussen)
@@ -517,18 +515,19 @@ def mijn_klussen_selectie():
 
 @main.route('/mijn_aangeboden_klussen', methods=['GET', 'POST'])
 def mijn_aangeboden_klussen():
-    user_id = session.get('user_id')  # Haal de ingelogde gebruiker op uit de sessie
+    user_id = session.get('user_id')
     if not user_id:
         flash('Je moet ingelogd zijn om deze pagina te bekijken.', 'danger')
         return redirect(url_for('main.login'))
 
-    # Query: Haal alleen klussen op die niet voltooid zijn
     klussen = Klus.query.filter(
-        Klus.idnummer == user_id,   # Alleen klussen aangeboden door de gebruiker
-        Klus.status != 'voltooid'   # Sluit voltooide klussen uit
+        Klus.idnummer == user_id,
+        Klus.status != 'voltooid'
     ).order_by(Klus.datum.desc()).all()
 
     return render_template('mijn_aangeboden_klussen.html', klussen=klussen)
+
+
 
 @main.route('/mijn_gezochte_klussen')
 def mijn_gezochte_klussen():
@@ -537,14 +536,13 @@ def mijn_gezochte_klussen():
         flash('Je moet ingelogd zijn om deze pagina te bekijken.', 'danger')
         return redirect(url_for('main.login'))
 
-    # Haal klussen op waar de gebruiker aan gekoppeld is als zoeker
     gezochte_klussen = Klus.query.filter(
         Klus.status == 'geaccepteerd',
         Klus.klussen_zoekers.any(Persoon.idnummer == user_id)
     ).order_by(Klus.created_at.desc()).all()
 
-    # Variabele naam consistent maken met de template
     return render_template('mijn_gezochte_klussen.html', klussen=gezochte_klussen)
+
 
 
 @main.route('/leave_klus/<klusnummer>', methods=['POST'])
@@ -559,15 +557,12 @@ def leave_klus(klusnummer):
         flash("Klus niet gevonden.", "danger")
         return redirect(url_for('main.mijn_gezochte_klussen'))
 
-    # Zoek de kluszoeker
     kluszoeker = next((zoeker for zoeker in klus.klussen_zoekers if zoeker.idnummer == user_id), None)
     if kluszoeker:
-        # Verwijder de gebruiker van de klus
         klus.klussen_zoekers.remove(kluszoeker)
         klus.status = "beschikbaar"
         db.session.commit()
 
-        # Notificatie naar klusaanbieder
         maak_melding(
             gebruiker_id=klus.idnummer,
             bericht=f"De kluszoeker heeft jouw klus '{klus.naam}' geannuleerd."
@@ -589,20 +584,17 @@ def delete_klus(klusnummer):
         return redirect(url_for('main.mijn_aangeboden_klussen'))
 
     try:
-        # Notificatie naar alle gekoppelde kluszoekers
         for zoeker in klus.klussen_zoekers:
             maak_melding(
                 gebruiker_id=zoeker.idnummer,
                 bericht=f"De klus '{klus.naam}' is verwijderd door de aanbieder."
             )
 
-        # Notificatie naar de klusaanbieder zelf
         maak_melding(
             gebruiker_id=user_id,
             bericht=f"Je hebt de klus '{klus.naam}' succesvol verwijderd."
         )
 
-        # Verwijder de klus
         db.session.delete(klus)
         db.session.commit()
         flash(f"De klus '{klus.naam}' is verwijderd en de zoekers zijn op de hoogte gesteld.", 'success')
@@ -616,23 +608,19 @@ def delete_klus(klusnummer):
 
 @main.route('/klus/<klusnummer>/accepteren', methods=['POST'])
 def accepteer_klus(klusnummer):
-    # Controleer of de gebruiker is ingelogd
     if 'user_id' not in session:
         flash('Je moet ingelogd zijn om deze klus te accepteren.', 'danger')
         return redirect(url_for('main.klussen'))
 
-    # Zoek de klus op basis van klusnummer
     klus = Klus.query.filter_by(klusnummer=klusnummer).first()
     if not klus:
         flash('Deze klus bestaat niet.', 'danger')
         return redirect(url_for('main.klussen'))
 
-    # Controleer of de klus beschikbaar is
     if klus.status != 'beschikbaar':
         flash('Deze klus is niet beschikbaar.', 'danger')
         return redirect(url_for('main.klussen'))
 
-    # Haal de ingelogde gebruiker op
     user_id = session['user_id']
     gebruiker = Persoon.query.filter_by(idnummer=user_id).first()
 
@@ -641,17 +629,14 @@ def accepteer_klus(klusnummer):
         return redirect(url_for('main.klussen'))
 
     try:
-        # Verander de status naar 'geaccepteerd'
         klus.status = 'geaccepteerd'
 
-        # Voeg de gebruiker toe aan de klus_zoeker relatie
         if gebruiker not in klus.klussen_zoekers:
             klus.klussen_zoekers.append(gebruiker)
             print(f"Kluszoeker {gebruiker.idnummer} toegevoegd aan klus {klus.klusnummer}")
         else:
             print(f"Kluszoeker {gebruiker.idnummer} was al gekoppeld aan klus {klus.klusnummer}")
 
-        # Werk de statistieken voor de categorie bij
         categorie_statistiek = CategorieStatistiek.query.filter_by(
             idnummer=user_id,
             categorie=klus.categorie
@@ -668,19 +653,17 @@ def accepteer_klus(klusnummer):
             db.session.add(nieuwe_statistiek)
 
 
-        # Maak een melding voor de klusaanbieder
         maak_melding(
             gebruiker_id=klus.idnummer,
             bericht=f"Je klus '{klus.naam}' is geaccepteerd door {gebruiker.voornaam} {gebruiker.achternaam}."
         )
 
-        # Sla de wijzigingen op
         db.session.commit()
 
         flash('Je hebt de klus geaccepteerd!', 'success')
         return redirect(url_for('main.mijn_gezochte_klussen'))
     except Exception as e:
-        db.session.rollback()  # Rollback bij een fout
+        db.session.rollback()
         flash(f'Er is een fout opgetreden: {e}', 'danger')
         return redirect(url_for('main.klussen'))
 
@@ -692,14 +675,12 @@ def mijn_geschiedenis():
         flash('Je moet ingelogd zijn om deze pagina te bekijken.', 'danger')
         return redirect(url_for('main.login'))
 
-    # Aangeboden klussen
     aangeboden_klussen = Klus.query.filter(
         Klus.idnummer == user_id,
         Klus.status == 'voltooid',
         Klus.voltooid_op.isnot(None)
     ).order_by(Klus.voltooid_op.desc()).all()
 
-    # Gezochte klussen
     gezochte_klussen = Klus.query.join(Klus.klussen_zoekers).filter(
         Persoon.idnummer == user_id,
         Klus.status == 'voltooid',
@@ -720,7 +701,6 @@ def markeer_klus_voltooid(klusnummer):
         flash('Klus niet gevonden.', 'danger')
         return redirect(url_for('main.mijn_aangeboden_klussen'))
 
-    # Haal de ingelogde gebruiker op
     user_id = session.get('user_id')
     if not user_id:
         flash('Je moet ingelogd zijn om deze actie uit te voeren.', 'danger')
@@ -731,19 +711,16 @@ def markeer_klus_voltooid(klusnummer):
         flash('Je hebt geen toestemming om deze actie uit te voeren.', 'danger')
         return redirect(url_for('main.mijn_aangeboden_klussen'))
 
-    # Markeer de klus als voltooid
     klus.status = 'voltooid'
     klus.voltooid_op = utc_to_plus_one()
     db.session.commit()
 
-    # Notificatie naar kluszoekers
     for zoeker in klus.klussen_zoekers:
         maak_melding(
             gebruiker_id=zoeker.idnummer,
             bericht=f"De klus '{klus.naam}' is gemarkeerd als voltooid. Je kunt nu een beoordeling nalaten."
         )
 
-    # Notificatie naar klusaanbieder
     maak_melding(
         gebruiker_id=klus.idnummer,
         bericht=f"De klus '{klus.naam}' is voltooid. Je kunt nu een beoordeling nalaten."
@@ -760,7 +737,7 @@ def rate_zoeker(klusnummer):
         flash('Klus niet gevonden.', 'danger')
         return redirect(url_for('main.mijn_geschiedenis'))
 
-    # Zoek bestaande beoordeling
+    #dit kan wss weg
     existing_rating = Rating.query.filter_by(
         klusnummer=klusnummer,
         kluszoeker_id=klus.klussen_zoekers[0].idnummer
@@ -769,7 +746,6 @@ def rate_zoeker(klusnummer):
     form = RatingFormForZoeker()
     if form.validate_on_submit():
         if existing_rating:
-            # Update bestaande beoordeling
             existing_rating.vriendelijkheid_zoeker = form.vriendelijkheid.data
             existing_rating.tijdigheid = form.tijdigheid.data
             existing_rating.kwaliteit = form.kwaliteit.data
@@ -793,13 +769,12 @@ def rate_zoeker(klusnummer):
 
         db.session.commit()
 
-        # Meldingen
-        # Melding naar de kluszoeker
+
         maak_melding(
             gebruiker_id=klus.klussen_zoekers[0].idnummer,
             bericht=f"Je bent beoordeeld door de klusaanbieder voor de klus '{klus.naam}'."
         )
-        # Melding naar de klusaanbieder
+
         maak_melding(
             gebruiker_id=session.get('user_id'),
             bericht=f"Bedankt voor het achterlaten van een beoordeling voor de kluszoeker van '{klus.naam}'."
@@ -818,7 +793,6 @@ def rate_aanbieder(klusnummer):
         flash('Klus niet gevonden.', 'danger')
         return redirect(url_for('main.mijn_geschiedenis'))
 
-    # Controleer of de huidige gebruiker een kluszoeker is
     if not any(zoeker.idnummer == session.get('user_id') for zoeker in klus.klussen_zoekers):
         flash('Je bent niet bevoegd om deze beoordeling te maken.', 'danger')
         return redirect(url_for('main.mijn_geschiedenis'))
@@ -833,7 +807,7 @@ def rate_aanbieder(klusnummer):
     form = RatingFormForAanbieder()
     if form.validate_on_submit():
         if existing_rating:
-            # Update bestaande beoordeling
+            # mag wss weg, hebben we geen dinges voor
             existing_rating.vriendelijkheid_aanbieder = form.vriendelijkheid.data
             existing_rating.gastvrijheid = form.gastvrijheid.data
             existing_rating.betrouwbaarheid = form.betrouwbaarheid.data
@@ -860,13 +834,11 @@ def rate_aanbieder(klusnummer):
 
         db.session.commit()
 
-        # Meldingen
-        # Melding naar de klusaanbieder
+
         maak_melding(
             gebruiker_id=klus.idnummer,
             bericht=f"Je bent beoordeeld door de kluszoeker voor de klus '{klus.naam}'."
         )
-        # Melding naar de kluszoeker
         maak_melding(
             gebruiker_id=session.get('user_id'),
             bericht=f"Bedankt voor het achterlaten van een beoordeling voor de klusaanbieder van '{klus.naam}'."
@@ -881,24 +853,20 @@ def rate_aanbieder(klusnummer):
 def ratings(rol, idnummer):
     back_url = request.args.get('back_url', url_for('main.dashboard'))
     
-    # Controleer of de rol geldig is
     if rol not in ['aanbieder', 'zoeker']:
         flash('Ongeldige rol opgegeven.', 'error')
         abort(404)
 
-    # Haal de persoon op
     persoon = Persoon.query.filter_by(idnummer=idnummer).first()
     if not persoon:
         flash('Persoon niet gevonden.', 'error')
         abort(404)
 
-    # Beoordelingen ophalen op basis van de rol, gesorteerd op de meest recente
     if rol == 'aanbieder':
         ratings = Rating.query.filter_by(klusaanbieder_id=idnummer).order_by(Rating.created_at.desc()).all()
     elif rol == 'zoeker':
         ratings = Rating.query.filter_by(kluszoeker_id=idnummer).order_by(Rating.created_at.desc()).all()
 
-    # Bereken gemiddelde scores en extra statistieken
     gemiddelde_scores = {}
     if ratings:
         if rol == 'aanbieder':
@@ -910,7 +878,6 @@ def ratings(rol, idnummer):
                 'algemene_ervaring': round(sum(r.algemene_ervaring_zoeker for r in ratings if r.algemene_ervaring_zoeker) / len(ratings), 1),
             }
 
-    # Render de template met de gegevens
     return render_template(
         'bekijken_ratings.html',
         persoon=persoon,
@@ -923,24 +890,20 @@ def ratings(rol, idnummer):
 
 @main.route('/rating/<int:rating_id>', methods=['GET'])
 def ratings_detail(rating_id):
-    # Zoek de beoordeling op in de database
     rating = Rating.query.get(rating_id)
     
-    # Controleer of de beoordeling 
     if not rating:
         abort(404, description="Rating not found")
     
-    # Bepaal de rol (aanbieder of zoeker) door te controleren welke id ingevuld is
     if rating.klusaanbieder_id:
-        rol = 'aanbieder'  # Beoordeling door de klusaanbieder
+        rol = 'aanbieder'
     elif rating.kluszoeker_id:
-        rol = 'zoeker'  # Beoordeling door de kluszoeker
+        rol = 'zoeker'
     else:
-        rol = 'onbekend'  # Als er geen geldig id is, kun je dit als fallback gebruiken
+        rol = 'onbekend' 
     
     back_url = url_for('main.ratings', rol=rol, idnummer=rating.klusaanbieder_id)
 
-    # Render de detailpagina
     return render_template(
         'ratings_detail.html',
         rating=rating,
@@ -951,24 +914,20 @@ def ratings_detail(rating_id):
 
 @main.route('/rating/zoeker/<int:rating_id>', methods=['GET'])
 def ratings_detail_zoeker(rating_id):
-    # Zoek de beoordeling op in de database
     rating = Rating.query.get(rating_id)
     
-    # Controleer of de beoordeling bestaat
     if not rating:
         abort(404, description="Rating not found")
     
-    # Bepaal de rol (zoeker of aanbieder) door te controleren welke id ingevuld is
     if rating.kluszoeker_id:
-        rol = 'zoeker'  # Beoordeling door de kluszoeker
+        rol = 'zoeker'
     elif rating.klusaanbieder_id:
-        rol = 'aanbieder'  # Beoordeling door de klusaanbieder
+        rol = 'aanbieder'
     else:
-        rol = 'onbekend'  # Fallback als er geen geldig id is
+        rol = 'onbekend'
     
     back_url = url_for('main.beoordelingen_kluszoeker', rol=rol, idnummer=rating.kluszoeker_id, klusnummer=rating.klusnummer)
 
-    # Render de detailpagina voor de zoeker
     return render_template(
         'ratings_detail_zoeker.html',
         rating=rating,
@@ -1005,18 +964,16 @@ def markeer_melding_gelezen(id):
 @main.app_context_processor
 def inject_notificaties():
     if 'user_id' in session and session['user_id']:
-        # Laatste 5 meldingen ophalen
         laatste_vijf_meldingen = Notificatie.query.filter_by(
             gebruiker_id=session['user_id']
         ).order_by(Notificatie.aangemaakt_op.desc()).limit(5).all()
 
-        # Totaal aantal ongelezen meldingen
         aantal_ongelezen = Notificatie.query.filter_by(
             gebruiker_id=session['user_id'], gelezen=False
         ).count()
 
         return {
-            'notificaties': laatste_vijf_meldingen,  # Alleen laatste 5
+            'notificaties': laatste_vijf_meldingen,
             'aantal_ongelezen_meldingen': aantal_ongelezen
         }
     return {
@@ -1032,9 +989,8 @@ def beoordeel_aanbieder(klusnummer):
         flash("Klus niet gevonden.", "danger")
         return redirect(url_for('main.dashboard'))
 
-    form = RatingForm()  # Formulier voor beoordeling
+    form = RatingForm()
     if form.validate_on_submit():
-        # Beoordeling aanmaken
         rating = Rating(
             klusnummer=klusnummer,
             klusaanbieder_id=klus.idnummer,
@@ -1049,7 +1005,6 @@ def beoordeel_aanbieder(klusnummer):
         db.session.add(rating)
         db.session.commit()
 
-        # Notificatie naar klusaanbieder
         maak_melding(
             gebruiker_id=klus.idnummer,
             bericht=f"Je bent beoordeeld door de kluszoeker voor de klus '{klus.naam}'."
@@ -1067,13 +1022,12 @@ def beoordeel_zoeker(klusnummer):
         flash("Klus niet gevonden.", "danger")
         return redirect(url_for('main.dashboard'))
 
-    form = RatingFormForZoeker()  # Formulier voor beoordeling
+    form = RatingFormForZoeker()
     if form.validate_on_submit():
-        # Beoordeling aanmaken
         rating = Rating(
             klusnummer=klusnummer,
             klusaanbieder_id=session['user_id'],
-            kluszoeker_id=klus.klussen_zoekers[0].idnummer,  # Stel dat er één zoeker is
+            kluszoeker_id=klus.klussen_zoekers[0].idnummer,
             vriendelijkheid_zoeker=form.vriendelijkheid.data,
             tijdigheid=form.tijdigheid.data,
             kwaliteit=form.kwaliteit.data,
@@ -1084,7 +1038,6 @@ def beoordeel_zoeker(klusnummer):
         db.session.add(rating)
         db.session.commit()
 
-        # Notificatie naar kluszoeker
         maak_melding(
             gebruiker_id=klus.klussen_zoekers[0].idnummer,
             bericht=f"Je bent beoordeeld door de klusaanbieder voor de klus '{klus.naam}'."
@@ -1101,7 +1054,6 @@ def alle_meldingen():
         flash("Je moet ingelogd zijn om meldingen te bekijken.", "warning")
         return redirect(url_for('main.login'))
 
-    # Haal alle meldingen van de gebruiker op
     alle_meldingen = Notificatie.query.filter_by(
         gebruiker_id=session['user_id']
     ).order_by(Notificatie.aangemaakt_op.desc()).all()
@@ -1111,24 +1063,20 @@ def alle_meldingen():
 
 @main.route('/beoordelingen/<string:klusnummer>', methods=['GET'])
 def beoordelingen_kluszoeker(klusnummer):
-    # Haal de klus op aan de hand van klusnummer
     klus = Klus.query.filter_by(klusnummer=klusnummer).first()
     
     if not klus:
         flash("De gevraagde klus bestaat niet.", "danger")
         return redirect(url_for('main.home'))
 
-    # Haal de eerste kluszoeker op
     kluszoeker = klus.klussen_zoekers[0] if klus.klussen_zoekers else None
     
     if not kluszoeker:
         flash("Er zijn geen kluszoekers gekoppeld aan deze klus.", "warning")
         return redirect(url_for('main.home'))
 
-    # Haal alle beoordelingen voor deze kluszoeker
     ratings = Rating.query.filter_by(kluszoeker_id=kluszoeker.idnummer).order_by(Rating.created_at.desc()).all()
 
-    # Bereken gemiddelde score van de algemene ervaring
     gemiddelde_scores = None
     if ratings:
         gemiddelde_scores = round(sum(r.algemene_ervaring_zoeker for r in ratings if r.algemene_ervaring_zoeker) / len(ratings), 1)
