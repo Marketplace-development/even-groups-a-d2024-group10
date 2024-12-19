@@ -10,71 +10,67 @@
     </div>
 
     <!-- Klussenlijst -->
-    <div class="klus-list">
+    <div class="row">
         {% if klussen %}
             {% for klus in klussen %}
-                <div class="klus-card">
-                    <!-- Titel van de klus -->
-                    <h3>{{ klus.naam }}</h3>
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <!-- Titel van de klus -->
+                            <h3 class="card-title">{{ klus.naam }}</h3>
 
-                    <!-- Klusdetails -->
-                    <p><strong>Locatie:</strong> {{ klus.locatie }}</p>
-                    <p><strong>Tijd:</strong> {{ klus.tijd }}</p>
-                    <p><strong>Datum:</strong> {{ klus.datum }}</p>
-                    <p><strong>Vergoeding:</strong> €{{ klus.vergoeding }}</p>
-                    <p><strong>Categorie:</strong> {{ klus.categorie_ref.naam if klus.categorie_ref else 'Onbekend' }}</p>
-                    <p><strong>Verwachte duur:</strong> {{ klus.verwachte_duur }}</p>
-                    <p><strong>Beschrijving:</strong> {{ klus.beschrijving }}</p>
+                            <!-- Klusdetails -->
+                            <p><strong>Locatie:</strong> {{ klus.locatie }}</p>
+                            <p><strong>Tijd:</strong> {{ klus.tijd }}</p>
+                            <p><strong>Datum:</strong> {{ klus.datum }}</p>
+                            <p><strong>Vergoeding:</strong> €{{ klus.vergoeding }}</p>
+                            <p><strong>Categorie:</strong> {{ klus.categorie_ref.naam if klus.categorie_ref else 'Onbekend' }}</p>
+                            <p><strong>Verwachte duur:</strong> {{ klus.verwachte_duur }}</p>
+                            <p><strong>Beschrijving:</strong> {{ klus.beschrijving }}</p>
 
-                    <!-- Status van de klus -->
-                    <p><strong>Status:</strong> 
-                        {% if klus.status == 'completed' %}
-                            <span class="status-completed">Klus voltooid</span>
-                        {% elif klus.status == 'geaccepteerd' %}
-                            <span class="status-accepted">Klus geaccepteerd</span>
-                        {% endif %}
-                    </p>
+                            <!-- Status van de klus -->
+                            <p><strong>Status:</strong> 
+                                {% if klus.status == 'completed' %}
+                                    <span class="text-success font-weight-bold">Klus voltooid</span>
+                                {% elif klus.status == 'geaccepteerd' %}
+                                    <span class="text-warning font-weight-bold">Klus geaccepteerd</span>
+                                {% endif %}
+                            </p>
 
-                    <!-- Acties -->
-                    {% if klus.status == 'geaccepteerd' %}
-                        <!-- Chatten-knop -->
-                        <a href="{{ url_for('chat.chat_page', klusnummer=klus.klusnummer) }}" class="btn btn-primary btn-sm">Chatten</a>
+                            <!-- Acties -->
+                            {% if klus.status == 'geaccepteerd' %}
+                                <a href="{{ url_for('chat.chat_page', klusnummer=klus.klusnummer) }}" class="btn btn-primary btn-sm">Chatten</a>
 
-                        <form action="{{ url_for('main.leave_klus', klusnummer=klus.klusnummer) }}" method="POST" class="text-center">
-                            <button type="submit" class="btn btn-danger btn-sm">Annuleren</button>
-                        </form>
-                    {% endif %}
+                                <form action="{{ url_for('main.leave_klus', klusnummer=klus.klusnummer) }}" method="POST" class="text-center mt-2">
+                                    <button type="submit" class="btn btn-danger btn-sm">Annuleren</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
             {% endfor %}
         {% else %}
-            <div class="alert alert-info text-center">
+            <div class="alert alert-info text-center w-100">
                 Je hebt nog geen geaccepteerde gezochte klussen.
             </div>
         {% endif %}
     </div>
 </div>
 
-<!-- Terugknop -->
-<div class="back">
-    <div class="back-icon">
-        <a href="{{ url_for('main.mijn_klussen_selectie') }}">
-            <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" style="width: 100px; height: auto;">
-        </a>
-    </div>
+<!-- Terug knop -->
+<div class="position-fixed" style="left: 10px; bottom: 10px; z-index: 100;">
+    <a href="{{ url_for('main.mijn_klussen_selectie') }}" class="back-icon">
+        <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" class="img-fluid" style="width: 70px;">
+    </a>
 </div>
+{% endblock %}
 
+{% block style %}
 <style>
     body {
         font-family: 'Arial', sans-serif;
         background-color: #f4f7fa;
         color: #000000;
-    }
-
-    .container {
-        max-width: 1200px;
-        margin: 20px auto;
-        padding: 20px;
-        border-radius: 10px;
     }
 
     .header h2 {
@@ -83,38 +79,25 @@
         margin-bottom: 20px;
     }
 
-    .klus-list {
-        margin-top: 20px;
-    }
-
-    .klus-card {
-        background: #ffffff;
+    .card {
         border: 1px solid #ddd;
         border-radius: 8px;
-        padding: 20px;
-        margin-bottom: 20px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
-    .klus-card h3 {
+    .card-body {
+        padding: 20px;
+    }
+
+    .card-title {
         color: #10246B;
         margin-bottom: 10px;
     }
 
-    .klus-card p {
+    .card p {
         margin: 5px 0;
         font-size: 14px;
         color: #000000;
-    }
-
-    .status-completed {
-        color: green;
-        font-weight: bold;
-    }
-
-    .status-accepted {
-        color: orange;
-        font-weight: bold;
     }
 
     .back {
@@ -168,6 +151,27 @@
 
     .btn-danger:hover {
         background-color: #c82333;
+    }
+
+    /* Responsieve aanpassingen */
+    .back-icon img {
+        width: 80px;
+        height: auto;
+    }
+
+    @media (max-width: 768px) {
+        .back-icon {
+            width: 100px;
+            height: 100px;
+        }
+
+        .card-body {
+            padding: 15px;
+        }
+
+        .card p {
+            font-size: 12px;
+        }
     }
 </style>
 {% endblock %}

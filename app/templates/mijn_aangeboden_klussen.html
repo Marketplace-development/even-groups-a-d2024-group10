@@ -5,60 +5,61 @@
 {% block content %}
 <div class="container">
     <!-- Logo en decoratie -->
-    <div class="logo">
+    <div class="logo text-center mb-4">
         <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" class="logo-img">
     </div>
 
     <!-- Tabel met klussen -->
     <div class="klussen-table mt-5">
         {% if klussen|length > 0 %}
-        <table class="table table-hover text-center">
-            <thead class="table-header">
-                <tr>
-                    <th>Klusnaam</th>
-                    <th>Datum</th>
-                    <th>Status</th>
-                    <th>Kluszoeker</th>
-                    <th>Acties</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for klus in klussen %}
-                <tr>
-                    <td>{{ klus.naam }}</td>
-                    <td>{{ klus.datum }}</td>
-                    <td>{{ klus.status or "beschikbaar" }}</td>
-                    <td>
-                        {% if klus.klussen_zoekers %}
-                            {% for zoeker in klus.klussen_zoekers %}
-                                {{ zoeker.voornaam }} {{ zoeker.achternaam }}
-                            {% endfor %}
-                        {% else %}
-                            <span class="text-muted">Geen kluszoeker gekoppeld</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <!-- Actieknoppen -->
-                        <div class="btn-group" role="group">
-                            {% if klus.status == 'geaccepteerd' %}
-                                <a href="{{ url_for('chat.chat_page', klusnummer=klus.klusnummer) }}" class="btn btn-primary btn-sm">Chatten</a>
-                                <form action="{{ url_for('main.markeer_klus_voltooid', klusnummer=klus.klusnummer) }}" method="POST" style="display: inline-block;">
-                                    <button type="submit" class="btn btn-success btn-sm">Markeer als voltooid</button>
+        <div class="table-responsive">
+            <table class="table table-hover text-center table-sm">
+                <thead class="table-header">
+                    <tr>
+                        <th>Klusnaam</th>
+                        <th>Datum</th>
+                        <th>Status</th>
+                        <th>Kluszoeker</th>
+                        <th>Acties</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for klus in klussen %}
+                    <tr>
+                        <td>{{ klus.naam }}</td>
+                        <td>{{ klus.datum }}</td>
+                        <td>{{ klus.status or "beschikbaar" }}</td>
+                        <td>
+                            {% if klus.klussen_zoekers %}
+                                {% for zoeker in klus.klussen_zoekers %}
+                                    {{ zoeker.voornaam }} {{ zoeker.achternaam }}
+                                {% endfor %}
+                            {% else %}
+                                <span class="text-muted">Geen kluszoeker gekoppeld</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group d-flex justify-content-center gap-2" role="group">
+                                {% if klus.status == 'geaccepteerd' %}
+                                    <a href="{{ url_for('chat.chat_page', klusnummer=klus.klusnummer) }}" class="btn btn-primary btn-sm">Chatten</a>
+                                    <form action="{{ url_for('main.markeer_klus_voltooid', klusnummer=klus.klusnummer) }}" method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-success btn-sm">Voltooid</button>
+                                    </form>
+                                {% endif %}
+                                <form action="{{ url_for('main.delete_klus', klusnummer=klus.klusnummer) }}" method="POST" class="d-inline">
+                                    <button type="submit" class="btn btn-danger btn-sm">Verwijder</button>
                                 </form>
-                            {% endif %}
-                            <form action="{{ url_for('main.delete_klus', klusnummer=klus.klusnummer) }}" method="POST" style="display: inline-block;">
-                                <button type="submit" class="btn btn-danger btn-sm">Verwijder Klus</button>
-                            </form>
-                            <a href="{{ url_for('main.details_eigen_klus', klusnummer=klus.klusnummer) }}" class="btn btn-secondary btn-sm">Bekijk Details</a>
-                            {% if klus.status == 'geaccepteerd' and klus.klussen_zoekers %}
-                                <a href="{{ url_for('main.beoordelingen_kluszoeker', klusnummer=klus.klusnummer) }}" class="btn btn-info btn-sm">Bekijk Beoordelingen</a>
-                            {% endif %}
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                                <a href="{{ url_for('main.details_eigen_klus', klusnummer=klus.klusnummer) }}" class="btn btn-secondary btn-sm">Details</a>
+                                {% if klus.status == 'geaccepteerd' and klus.klussen_zoekers %}
+                                    <a href="{{ url_for('main.beoordelingen_kluszoeker', klusnummer=klus.klusnummer) }}" class="btn btn-info btn-sm">Beoordelingen</a>
+                                {% endif %}
+                            </div>
+                        </td>                    
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         {% else %}
         <div class="alert alert-info text-center mt-5">
             <strong>Je hebt geen aangeboden klussen.</strong>
@@ -66,14 +67,11 @@
         {% endif %}
     </div>
 </div>
-
 <!-- Terug knop -->
-<div class="back">
-    <div class="back-icon">
-        <a href="{{ url_for('main.mijn_klussen_selectie') }}">
-            <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug">
-        </a>
-    </div>
+<div class="position-fixed" style="left: 10px; bottom: 10px; z-index: 100;">
+    <a href="{{ url_for('main.mijn_klussen_selectie') }}" class="back-icon">
+        <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" class="img-fluid" style="width: 70px;">
+    </a>
 </div>
 
 <style>
@@ -85,13 +83,9 @@
         color: #10246B;
     }
 
-    .logo {
-        margin: 30px auto;
-        text-align: center;
-    }
-
     .logo-img {
-        width: 400px;
+        width: 100%;
+        max-width: 350px;
         height: auto;
     }
 
@@ -101,8 +95,9 @@
     }
 
     .btn-group .btn {
-        margin: 2px;
-        border-radius: 5px;
+        padding: 4px 8px;
+        font-size: 0.85rem;
+        border-radius: 4px;
     }
 
     .btn-primary {
@@ -143,28 +138,45 @@
         background-color: #f8f9fa;
     }
 
-    .back {
-        position: fixed;
-        left: 20px;
-        bottom: 20px;
-        text-align: center;
-        z-index: 1000;
-    }
-
-    .back-icon img {
-        width: 80px;
-        height: auto;
-        transition: transform 0.3s ease;
-    }
-
-    .back-icon img:hover {
-        transform: scale(1.1);
-    }
-
     .alert {
         font-size: 1.2rem;
         padding: 20px;
     }
+
+    /* Responsieve aanpassingen */
+    @media (max-width: 768px) {
+        .table td, .table th {
+            padding: 8px;
+        }
+
+        .logo-img {
+            width: 80%;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .btn-group .btn {
+            margin-bottom: 5px;
+        }
+
+        .table-responsive {
+            -webkit-overflow-scrolling: touch;
+            overflow-x: auto;
+        }
+
+        .table-responsive table {
+            width: 100%;
+        }
+    }
+
+    /* Tabelcontainer voor grotere schermen */
+    .table-container {
+        width: 100%;
+        overflow-x: hidden;
+        padding: 0 15px;
+    }
 </style>
 {% endblock %}
-

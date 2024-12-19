@@ -1,263 +1,130 @@
+{% extends 'base.html' %}
 
+{% block title %}Registreren - KLUSKOMPAS{% endblock %}
 
 {% block content %}
-<style>
-    body {
-        font-family: 'Inter', sans-serif;
-        background-color: #f8f8f8;
-        margin: 0;
-        padding: 0;
-    }
-    .registration-page {
-        text-align: center;
-        margin-top: 50px;
-    }
-    .logo img {
-        max-width: 500px;
-        margin:  auto;
-    }
-    .registration-form {
-        max-width: 600px;
-        margin: 5px auto;
-        padding: 20px;
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    }
-    .registration-form h1 {
-        color: #10246B;
-        font-size: 36px;
-        margin-bottom: 20px;
-    }
-    .form-group {
-        margin-bottom: 20px;
-        text-align: left;
-    }
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-size: 16px;
-        color: #767676;
-    }
-    .form-control {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #B2B2B2;
-        border-radius: 6px;
-        font-size: 16px;
-    }
-    .error-list {
-        color: red;
-        font-size: 14px;
-        margin: 5px 0 0;
-        padding: 0;
-        list-style: none;
-    }
-    .submit-button {
-        width: 100%;
-        padding: 14px;
-        background-color: #10246B;
-        color: white;
-        font-size: 18px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-    }
-    .submit-button:hover {
-        background-color: #0d1c59;
-    }
-
-    /* Logo bovenaan */
-    .logo-container {
-        position: relative;
-        top: -50px; /* Zet het logo hoger */
-        margin-bottom: 30px;
-    }
-
-    /* Terug-knop linksonder */
-    .terug {
-        position: fixed;
-        bottom: 20px;
-        left: 20px;
-    }
-    .terug-icon img {
-        width: 100px;
-        height: auto;
-        cursor: pointer;
-    }
-    .terug-icon img:hover {
-        opacity: 0.8;
-    }
-
-    /* Flexbox voor Stad en Adres naast elkaar */
-    .form-row {
-        display: flex;
-        justify-content: space-between;
-    }
-
-    .form-row .form-group {
-        flex: 1;
-        margin-right: 10px;
-    }
-
-    .form-row .form-group:last-child {
-        margin-right: 0;
-    }
-</style>
-
-<div class="registration-page">
-    <!-- Logo en decoratie -->
-    <div class="logo-container">
-        <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" style="width: 500px; height: auto;">
-    </div>
-
-    <!-- Registratieformulier -->
-    <div class="registration-form">
-        <h1>Registreren</h1>
+<div class="container py-5">
+    <div class="form-container mx-auto" style="max-width: 600px;">
+        <h1 class="text-center mb-4">Registreren</h1>
+        
         <form method="POST" action="{{ url_for('main.register') }}">
             {{ form.hidden_tag() }}
 
             <!-- Gebruikersnaam -->
-            <div class="form-group">
-                <label for="username">Gebruikersnaam</label>
-                {{ form.username(class="form-control") }}
+            <div class="mb-3">
+                <label for="username" class="form-label">Gebruikersnaam:</label>
+                {{ form.username(class_="form-control", placeholder="Voer een gebruikersnaam in") }}
                 {% if form.username.errors %}
-                    <ul class="error-list">
-                        {% for error in form.username.errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
+                    <div class="text-danger">{{ form.username.errors[0] }}</div>
                 {% endif %}
             </div>
 
             <!-- E-mail -->
-            <div class="form-group">
-                <label for="email">E-mail</label>
-                {{ form.email(class="form-control") }}
+            <div class="mb-3">
+                <label for="email" class="form-label">E-mail:</label>
+                {{ form.email(class_="form-control", placeholder="Voer een e-mail in") }}
                 {% if form.email.errors %}
-                    <ul class="error-list">
-                        {% for error in form.email.errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
+                    <div class="text-danger">{{ form.email.errors[0] }}</div>
                 {% endif %}
             </div>
 
             <!-- Voornaam -->
-            <div class="form-group">
-                <label for="voornaam">Voornaam</label>
-                {{ form.voornaam(class="form-control") }}
+            <div class="mb-3">
+                <label for="voornaam" class="form-label">Voornaam:</label>
+                {{ form.voornaam(class_="form-control", placeholder="Voer je voornaam in") }}
                 {% if form.voornaam.errors %}
-                    <ul class="error-list">
-                        {% for error in form.voornaam.errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
+                    <div class="text-danger">{{ form.voornaam.errors[0] }}</div>
                 {% endif %}
             </div>
 
             <!-- Achternaam -->
-            <div class="form-group">
-                <label for="achternaam">Achternaam</label>
-                {{ form.achternaam(class="form-control") }}
+            <div class="mb-3">
+                <label for="achternaam" class="form-label">Achternaam:</label>
+                {{ form.achternaam(class_="form-control", placeholder="Voer je achternaam in") }}
                 {% if form.achternaam.errors %}
-                    <ul class="error-list">
-                        {% for error in form.achternaam.errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
+                    <div class="text-danger">{{ form.achternaam.errors[0] }}</div>
                 {% endif %}
             </div>
 
             <!-- Geboortedatum -->
-            <div class="form-group">
-                <label for="geboortedatum">Geboortedatum</label>
-                {{ form.geboortedatum(class="form-control") }}
+            <div class="mb-3">
+                <label for="geboortedatum" class="form-label">Geboortedatum:</label>
+                {{ form.geboortedatum(class_="form-control", placeholder="Selecteer je geboortedatum") }}
                 {% if form.geboortedatum.errors %}
-                    <ul class="error-list">
-                        {% for error in form.geboortedatum.errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
+                    <div class="text-danger">{{ form.geboortedatum.errors[0] }}</div>
                 {% endif %}
-                <!-- Foutmelding als de gebruiker jonger is dan 16 -->
                 {% if age_error %}
-                    <ul class="error-list">
-                        <li>{{ age_error }}</li>
-                    </ul>
+                    <div class="text-danger">{{ age_error }}</div>
                 {% endif %}
             </div>
 
             <!-- Geslacht -->
-            <div class="form-group">
-                <label for="gender">Geslacht</label>
-                {{ form.gender(class="form-control") }}
+            <div class="mb-3">
+                <label for="gender" class="form-label">Geslacht:</label>
+                {{ form.gender(class_="form-control") }}
                 {% if form.gender.errors %}
-                    <ul class="error-list">
-                        {% for error in form.gender.errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
+                    <div class="text-danger">{{ form.gender.errors[0] }}</div>
                 {% endif %}
             </div>
 
             <!-- Telefoonnummer -->
-            <div class="form-group">
-                <label for="telefoonnummer">Telefoonnummer</label>
-                {{ form.telefoonnummer(class="form-control") }}
+            <div class="mb-3">
+                <label for="telefoonnummer" class="form-label">Telefoonnummer:</label>
+                {{ form.telefoonnummer(class_="form-control", placeholder="Voer je telefoonnummer in") }}
                 {% if form.telefoonnummer.errors %}
-                    <ul class="error-list">
-                        {% for error in form.telefoonnummer.errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
+                    <div class="text-danger">{{ form.telefoonnummer.errors[0] }}</div>
                 {% endif %}
             </div>
 
             <!-- Flexbox voor Stad en Adres -->
-            <div class="form-row">
+            <div class="row mb-3">
                 <!-- Stad -->
-                <div class="form-group">
-                    <label for="stad">Stad</label>
-                    {{ form.stad(class="form-control") }}
+                <div class="col">
+                    <label for="stad" class="form-label">Stad:</label>
+                    {{ form.stad(class_="form-control", placeholder="Voer je stad in") }}
                     {% if form.stad.errors %}
-                        <ul class="error-list">
-                            {% for error in form.stad.errors %}
-                                <li>{{ error }}</li>
-                            {% endfor %}
-                        </ul>
+                        <div class="text-danger">{{ form.stad.errors[0] }}</div>
                     {% endif %}
                 </div>
 
                 <!-- Adres -->
-                <div class="form-group">
-                    <label for="adres">Adres</label>
-                    {{ form.adres(class="form-control") }}
+                <div class="col">
+                    <label for="adres" class="form-label">Adres:</label>
+                    {{ form.adres(class_="form-control", placeholder="Voer je adres in") }}
                     {% if form.adres.errors %}
-                        <ul class="error-list">
-                            {% for error in form.adres.errors %}
-                                <li>{{ error }}</li>
-                            {% endfor %}
-                        </ul>
+                        <div class="text-danger">{{ form.adres.errors[0] }}</div>
                     {% endif %}
                 </div>
             </div>
 
             <!-- Submit knop -->
-            <div class="form-group">
-                <button type="submit" class="submit-button">Registreren</button>
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary w-100">Registreren</button>
             </div>
         </form>
     </div>
 
     <!-- Terug Knop -->
-    <div class="terug">
-        <div class="terug-icon">
-            <a href="{{ url_for('main.home') }}">
-                <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug">
-            </a>
-        </div>
+    <div class="position-fixed" style="left: 10px; bottom: 10px; z-index: 100;">
+        <a href="{{ url_for('main.home') }}" class="back-icon">
+            <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" class="img-fluid" style="width: 70px;">
+        </a>
     </div>
 </div>
 
+<style>
+    .back-icon img {
+        transition: transform 0.3s ease;
+    }
+
+    .back-icon:hover img {
+        transform: scale(1.1);
+    }
+
+    @media (max-width: 768px) {
+        .back-icon img {
+            width: 50px; /* Smaller on mobile */
+        }
+    }
+</style>
 {% endblock %}
