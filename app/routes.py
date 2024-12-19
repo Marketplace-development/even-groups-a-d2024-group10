@@ -843,7 +843,7 @@ def rate_aanbieder(klusnummer):
                 communicatie_aanbieder=form.communicatie.data,
                 algemene_ervaring_aanbieder=form.algemene_ervaring.data,
                 comment=form.comment.data,
-                created_at=utc_to_plus_one()
+                created_at=utc_to_plus_one(datetime.utcnow())
             )
             db.session.add(new_rating)
             flash('Beoordeling succesvol toegevoegd!', 'success')
