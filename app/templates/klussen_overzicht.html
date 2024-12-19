@@ -60,8 +60,8 @@
             {% for klus in klussen %}
                 <div class="klus-card mb-4 p-3 border rounded-3 bg-custom text-white">
                     <h2 class="text-center text-white">{{ klus.naam if klus.naam else "Geen titel beschikbaar" }}</h2>
-                    <p class="text-white"><strong style="color: #ff5733;">Datum:</strong> {{ klus.datum.strftime('%d-%m-%Y') if klus.datum else "Niet opgegeven" }}</p>
-                    <p class="text-white"><strong style="color: #ff5733;">Locatie:</strong> {{ klus.locatie.split(',')[0] if klus.locatie else "Niet opgegeven" }}</p>
+                    <p class="text-white"><strong style="color: #fff777;">Datum:</strong> {{ klus.datum.strftime('%d-%m-%Y') if klus.datum else "Niet opgegeven" }}</p>
+                    <p class="text-white"><strong style="color: #fff777;">Locatie:</strong> {{ klus.locatie.split(',')[0] if klus.locatie else "Niet opgegeven" }}</p>
                     <a href="{{ url_for('main.klus_detail', klusnummer=klus.klusnummer) }}" class="text-white">Meer informatie →</a>
                 </div>
             {% endfor %}
