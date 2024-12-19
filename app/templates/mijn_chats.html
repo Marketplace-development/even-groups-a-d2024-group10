@@ -3,12 +3,12 @@
 {% block title %}Mijn chats - KLUSKOMPAS{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container-fluid mt-5">
     <h2 class="text-center mb-4" style="color: #10246B; font-weight: bold;">Mijn Chats</h2>
 
     <div class="row">
         <!-- Aangeboden Klussen -->
-        <div class="col-md-6">
+        <div class="col-12 col-md-6 mb-4">
             <h3 class="text-center mb-3" style="color: #007bff;">Aangeboden Klussen</h3>
             {% for klus in klussen %}
                 {% if klus.type == 'aangeboden' %}
@@ -37,7 +37,7 @@
         </div>
 
         <!-- Gezochte Klussen -->
-        <div class="col-md-6">
+        <div class="col-12 col-md-6 mb-4">
             <h3 class="text-center mb-3" style="color: #28a745;">Gezochte Klussen</h3>
             {% for klus in klussen %}
                 {% if klus.type == 'gezocht' %}
@@ -66,14 +66,12 @@
         </div>
     </div>
 </div>
-
-<!-- Terugknop -->
-<div class="back">
-    <a href="{{ url_for('main.dashboard') }}">
-        <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" style="width: 80px;">
+<!-- Terug knop -->
+<div class="position-fixed" style="left: 10px; bottom: 10px; z-index: 100;">
+    <a href="{{ url_for('main.dashboard') }}" class="back-icon">
+        <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" class="img-fluid" style="width: 70px;">
     </a>
 </div>
-
 <!-- CSS -->
 <style>
     /* Algemene instellingen */

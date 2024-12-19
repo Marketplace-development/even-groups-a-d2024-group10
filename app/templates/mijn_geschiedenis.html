@@ -3,24 +3,24 @@
 {% block title %}Mijn geschiedenis - KLUSKOMPAS{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container-fluid mt-5">
     <!-- Titel -->
     <div class="text-center mb-4">
-        <h1 class="text-dark-blue text-center">Mijn geschiedenis</h1>
+        <h1 class="text-custom">Mijn geschiedenis</h1>
     </div>
 
     <div class="row">
         <!-- Aangeboden Klussen -->
-        <div class="col-lg-6 mb-4">
+        <div class="col-12 col-md-6 mb-4">
             <div class="card shadow-sm">
-                <div class="card-header bg-dark-blue text-white text-center">
+                <div class="card-header bg-custom text-white text-center">
                     <h4>Aangeboden klussen</h4>
                 </div>
                 <div class="card-body">
                     {% if aangeboden_klussen %}
                         {% for klus in aangeboden_klussen %}
                             <div class="klus-item mb-3 p-3 border rounded">
-                                <h5 class="text-dark-blue"><strong>{{ klus.naam }}</strong> - {{ klus.datum.strftime('%d-%m-%Y') }}</h5>
+                                <h5 class="text-custom"><strong>{{ klus.naam }}</strong> - {{ klus.datum.strftime('%d-%m-%Y') }}</h5>
                                 <p><strong>Locatie:</strong> {{ klus.locatie }}</p>
                                 <p class="text-muted small">Voltooid op: {{ klus.voltooid_op.strftime('%d-%m-%Y %H:%M') }}</p>
 
@@ -29,7 +29,7 @@
                                     <p class="text-success mb-0">Beide beoordelingen zijn ingediend.</p>
                                 {% elif not klus.is_gewaardeerd_door_aanbieder() %}
                                     <a href="{{ url_for('main.rate_zoeker', klusnummer=klus.klusnummer) }}" 
-                                       class="btn btn-sm btn-dark-blue text-white">Beoordeling Indienen</a>
+                                       class="btn btn-sm btn-custom">Beoordeling Indienen</a>
                                 {% endif %}
                             </div>
                         {% endfor %}
@@ -41,16 +41,16 @@
         </div>
 
         <!-- Gezochte Klussen -->
-        <div class="col-lg-6 mb-4">
+        <div class="col-12 col-md-6 mb-4">
             <div class="card shadow-sm">
-                <div class="card-header bg-dark-blue text-white text-center">
+                <div class="card-header bg-custom text-white text-center">
                     <h4>Gezochte klussen</h4>
                 </div>
                 <div class="card-body">
                     {% if gezochte_klussen %}
                         {% for klus in gezochte_klussen %}
                             <div class="klus-item mb-3 p-3 border rounded">
-                                <h5 class="text-dark-blue"><strong>{{ klus.naam }}</strong> - {{ klus.datum.strftime('%d-%m-%Y') }}</h5>
+                                <h5 class="text-custom"><strong>{{ klus.naam }}</strong> - {{ klus.datum.strftime('%d-%m-%Y') }}</h5>
                                 <p><strong>Locatie:</strong> {{ klus.locatie }}</p>
                                 <p class="text-muted small">Voltooid op: {{ klus.voltooid_op.strftime('%d-%m-%Y %H:%M') }}</p>
 
@@ -59,7 +59,7 @@
                                     <p class="text-success mb-0">Beide beoordelingen zijn ingediend.</p>
                                 {% elif not klus.is_gewaardeerd_door_zoeker() %}
                                     <a href="{{ url_for('main.rate_aanbieder', klusnummer=klus.klusnummer) }}" 
-                                       class="btn btn-sm btn-dark-blue text-white">Beoordeling Indienen</a>
+                                       class="btn btn-sm btn-custom">Beoordeling Indienen</a>
                                 {% endif %}
                             </div>
                         {% endfor %}
@@ -71,109 +71,23 @@
         </div>
     </div>
 </div>
-
-<!-- Terugknop -->
-<div class="back">
-    <div class="back-icon">
-        <a href="{{ url_for('main.dashboard') }}">
-            <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" style="width: 100px; height: auto;">
-        </a>
-    </div>
+<!-- Terug knop -->
+<div class="position-fixed" style="left: 10px; bottom: 10px; z-index: 100;">
+    <a href="{{ url_for('main.dashboard') }}" class="back-icon">
+        <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" class="img-fluid" style="width: 70px;">
+    </a>
 </div>
 
-<!-- Stijl -->
 <style>
-    body {
-        background-color: #f8f9fa;
-        font-family: Arial, sans-serif;
-        color: #333;
+    .bg-custom {
+        background-color: #10246B !important;
     }
-
-    .bg-dark-blue {
-        background-color: #10246B;
-    }
-
-    .text-dark-blue {
-        color: #10246B;
-    }
-
-    .history-header {
-        text-align: center;
-        margin-bottom: 20px;
-    }
-
-    .history-header h2 {
-        font-size: 32px;
-        color: #10246B;
-    }
-
-    .card {
-        border: none;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .card-header {
-        font-size: 1.2rem;
-        font-weight: bold;
-    }
-
-    .klus-item {
-        background-color: #ffffff;
-        transition: box-shadow 0.3s ease;
-    }
-
-    .klus-item:hover {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    }
-
-    .btn-dark-blue {
-        background-color: #10246B;
-        border: none;
-        padding: 8px 12px;
-        border-radius: 5px;
-    }
-
-    .btn-dark-blue:hover {
-        background-color: #0e1f4a;
-        color: white;
-    }
-
-    .text-success {
-        color: #28a745;
-    }
-
-    .text-muted {
-        color: #6c757d;
-    }
-
-    .back {
-        position: fixed;
-        left: 20px;
-        bottom: 20px;
-        text-align: center;
-        z-index: 1000;
-    }
-
-    .back-icon {
-        width: 120px;
-        height: 120px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: 50%;
-        overflow: hidden;
-        transition: transform 0.3s ease;
-    }
-
-    .back-icon img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .back-icon:hover {
-        transform: scale(1.1);
+</style>
+<style>
+    .text-custom {
+        color: #10246B !important;
     }
 </style>
 {% endblock %}
+
+

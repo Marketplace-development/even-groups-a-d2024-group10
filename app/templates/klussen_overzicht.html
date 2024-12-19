@@ -3,213 +3,89 @@
 {% block title %}Alle Klussen - KLUSKOMPAS{% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container-fluid mt-5">
     <!-- Logo -->
-    <div class="logo">
-        <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo">
+    <div class="logo d-flex justify-content-center mb-4">
+        <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" class="img-fluid" style="max-width: 300px;">
     </div>
 
     <!-- Titel van de pagina -->
     <h1 class="text-center" style="font-size: 28px; color: #10246B;">Alle Klussen</h1>
 
     <!-- Filtersectie -->
-    <div class="filters">
+    <div class="filters mb-4 p-4 border rounded-3 bg-light">
         <form method="GET" action="{{ url_for('main.klussen') }}">
-            <div class="form-group">
-                <label for="categorie">Categorie:</label>
-                <select name="categorie" id="categorie" class="form-control">
-                    <option value="">Alle categorieën</option>
-                    {% for categorie in categorieën %}
-                        <option value="{{ categorie }}" {% if categorie == geselecteerde_categorie %}selected{% endif %}>
-                            {{ categorie }}
-                        </option>
-                    {% endfor %}
-                </select>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="categorie" class="form-label">Categorie:</label>
+                    <select name="categorie" id="categorie" class="form-select">
+                        <option value="">Alle categorieën</option>
+                        {% for categorie in categorieën %}
+                            <option value="{{ categorie }}" {% if categorie == geselecteerde_categorie %}selected{% endif %}>
+                                {{ categorie }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="locatie" class="form-label">Locatie:</label>
+                    <select name="locatie" id="locatie" class="form-select">
+                        <option value="">Alle locaties</option>
+                        {% for stad in locaties %}
+                            <option value="{{ stad }}" {% if stad.lower() == geselecteerde_locatie %}selected{% endif %}>
+                                {{ stad }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
             </div>
-        
-            <div class="form-group">
-                <label for="locatie">Locatie:</label>
-                <select name="locatie" id="locatie" class="form-control">
-                    <option value="">Alle locaties</option>
-                    {% for stad in locaties %}
-                        <option value="{{ stad }}" {% if stad.lower() == geselecteerde_locatie %}selected{% endif %}>
-                            {{ stad }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>            
-        
-            <div class="form-group">
-                <label for="datum_van">Van:</label>
-                <input type="date" name="datum_van" id="datum_van" class="form-control" value="{{ datum_van }}">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="datum_van" class="form-label">Van:</label>
+                    <input type="date" name="datum_van" id="datum_van" class="form-control" value="{{ datum_van }}">
+                </div>
+                <div class="col-md-6">
+                    <label for="datum_tot" class="form-label">Tot:</label>
+                    <input type="date" name="datum_tot" id="datum_tot" class="form-control" value="{{ datum_tot }}">
+                </div>
             </div>
-        
-            <div class="form-group">
-                <label for="datum_tot">Tot:</label>
-                <input type="date" name="datum_tot" id="datum_tot" class="form-control" value="{{ datum_tot }}">
-            </div>
-        
-            <button type="submit" class="btn btn-primary">Filteren</button>
+
+            <button type="submit" class="btn btn-custom">Filteren</button>
         </form>
-        
     </div>
 
     <!-- Lijst met klussen -->
     <div>
         {% if klussen %}
             {% for klus in klussen %}
-                <div class="klus-card">
-                    <!-- Titel van de klus -->
-                    <h2>{{ klus.naam if klus.naam else "Geen titel beschikbaar" }}</h2>
-
-                    <!-- Datum van de klus -->
-                    <p><strong>Datum:</strong> {{ klus.datum.strftime('%d-%m-%Y') if klus.datum else "Niet opgegeven" }}</p>
-
-                    <!-- Locatie van de klus -->
-                    <p><strong>Locatie:</strong> {{ klus.locatie.split(',')[0] if klus.locatie else "Niet opgegeven" }}</p>
-
-                    <!-- Link naar details -->
-                    <a href="{{ url_for('main.klus_detail', klusnummer=klus.klusnummer) }}">Meer informatie →</a>
+                <div class="klus-card mb-4 p-3 border rounded-3 bg-custom text-white">
+                    <h2 class="text-center text-white">{{ klus.naam if klus.naam else "Geen titel beschikbaar" }}</h2>
+                    <p class="text-white"><strong style="color: #ff5733;">Datum:</strong> {{ klus.datum.strftime('%d-%m-%Y') if klus.datum else "Niet opgegeven" }}</p>
+                    <p class="text-white"><strong style="color: #ff5733;">Locatie:</strong> {{ klus.locatie.split(',')[0] if klus.locatie else "Niet opgegeven" }}</p>
+                    <a href="{{ url_for('main.klus_detail', klusnummer=klus.klusnummer) }}" class="text-white">Meer informatie →</a>
                 </div>
             {% endfor %}
         {% else %}
             <p class="text-center" style="margin-top: 20px; color: #10246B;">Geen klussen gevonden. Probeer andere filters.</p>
         {% endif %}
     </div>
+</div>
 
-    <!-- Terug naar Dashboard optie -->
-    <div class="back">
-        <div class="back-icon">
-            <a href="{{ url_for('main.dashboard') }}">
-                <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" style="width: 100px; height: auto;">
-            </a>
-        </div>
-    </div>
+<!-- Terug knop -->
+<div class="position-fixed" style="left: 10px; bottom: 10px; z-index: 100;">
+    <a href="{{ url_for('main.dashboard') }}" class="back-icon">
+        <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" class="img-fluid" style="width: 70px;">
+    </a>
 </div>
 
 <style>
-    body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: white;
-        color: #10246B;
+    .bg-custom {
+        background-color: #10246B !important;
     }
-
-    .container {
-        width: 100%;
-        padding: 20px;
-        background-color: white;
-    }
-
-    .logo {
-        text-align: center;
-        margin-bottom: 20px;
-    }
-
-    .logo img {
-        max-width: 100%;
-        height: auto;
-        width: 300px;
-    }
-
-    .filters {
-        margin-bottom: 20px;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        background-color: #f9f9f9;
-    }
-
-    .filters .form-group {
-        margin-bottom: 15px;
-    }
-
-    .filters label {
-        font-weight: bold;
-        color: #10246B;
-    }
-
-    .filters .btn {
-        background-color: #10246B;
-        color: white;
-    }
-
-    .klus-card {
-        width: 90%;
-        max-width: 400px;
-        background-color: #10246B; /* Donkerblauwe achtergrond */
-        color: white; /* Witte tekst */
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-        margin: 16px auto;
-        text-align: center;
-        transition: transform 0.3s, box-shadow 0.3s;
-    }
-
-    .klus-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-    }
-
-    .klus-card h2 {
-        font-size: 24px;
-        font-weight: bold;
-        color: white; /* Witte tekst */
-        margin-bottom: 16px;
-        text-transform: uppercase;
-    }
-
-    .klus-card p {
-        font-size: 16px;
-        color: white; /* Witte tekst */
-        margin: 5px 0;
-    }
-
-    .klus-card p strong {
-        color: white; /* Witte tekst voor de labels */
-    }
-
-    .klus-card a {
-        font-size: 18px;
-        font-weight: bold;
-        color: white; /* Witte tekst */
-        text-decoration: none;
-        display: inline-block;
-        margin-top: 10px;
-    }
-
-    .klus-card a:hover {
-        text-decoration: underline;
-    }
-
-    .back {
-        position: fixed;
-        left: 20px;
-        bottom: 20px;
-        text-align: center;
-        z-index: 100;
-    }
-
-    .back-icon {
-        width: 120px;
-        height: 120px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: 50%;
-        overflow: hidden;
-        transition: transform 0.3s ease;
-    }
-
-    .back-icon img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .back-icon:hover {
-        transform: scale(1.1);
+</style>
+<style>
+    .btn-custom {
+        color: #10246B !important;
     }
 </style>
 {% endblock %}
