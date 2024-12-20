@@ -28,14 +28,6 @@
                 <h4 class="mb-3" style="color: #10246B;">Beoordeling als kluszoeker</h4>
                 {% set gemiddelde_score_zoeker = user.gemiddelde_score_zoeker() %}
                 {% if gemiddelde_score_zoeker %}
-                    <div class="stars mb-2">
-                        {% for _ in range(gemiddelde_score_zoeker|int) %}
-                            <span class="rating-star">&#9733;</span>
-                        {% endfor %}
-                        {% for _ in range(10 - gemiddelde_score_zoeker|int) %}
-                            <span class="rating-star empty">&#9733;</span>
-                        {% endfor %}
-                    </div>
                     <p class="score">{{ "%.1f"|format(gemiddelde_score_zoeker) }}/10</p>
                 {% else %}
                     <p class="no-rating">Nog geen beoordelingen</p>
@@ -46,14 +38,6 @@
                 <h4 class="mb-3" style="color: #10246B;">Beoordeling als klusaanbieder</h4>
                 {% set gemiddelde_score_aanbieder = user.gemiddelde_score_aanbieder() %}
                 {% if gemiddelde_score_aanbieder %}
-                    <div class="stars mb-2">
-                        {% for _ in range(gemiddelde_score_aanbieder|int) %}
-                            <span class="rating-star">&#9733;</span>
-                        {% endfor %}
-                        {% for _ in range(10 - gemiddelde_score_aanbieder|int) %}
-                            <span class="rating-star empty">&#9733;</span>
-                        {% endfor %}
-                    </div>
                     <p class="score">{{ "%.1f"|format(gemiddelde_score_aanbieder) }}/10</p>
                 {% else %}
                     <p class="no-rating">Nog geen beoordelingen</p>
