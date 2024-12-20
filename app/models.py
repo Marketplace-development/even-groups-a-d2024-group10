@@ -1,7 +1,7 @@
 from datetime import datetime, date
 from . import db
 import uuid
-import requests
+import requests # type: ignore
 from sqlalchemy.orm import validates
 
 

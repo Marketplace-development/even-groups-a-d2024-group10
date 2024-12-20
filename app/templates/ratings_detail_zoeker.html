@@ -4,13 +4,16 @@
 
 {% block content %}
 <div class="container my-5">
-    <!-- Logo -->
-    <div class="text-center mb-4">
-        <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" class="img-fluid" style="max-width: 300px;">
+    <div class="d-flex justify-content-center mb-4">
+        <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" 
+            alt="Kluskompas Logo" 
+            class="img-fluid" 
+            style="max-width: 300px;">
     </div>
     <!-- Titel van de pagina -->
-    <h1 class="text-center text-custom" style="font-size: 28px;">Beoordelingsdetails</h1>
-
+    <div class="d-flex justify-content-center mb-4">
+        <h1 class="text-custom" style="font-size: 28px;">Beoordelingsdetails</h1>
+    </div>
     <!-- Detailinformatie -->
     <div class="card mx-auto my-4 p-4 shadow-lg" style="max-width: 600px; background-color: #f9f9f9;">
         <h2 class="card-title text-custom">{{ rating.algemene_ervaring_zoeker }}</h2>
