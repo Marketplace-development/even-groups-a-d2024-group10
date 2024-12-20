@@ -738,7 +738,7 @@ def rate_aanbieder(klusnummer):
         db.session.add(new_rating)
         flash('Beoordeling succesvol toegevoegd!', 'success')
         db.session.commit()
-        
+
         maak_melding(
             gebruiker_id=klus.idnummer,
             bericht=f"Je bent beoordeeld door de kluszoeker voor de klus '{klus.naam}'."
@@ -864,7 +864,6 @@ def markeer_melding_gelezen(id):
         flash("Er ging iets mis bij het markeren van de melding.", "danger")
     return redirect(url_for('main.alle_meldingen'))
 
-
 @main.app_context_processor
 def inject_notificaties():
     if 'user_id' in session and session['user_id']:
@@ -885,9 +884,6 @@ def inject_notificaties():
         'aantal_ongelezen_meldingen': 0
     }
 
-
-
-
 @main.route('/meldingen', methods=['GET'])
 def alle_meldingen():
     if 'user_id' not in session:
@@ -899,7 +895,6 @@ def alle_meldingen():
     ).order_by(Notificatie.aangemaakt_op.desc()).all()
 
     return render_template('alle_meldingen.html', meldingen=alle_meldingen)
-
 
 @main.route('/beoordelingen/<string:klusnummer>', methods=['GET'])
 def beoordelingen_kluszoeker(klusnummer):
