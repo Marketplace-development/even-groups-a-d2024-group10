@@ -57,7 +57,7 @@
 
 <div class="container confirmation-container">
     <div class="row">
-        <!-- Confirmation Section -->
+        
         <div class="col-12 confirmation-header text-center">
             <h2>Profiel verwijderen</h2>
             <p>Weet je zeker dat je je profiel wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.</p>
@@ -66,9 +66,9 @@
 
     <div class="row mt-5">
         <div class="col-12 d-flex flex-column flex-md-row justify-content-between">
-            <!-- Back Button -->
+            
             <a href="{{ url_for('main.profile') }}" class="btn btn-secondary w-100 mb-2 mb-md-0">Terug naar Profiel</a>
-            <!-- Confirmation Buttons -->
+            
             <form action="{{ url_for('main.bevestig_verwijdering') }}" method="POST" class="w-100">
                 <button type="submit" class="btn btn-danger w-100">Bevestig Verwijdering</button>
             </form>

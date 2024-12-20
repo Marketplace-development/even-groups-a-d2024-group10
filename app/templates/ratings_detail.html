@@ -4,15 +4,15 @@
 
 {% block content %}
 <div class="container my-4">
-    <!-- Logo -->
+    
     <div class="text-center mb-4">
         <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" class="img-fluid" style="max-width: 150px;">
     </div>
 
-    <!-- Titel van de pagina -->
+    
     <h1 class="text-center" style="font-size: 28px; color: #10246B;">Beoordelingsdetails</h1>
 
-    <!-- Detailinformatie -->
+    
     <div class="card details-card shadow-sm">
         <div class="card-body">
             <h2 class="card-title">Algemene ervaring: {{ rating.algemene_ervaring_aanbieder if rol == 'aanbieder' else rating.algemene_ervaring_zoeker }}</h2>
@@ -28,7 +28,7 @@
             
             <p><strong>Communicatie:</strong> {{ rating.communicatie_aanbieder if rol == 'aanbieder' else rating.communicatie_zoeker }}</p>
             
-            <!-- Alleen commentaar tonen als er een commentaar is -->
+            
             {% if rating.comment %}
             <p><strong>Commentaar:</strong> {{ rating.comment }}</p>
             {% else %}
@@ -39,7 +39,7 @@
         </div>
     </div>
 
-    <!-- Terug knop -->
+    
     <div class="position-fixed" style="left: 10px; bottom: 10px; z-index: 100;">
         <a href="{{ url_for('main.dashboard') }}" class="back-icon">
             <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" class="img-fluid" style="width: 70px;">

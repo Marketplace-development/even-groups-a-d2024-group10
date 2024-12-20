@@ -10,11 +10,11 @@
             class="img-fluid" 
             style="max-width: 300px;">
     </div>
-    <!-- Titel van de pagina -->
+    
     <div class="d-flex justify-content-center mb-4">
         <h1 class="text-custom" style="font-size: 28px;">Beoordelingsdetails</h1>
     </div>
-    <!-- Detailinformatie -->
+    
     <div class="card mx-auto my-4 p-4 shadow-lg" style="max-width: 600px; background-color: #f9f9f9;">
         <h2 class="card-title text-custom">{{ rating.algemene_ervaring_zoeker }}</h2>
         <p><strong>Vriendelijkheid:</strong> {{ rating.vriendelijkheid_zoeker }}</p>
@@ -22,7 +22,7 @@
         <p><strong>Kwaliteit:</strong> {{ rating.kwaliteit }}</p>
         <p><strong>Communicatie:</strong> {{ rating.communicatie_zoeker }}</p>
         
-        <!-- Alleen commentaar tonen als er een commentaar is -->
+        
         {% if rating.comment %}
         <p><strong>Commentaar:</strong> {{ rating.comment }}</p>
         {% else %}
@@ -32,7 +32,7 @@
         <p><strong>Datum:</strong> {{ rating.created_at.strftime('%d-%m-%Y') }}</p>
     </div>
 
-    <!-- Terug knop -->
+    
     <div class="position-fixed" style="left: 10px; bottom: 10px; z-index: 100;">
         <a href="{{ url_for('main.mijn_aangeboden_klussen') }}" class="back-icon">
             <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" class="img-fluid" style="width: 70px;">

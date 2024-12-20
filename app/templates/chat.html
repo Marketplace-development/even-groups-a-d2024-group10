@@ -4,13 +4,13 @@
 
 {% block content %}
 <div class="container py-4">
-    <!-- Toon met wie je chat -->
+    
     <div class="text-center mb-3">
         <h2 class="text-primary">Chat met: {{ ontvanger.voornaam }} {{ ontvanger.achternaam }}</h2>
         <h4 class="text-muted">Klus: {{ klus.naam }}</h4>
     </div>
 
-    <!-- Berichtenlijst -->
+    
     <div class="chat-box border rounded bg-light p-3 mb-3" id="chat-box">
         {% for bericht in berichten %}
             <div class="chat-message d-flex {{ 'justify-content-end' if bericht.afzender_id == session['user_id'] else 'justify-content-start' }} mb-2">
@@ -22,7 +22,7 @@
         {% endfor %}
     </div>
 
-    <!-- Bericht verzenden -->
+    
     <form method="POST" action="{{ url_for('chat.chat_page', klusnummer=klus.klusnummer) }}">
         <textarea name="inhoud" class="form-control mb-2" placeholder="Typ hier je bericht..." rows="2" required></textarea>
         <button type="submit" class="btn btn-primary w-100">
@@ -31,7 +31,7 @@
     </form>
 </div>
 
-<!-- Terug optie -->
+
 <div class="position-fixed bottom-0 start-0 m-3">
     <a href="{{ url_for('chat.mijn_chats') }}">
         <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" class="img-fluid" style="width: 80px;">

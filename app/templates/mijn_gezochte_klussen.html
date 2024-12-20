@@ -4,22 +4,22 @@
 
 {% block content %}
 <div class="container">
-    <!-- Titel -->
+    
     <div class="header text-center mb-4">
         <h2>Mijn gezochte klussen</h2>
     </div>
 
-    <!-- Klussenlijst -->
+    
     <div class="row">
         {% if klussen %}
             {% for klus in klussen %}
                 <div class="col-md-4 mb-4">
                     <div class="card">
                         <div class="card-body">
-                            <!-- Titel van de klus -->
+                            
                             <h3 class="card-title">{{ klus.naam }}</h3>
 
-                            <!-- Klusdetails -->
+                            
                             <p><strong>Locatie:</strong> {{ klus.locatie }}</p>
                             <p><strong>Tijd:</strong> {{ klus.tijd }}</p>
                             <p><strong>Datum:</strong> {{ klus.datum }}</p>
@@ -28,7 +28,7 @@
                             <p><strong>Verwachte duur:</strong> {{ klus.verwachte_duur }}</p>
                             <p><strong>Beschrijving:</strong> {{ klus.beschrijving }}</p>
 
-                            <!-- Status van de klus -->
+                            
                             <p><strong>Status:</strong> 
                                 {% if klus.status == 'completed' %}
                                     <span class="text-success font-weight-bold">Klus voltooid</span>
@@ -37,7 +37,7 @@
                                 {% endif %}
                             </p>
 
-                            <!-- Acties -->
+                            
                             {% if klus.status == 'geaccepteerd' %}
                                 <a href="{{ url_for('chat.chat_page', klusnummer=klus.klusnummer) }}" class="btn btn-primary btn-sm">Chatten</a>
 
@@ -57,7 +57,7 @@
     </div>
 </div>
 
-<!-- Terug knop -->
+
 <div class="position-fixed" style="left: 10px; bottom: 10px; z-index: 100;">
     <a href="{{ url_for('main.mijn_klussen_selectie') }}" class="back-icon">
         <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" class="img-fluid" style="width: 70px;">
@@ -153,7 +153,7 @@
         background-color: #c82333;
     }
 
-    /* Responsieve aanpassingen */
+    
     .back-icon img {
         width: 80px;
         height: auto;

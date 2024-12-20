@@ -2,23 +2,23 @@
 
 {% block content %}
     <div>
-        <!-- Logo en decoratie -->
+        
         <div style="left: 50%; top: 30px; position: absolute; transform: translateX(-50%);">
             <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" style="width: 300px; height: auto;">
         </div>
 
-        <!-- Mijn Klussen Container -->
+        
         <div style="width: 80%; max-width: 1200px; margin: 100px auto; padding: 20px; background-color: #f9f9f9; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius: 8px;">
             <h1 style="text-align: center; color: #10246B;">Mijn geaccepteerde klussen</h1>
 
-            <!-- Klussen Lijst -->
+            
             <ul style="list-style: none; padding: 0; margin: 0;">
                 {% for klus in klussen %}
                     <li style="background-color: #ffffff; margin: 20px 0; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-                        <!-- Titel van de klus -->
+                        
                         <h2 style="color: #10246B; font-size: 32px; margin-bottom: 10px;">{{ klus.naam }}</h2>
 
-                        <!-- Locatie en andere klusdetails -->
+                        
                         <div style="margin-bottom: 15px;">
                             <strong>Locatie:</strong> {{ klus.locatie }}<br>
                             <strong>Tijd:</strong> {{ klus.tijd }}<br>
@@ -29,14 +29,14 @@
                             <strong>Beschrijving:</strong> {{ klus.beschrijving }}<br>
                         </div>
 
-                        <!-- Status en Knop voor Voltooien -->
+                        
                         <div style="margin-top: 20px;">
                             <strong>Status:</strong> {{ klus.status }}<br>
                             <div style="text-align: center; margin-top: 20px;">
                                 {% if klus.status == 'completed' %}
                                     <span style="font-size: 18px; color: green;">Klus voltooid</span>
                                 {% else %}
-                                    <!-- Formulier voor het markeren van de klus als voltooid -->
+                                    
                                     <form action="{{ url_for('main.markeer_klus_voltooid', klusnummer=klus.klusnummer) }}" method="POST">
                                         <button type="submit" style="display: inline-block; background-color: #10246B; color: white; padding: 10px 20px; border-radius: 8px; font-size: 18px;">
                                             Markeer als voltooid
@@ -50,7 +50,7 @@
             </ul>
         </div>
 
-        <!-- Terugknop -->
+        
         <div style="position: fixed; bottom: 20px; left: 20px;">
             <a href="{{ url_for('main.dashboard') }}">
                 <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" style="width: 100px; height: auto;">

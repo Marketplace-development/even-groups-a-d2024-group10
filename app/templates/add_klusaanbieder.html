@@ -10,7 +10,7 @@
         <form method="POST" action="{{ url_for('main.add_klusaanbieder') }}">
             {{ form.hidden_tag() }}
 
-            <!-- Titel -->
+            
             <div class="mb-3">
                 <label for="naam" class="form-label">Titel:</label>
                 {{ form.naam(class_="form-control", placeholder="Voer een titel in") }}
@@ -19,7 +19,7 @@
                 {% endif %}
             </div>
 
-            <!-- Categorie -->
+            
             <div class="mb-3">
                 <label for="categorie" class="form-label">Categorie:</label>
                 {{ form.categorie(class_="form-control") }}
@@ -28,7 +28,7 @@
                 {% endif %}
             </div>
 
-            <!-- Stad -->
+            
             <div class="mb-3">
                 <label for="stad" class="form-label">Stad:</label>
                 {{ form.stad(class_="form-control", placeholder="Voer een stad in") }}
@@ -37,7 +37,7 @@
                 {% endif %}
             </div>
 
-            <!-- Adres -->
+            
             <div class="mb-3">
                 <label for="adres" class="form-label">Adres:</label>
                 {{ form.adres(class_="form-control", placeholder="Voer een adres in") }}
@@ -46,7 +46,7 @@
                 {% endif %}
             </div>
 
-            <!-- Beschrijving -->
+            
             <div class="mb-3">
                 <label for="beschrijving" class="form-label">Beschrijving:</label>
                 {{ form.beschrijving(class_="form-control", placeholder="Beschrijf de klus") }}
@@ -55,7 +55,7 @@
                 {% endif %}
             </div>
 
-            <!-- Datum -->
+            
             <div class="mb-3">
                 <label for="datum" class="form-label">Datum:</label>
                 {{ form.datum(class_="form-control", placeholder="Selecteer een datum") }}
@@ -64,7 +64,7 @@
                 {% endif %}
             </div>
 
-            <!-- Tijd -->
+            
             <div class="mb-3">
                 <label for="tijd" class="form-label">Tijd:</label>
                 <div class="d-flex gap-3">
@@ -79,7 +79,7 @@
                 {% endif %}
             </div>
 
-            <!-- Geschatte duur -->
+            
             <div class="mb-3">
                 <label for="verwachte_duur" class="form-label">Geschatte duur:</label>
                 <div class="d-flex gap-3">
@@ -94,7 +94,7 @@
                 {% endif %}
             </div>
             
-            <!-- Vergoeding -->
+            
             <div class="mb-3">
                 <label for="vergoeding" class="form-label">Vergoeding:</label>
                 {{ form.vergoeding(class_="form-control", placeholder="Voer de vergoeding in (in euro)") }}
@@ -103,12 +103,12 @@
                 {% endif %}
             </div>
 
-            <!-- Aanmaken button -->
+            
             <button type="submit" class="btn btn-primary w-100">Aanmaken</button>
         </form>
     </div>
 
-    <!-- Terug knop -->
+    
     <div class="position-fixed" style="left: 10px; bottom: 10px; z-index: 100;">
         <a href="{{ url_for('main.dashboard') }}" class="back-icon">
             <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" class="img-fluid" style="width: 70px;">
@@ -127,7 +127,7 @@
 
     @media (max-width: 768px) {
         .back-icon img {
-            width: 50px; /* Smaller on mobile */
+            width: 50px; 
         }
     }
 </style>

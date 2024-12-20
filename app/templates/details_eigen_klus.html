@@ -84,15 +84,15 @@
 </head>
 <body>
     <div class="container">
-        <!-- Logo -->
+        
         <div class="logo">
             <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo">
         </div>
 
-        <!-- Titel -->
+        
         <div class="title">{{ klus.naam }}</div>
 
-        <!-- Klusdetails -->
+        
         <div class="details">
             <div>
                 <span class="label">Categorie:</span>
@@ -120,7 +120,7 @@
             </div>
         </div>
 
-        <!-- Terugknop -->
+        
         <div class="buttons">
             <a href="{{ url_for('main.mijn_aangeboden_klussen') }}" class="back-link">Terug naar overzicht</a>
         </div>

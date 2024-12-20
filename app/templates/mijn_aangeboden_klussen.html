@@ -4,12 +4,12 @@
 
 {% block content %}
 <div class="container">
-    <!-- Logo en decoratie -->
+    
     <div class="logo text-center mb-4">
         <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" class="logo-img">
     </div>
 
-    <!-- Tabel met klussen -->
+    
     <div class="klussen-table mt-5">
         {% if klussen|length > 0 %}
         <div class="table-responsive">
@@ -67,7 +67,7 @@
         {% endif %}
     </div>
 </div>
-<!-- Terug knop -->
+
 <div class="position-fixed" style="left: 10px; bottom: 10px; z-index: 100;">
     <a href="{{ url_for('main.mijn_klussen_selectie') }}" class="back-icon">
         <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" class="img-fluid" style="width: 70px;">
@@ -75,7 +75,7 @@
 </div>
 
 <style>
-    /* Algemene stijl */
+    
     body {
         margin: 0;
         font-family: Arial, sans-serif;
@@ -143,7 +143,7 @@
         padding: 20px;
     }
 
-    /* Responsieve aanpassingen */
+    
     @media (max-width: 768px) {
         .table td, .table th {
             padding: 8px;
@@ -172,7 +172,7 @@
         }
     }
 
-    /* Tabelcontainer voor grotere schermen */
+    
     .table-container {
         width: 100%;
         overflow-x: hidden;

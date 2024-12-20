@@ -4,15 +4,15 @@
 
 {% block content %}
 <div class="container-fluid mt-5">
-    <!-- Logo -->
+    
     <div class="logo d-flex justify-content-center mb-4">
         <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" class="img-fluid" style="max-width: 300px;">
     </div>
 
-    <!-- Titel van de pagina -->
+    
     <h1 class="text-center" style="font-size: 28px; color: #10246B;">Alle Klussen</h1>
 
-    <!-- Filtersectie -->
+    
     <div class="filters mb-4 p-4 border rounded-3 bg-light">
         <form method="GET" action="{{ url_for('main.klussen') }}">
             <div class="row mb-3">
@@ -54,7 +54,7 @@
         </form>
     </div>
 
-    <!-- Lijst met klussen -->
+    
     <div>
         {% if klussen %}
             {% for klus in klussen %}
@@ -71,7 +71,7 @@
     </div>
 </div>
 
-<!-- Terug knop -->
+
 <div class="position-fixed" style="left: 10px; bottom: 10px; z-index: 100;">
     <a href="{{ url_for('main.dashboard') }}" class="back-icon">
         <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" class="img-fluid" style="width: 70px;">

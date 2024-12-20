@@ -2,23 +2,23 @@
 
 {% block content %}
 <div class="container text-center py-5" style="max-width: 400px; margin: 0 auto;">
-    <!-- Logo -->
+    
     <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" 
          alt="Kluskompas Logo" 
          class="img-fluid mb-4" style="max-width: 100%;">
 
-    <!-- Titel -->
+    
     <h1 style="color:#10246B;" class="mb-4">Mijn klussen</h1>
 
-    <!-- Knoppen -->
+    
     <div class="d-flex flex-wrap justify-content-center gap-3 mt-4">
-        <!-- Knop voor Mijn Aangeboden Klussen -->
+        
         <a href="{{ url_for('main.mijn_aangeboden_klussen') }}" 
            class="btn btn-success btn-lg px-4 py-3" aria-label="Bekijk mijn aangeboden klussen">
             Mijn aangeboden klussen
         </a>
 
-        <!-- Knop voor Mijn Gezochte Klussen -->
+        
         <a href="{{ url_for('main.mijn_gezochte_klussen') }}" 
            class="btn btn-primary btn-lg px-4 py-3" aria-label="Bekijk mijn gezochte klussen">
             Mijn gezochte klussen
@@ -26,7 +26,7 @@
     </div>
 </div>
 
-<!-- Terug knop -->
+
 <div class="position-fixed" style="left: 10px; bottom: 10px; z-index: 100;">
     <a href="{{ url_for('main.dashboard') }}" class="back-icon">
         <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" class="img-fluid" style="width: 70px;">

@@ -92,7 +92,7 @@
     <form method="POST" action="{{ url_for('main.rate_zoeker', klusnummer=klus.klusnummer) }}">
         {{ form.hidden_tag() }}
         
-        <!-- Vriendelijkheid -->
+        
         <div class="criteria">
             <label for="vriendelijkheid">Vriendelijkheid</label>
             <div class="star-rating">
@@ -103,7 +103,7 @@
             </div>
         </div>
 
-        <!-- Tijdigheid -->
+        
         <div class="criteria">
             <label for="tijdigheid">Tijdigheid</label>
             <div class="star-rating">
@@ -114,7 +114,7 @@
             </div>
         </div>
 
-        <!-- Kwaliteit -->
+        
         <div class="criteria">
             <label for="kwaliteit">Kwaliteit</label>
             <div class="star-rating">
@@ -125,7 +125,7 @@
             </div>
         </div>
 
-        <!-- Communicatie -->
+        
         <div class="criteria">
             <label for="communicatie">Communicatie</label>
             <div class="star-rating">
@@ -136,7 +136,7 @@
             </div>
         </div>
 
-        <!-- Algemene Ervaring -->
+        
         <div class="criteria">
             <label for="algemene_ervaring">Algemene ervaring</label>
             <div class="star-rating">
@@ -147,7 +147,7 @@
             </div>
         </div>
 
-        <!-- Algemene Commentaar -->
+        
         <div class="general-comment">
             <label for="comment">Algemene commentaar</label>
             {{ form.comment(class_="form-control", placeholder="Optioneel: voeg een algemene commentaar toe") }}

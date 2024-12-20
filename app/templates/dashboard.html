@@ -4,12 +4,12 @@
 
 {% block content %}
 <div class="container">
-    <!-- Logo en decoratie -->
+    
     <div class="logo-container">
         <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo">
     </div>
 
-    <!-- Knoppen voor acties -->
+    
     <div class="button-container">
         <a href="{{ url_for('main.add_klusaanbieder') }}" class="button">Klus aanbieden</a>
         <a href="{{ url_for('main.klussen') }}" class="button">Klus zoeken</a>
@@ -22,7 +22,7 @@
         </a>
     </div>
 
-    <!-- Logout optie -->
+    
     <div class="logout">
         <a href="{{ url_for('main.logout') }}" class="logout-icon">
             <img src="{{ url_for('static', filename='images/logout.png') }}" alt="Logout">
@@ -44,9 +44,9 @@
         min-height: 100vh;
         display: flex;
         flex-direction: column;
-        justify-content: flex-start; /* Inhoud dichter naar boven */
+        justify-content: flex-start; 
         align-items: center;
-        padding: 40px 20px; /* Padding-top verhoogd voor desktop */
+        padding: 40px 20px; 
         box-sizing: border-box;
         text-align: center;
     }
@@ -55,7 +55,7 @@
         width: 100%;
         max-width: 500px;
         height: auto;
-        margin-bottom: 20px; /* Afstand logo en knoppen verminderd */
+        margin-bottom: 20px; 
     }
 
     .button-container {
@@ -123,7 +123,7 @@
 
     @media (max-width: 768px) {
         .container {
-            padding-top: 20px; /* Meer naar boven op mobiel */
+            padding-top: 20px; 
         }
 
         .logo-container img {
@@ -131,7 +131,7 @@
         }
 
         .button {
-            font-size: 18px; /* Kleinere knoppen voor mobiel */
+            font-size: 18px; 
         }
 
         .logout {
@@ -145,8 +145,8 @@
 
     @media (min-width: 768px) {
         .button {
-            font-size: 24px; /* Grotere knoppen voor pc */
-            padding: 20px; /* Grotere knoppen */
+            font-size: 24px; 
+            padding: 20px; 
         }
     }
 </style>

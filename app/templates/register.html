@@ -10,7 +10,7 @@
         <form method="POST" action="{{ url_for('main.register') }}">
             {{ form.hidden_tag() }}
 
-            <!-- Gebruikersnaam -->
+            
             <div class="mb-3">
                 <label for="username" class="form-label">Gebruikersnaam:</label>
                 {{ form.username(class_="form-control", placeholder="Voer een gebruikersnaam in") }}
@@ -19,7 +19,7 @@
                 {% endif %}
             </div>
 
-            <!-- E-mail -->
+            
             <div class="mb-3">
                 <label for="email" class="form-label">E-mail:</label>
                 {{ form.email(class_="form-control", placeholder="Voer een e-mail in") }}
@@ -28,7 +28,7 @@
                 {% endif %}
             </div>
 
-            <!-- Voornaam -->
+            
             <div class="mb-3">
                 <label for="voornaam" class="form-label">Voornaam:</label>
                 {{ form.voornaam(class_="form-control", placeholder="Voer je voornaam in") }}
@@ -37,7 +37,7 @@
                 {% endif %}
             </div>
 
-            <!-- Achternaam -->
+            
             <div class="mb-3">
                 <label for="achternaam" class="form-label">Achternaam:</label>
                 {{ form.achternaam(class_="form-control", placeholder="Voer je achternaam in") }}
@@ -46,7 +46,7 @@
                 {% endif %}
             </div>
 
-            <!-- Geboortedatum -->
+            
             <div class="mb-3">
                 <label for="geboortedatum" class="form-label">Geboortedatum:</label>
                 {{ form.geboortedatum(class_="form-control", placeholder="Selecteer je geboortedatum") }}
@@ -58,7 +58,7 @@
                 {% endif %}
             </div>
 
-            <!-- Geslacht -->
+            
             <div class="mb-3">
                 <label for="gender" class="form-label">Geslacht:</label>
                 {{ form.gender(class_="form-control") }}
@@ -67,7 +67,7 @@
                 {% endif %}
             </div>
 
-            <!-- Telefoonnummer -->
+            
             <div class="mb-3">
                 <label for="telefoonnummer" class="form-label">Telefoonnummer:</label>
                 {{ form.telefoonnummer(class_="form-control", placeholder="Voer je telefoonnummer in") }}
@@ -76,9 +76,9 @@
                 {% endif %}
             </div>
 
-            <!-- Flexbox voor Stad en Adres -->
+            
             <div class="row mb-3">
-                <!-- Stad -->
+                
                 <div class="col">
                     <label for="stad" class="form-label">Stad:</label>
                     {{ form.stad(class_="form-control", placeholder="Voer je stad in") }}
@@ -87,7 +87,7 @@
                     {% endif %}
                 </div>
 
-                <!-- Adres -->
+                
                 <div class="col">
                     <label for="adres" class="form-label">Adres:</label>
                     {{ form.adres(class_="form-control", placeholder="Voer je adres in") }}
@@ -97,14 +97,14 @@
                 </div>
             </div>
 
-            <!-- Submit knop -->
+            
             <div class="mb-3">
                 <button type="submit" class="btn btn-primary w-100">Registreren</button>
             </div>
         </form>
     </div>
 
-    <!-- Terug Knop -->
+   
     <div class="position-fixed" style="left: 10px; bottom: 10px; z-index: 100;">
         <a href="{{ url_for('main.home') }}" class="back-icon">
             <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" class="img-fluid" style="width: 70px;">
@@ -123,7 +123,7 @@
 
     @media (max-width: 768px) {
         .back-icon img {
-            width: 50px; /* Smaller on mobile */
+            width: 50px; 
         }
     }
 </style>

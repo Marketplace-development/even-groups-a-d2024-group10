@@ -9,14 +9,14 @@
   <p><strong>Beschrijving:</strong> {{ klus.beschrijving or 'Geen beschrijving opgegeven' }}</p>
   <p><strong>Vergoeding:</strong> {{ klus.vergoeding }} €</p>
 
-  <!-- Voeg datum toe -->
+  
   {% if klus.datum %}
     <p><strong>Datum:</strong> {{ klus.datum.strftime('%d/%m/%Y') }}</p>
   {% else %}
     <p><strong>Datum:</strong> Geen datum opgegeven</p>
   {% endif %}
 
-  <!-- Voeg verwachte duur toe -->
+  
   {% if klus.verwachte_duur %}
     <p><strong>Verwachte duur:</strong> {{ klus.verwachte_duur }} minuten</p>
   {% else %}

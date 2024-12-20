@@ -4,13 +4,13 @@
 
 {% block content %}
 <div class="container-fluid mt-5">
-    <!-- Titel -->
+   
     <div class="text-center mb-4">
         <h1 class="text-custom">Mijn geschiedenis</h1>
     </div>
 
     <div class="row">
-        <!-- Aangeboden Klussen -->
+        
         <div class="col-12 col-md-6 mb-4">
             <div class="card shadow-sm">
                 <div class="card-header bg-custom text-white text-center">
@@ -24,7 +24,7 @@
                                 <p><strong>Locatie:</strong> {{ klus.locatie }}</p>
                                 <p class="text-muted small">Voltooid op: {{ klus.voltooid_op.strftime('%d-%m-%Y %H:%M') }}</p>
 
-                                <!-- Status en knop -->
+                                
                                 {% if klus.is_gewaardeerd_door_aanbieder() and klus.is_gewaardeerd_door_zoeker() %}
                                     <p class="text-success mb-0">Beide beoordelingen zijn ingediend.</p>
                                 {% elif not klus.is_gewaardeerd_door_aanbieder() %}
@@ -40,7 +40,7 @@
             </div>
         </div>
 
-        <!-- Gezochte Klussen -->
+        
         <div class="col-12 col-md-6 mb-4">
             <div class="card shadow-sm">
                 <div class="card-header bg-custom text-white text-center">
@@ -54,7 +54,7 @@
                                 <p><strong>Locatie:</strong> {{ klus.locatie }}</p>
                                 <p class="text-muted small">Voltooid op: {{ klus.voltooid_op.strftime('%d-%m-%Y %H:%M') }}</p>
 
-                                <!-- Status en knop -->
+                                
                                 {% if klus.is_gewaardeerd_door_zoeker() and klus.is_gewaardeerd_door_aanbieder() %}
                                     <p class="text-success mb-0">Beide beoordelingen zijn ingediend.</p>
                                 {% elif not klus.is_gewaardeerd_door_zoeker() %}
@@ -71,7 +71,7 @@
         </div>
     </div>
 </div>
-<!-- Terug knop -->
+
 <div class="position-fixed" style="left: 10px; bottom: 10px; z-index: 100;">
     <a href="{{ url_for('main.dashboard') }}" class="back-icon">
         <img src="{{ url_for('static', filename='images/terug.png') }}" alt="Terug" class="img-fluid" style="width: 70px;">

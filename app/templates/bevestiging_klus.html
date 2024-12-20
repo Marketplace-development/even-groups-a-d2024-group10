@@ -47,14 +47,14 @@
 </head>
 <body>
     <div class="content-container text-center">
-        <!-- Logo -->
+        
         <img src="{{ url_for('static', filename='images/logo_kluskompass.png') }}" alt="Kluskompas Logo" class="img-fluid mb-4" style="max-width: 300px;">
 
-        <!-- Titel -->
+        
         <h1 class="mb-3">Bevestig klus accepteren</h1>
         <p class="mb-4">Weet je zeker dat je deze klus wilt accepteren?</p>
 
-        <!-- Klus Details -->
+        
         <div class="text-start">
             <h3>{{ klus.naam }}</h3>
             <p><strong>Beschrijving:</strong> {{ klus.beschrijving or "Geen beschrijving opgegeven" }}</p>
@@ -67,7 +67,7 @@
             <p><strong>Vergoeding:</strong> {{ klus.vergoeding }} €</p>
         </div>
 
-        <!-- Actie Knoppen -->
+        
         <form action="{{ url_for('main.accepteer_klus', klusnummer=klus.klusnummer) }}" method="POST">
             <button type="submit" class="btn btn-primary w-100 mb-3">Ja, accepteer deze klus</button>
         </form>

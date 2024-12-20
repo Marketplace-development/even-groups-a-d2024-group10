@@ -9,7 +9,7 @@
             <h2>Profiel Bewerken</h2>
         </div>
         
-        <!-- Flash Messages -->
+        
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <div class="alert-container">
@@ -22,19 +22,19 @@
         
         <form method="POST">
             <div class="card-body">
-                <!-- Voornaam -->
+                
                 <div class="form-group mb-3">
                     <label for="voornaam" class="font-weight-bold text-custom">Voornaam</label>
                     <input type="text" class="form-control" id="voornaam" name="voornaam" value="{{ user.voornaam }}" placeholder="Voer je voornaam in">
                 </div>
 
-                <!-- Achternaam -->
+                
                 <div class="form-group mb-3">
                     <label for="achternaam" class="font-weight-bold text-custom">Achternaam</label>
                     <input type="text" class="form-control" id="achternaam" name="achternaam" value="{{ user.achternaam }}" placeholder="Voer je achternaam in">
                 </div>
 
-                <!-- Geboortedatum -->
+                
                 <div class="form-group mb-3">
                     <label for="geboortedatum" class="font-weight-bold text-custom">Geboortedatum</label>
                     <input type="date" class="form-control" id="geboortedatum" name="geboortedatum" 
@@ -42,31 +42,31 @@
                            placeholder="Kies je geboortedatum">
                 </div>
 
-                <!-- Email -->
+                
                 <div class="form-group mb-3">
                     <label for="email" class="font-weight-bold text-custom">Email</label>
                     <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" placeholder="Voer je e-mailadres in">
                 </div>
 
-                <!-- Telefoonnummer -->
+                
                 <div class="form-group mb-3">
                     <label for="telefoonnummer" class="font-weight-bold text-custom">Telefoonnummer</label>
                     <input type="text" class="form-control" id="telefoonnummer" name="telefoonnummer" value="{{ user.telefoonnummer }}" placeholder="Voer je telefoonnummer in">
                 </div>
 
-                <!-- Adres -->
+                
                 <div class="form-group mb-3">
                     <label for="adres" class="font-weight-bold text-custom">Adres</label>
                     <input type="text" class="form-control" id="adres" name="adres" value="{{ user.adres }}" placeholder="Voer je adres in">
                 </div>
 
-                <!-- Gebruikersnaam -->
+                
                 <div class="form-group mb-3">
                     <label for="username" class="font-weight-bold text-custom">Gebruikersnaam</label>
                     <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" placeholder="Voer je gebruikersnaam in">
                 </div>
 
-                <!-- Geslacht -->
+                
                 <div class="form-group mb-3">
                     <label for="geslacht" class="font-weight-bold text-custom">Geslacht</label>
                     <select class="form-control" id="geslacht" name="geslacht">
@@ -77,7 +77,7 @@
                 </div>
             </div>
 
-            <!-- Actieknoppen -->
+            
             <div class="card-footer d-flex justify-content-between">
                 <button type="submit" class="btn btn-primary w-48">Opslaan</button>
                 <a href="{{ url_for('main.profile') }}" class="btn btn-secondary w-48">Annuleren</a>
